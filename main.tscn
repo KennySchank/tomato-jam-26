@@ -5,19 +5,27 @@
 [ext_resource type="Texture2D" uid="uid://sr5va3nbm3lx" path="res://assets/frog.png" id="3_h2yge"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_1bvp3"]
-atlas = ExtResource("3_h2yge")
+[gd_scene format=3 uid="uid://merged-main-tscn"]
+
+[ext_resource type="Script" uid="uid://cqeohk8rw803r" path="res://main.gd" id="1_main"]
+[ext_resource type="Script" uid="uid://cygvhuqxu7xl" path="res://player.gd" id="2_player"]
+[ext_resource type="Texture2D" uid="uid://sr5va3nbm3lx" path="res://assets/frog.png" id="3_frog"]
+[ext_resource type="Texture2D" uid="uid://dluoiye2tkt1i" path="res://icon.svg" id="4_icon"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1bvp3"]
+atlas = ExtResource("3_frog")
 region = Rect2(0, 0, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_lquwl"]
-atlas = ExtResource("3_h2yge")
+atlas = ExtResource("3_frog")
 region = Rect2(16, 0, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_7mycd"]
-atlas = ExtResource("3_h2yge")
+atlas = ExtResource("3_frog")
 region = Rect2(32, 0, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_272bh"]
-atlas = ExtResource("3_h2yge")
+atlas = ExtResource("3_frog")
 region = Rect2(48, 0, 16, 16)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_1bvp3"]
@@ -61,6 +69,11 @@ animation = &"stompWalk"
 autoplay = "stompWalk"
 frame_progress = 0.78724974
 
+[node name="GodotIcon" type="Sprite2D" parent="Player" unique_id=653312943]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("4_icon")
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=1899221278]
 rotation = -1.5707964
 shape = SubResource("CapsuleShape2D_assu6")
+[node name="Player" type="CharacterBody2D" parent="." unique_id=2119998355]
