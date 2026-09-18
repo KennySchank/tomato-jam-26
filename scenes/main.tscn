@@ -3,7 +3,6 @@
 [ext_resource type="Script" uid="uid://cqeohk8rw803r" path="res://main.gd" id="1_main"]
 [ext_resource type="Texture2D" uid="uid://b2dggjqohlxkh" path="res://assets/nasty nasty tiles.png" id="2_jyhfs"]
 [ext_resource type="Script" uid="uid://cygvhuqxu7xl" path="res://player.gd" id="2_player"]
-[ext_resource type="Texture2D" uid="uid://dluoiye2tkt1i" path="res://icon.svg" id="3_icon"]
 [ext_resource type="Texture2D" uid="uid://sr5va3nbm3lx" path="res://assets/frog.png" id="4_frog"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tbgi4"]
@@ -50,6 +49,10 @@ animations = [{
 "speed": 12.0
 }]
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
+radius = 11.0
+height = 38.0
+
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_main"]
 vertices = PackedVector2Array(16, 16, 1136, 16, 1136, 632, 16, 632)
 polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
@@ -76,11 +79,12 @@ target_desired_distance = 4.0
 radius = 16.0
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Player"]
+position = Vector2(0, 0.000000238418579)
 scale = Vector2(2.75, 2.75)
 sprite_frames = SubResource("SpriteFrames_frog")
 animation = &"stompWalk"
 autoplay = "stompWalk"
 
-[node name="GodotIcon" type="Sprite2D" parent="Player" unique_id=1553421816]
-scale = Vector2(0.34, 0.34)
-texture = ExtResource("3_icon")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+rotation = -1.5707964
+shape = SubResource("CapsuleShape2D_player")
