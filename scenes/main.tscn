@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://b2dggjqohlxkh" path="res://assets/nasty nasty tiles.png" id="2_jyhfs"]
 [ext_resource type="Script" uid="uid://cygvhuqxu7xl" path="res://player.gd" id="2_player"]
 [ext_resource type="Texture2D" uid="uid://dluoiye2tkt1i" path="res://icon.svg" id="3_icon"]
+[ext_resource type="Texture2D" uid="uid://sr5va3nbm3lx" path="res://assets/frog.png" id="4_frog"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tbgi4"]
 texture = ExtResource("2_jyhfs")
@@ -12,6 +13,42 @@ texture = ExtResource("2_jyhfs")
 
 [sub_resource type="TileSet" id="TileSet_lquwl"]
 sources/0 = SubResource("TileSetAtlasSource_tbgi4")
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_frog_0"]
+atlas = ExtResource("4_frog")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_frog_1"]
+atlas = ExtResource("4_frog")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_frog_2"]
+atlas = ExtResource("4_frog")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_frog_3"]
+atlas = ExtResource("4_frog")
+region = Rect2(48, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_frog"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_frog_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_frog_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_frog_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_frog_3")
+}],
+"loop": true,
+"name": &"stompWalk",
+"speed": 12.0
+}]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_main"]
 vertices = PackedVector2Array(16, 16, 1136, 16, 1136, 632, 16, 632)
@@ -37,6 +74,12 @@ script = ExtResource("2_player")
 path_desired_distance = 4.0
 target_desired_distance = 4.0
 radius = 16.0
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Player"]
+scale = Vector2(2.75, 2.75)
+sprite_frames = SubResource("SpriteFrames_frog")
+animation = &"stompWalk"
+autoplay = "stompWalk"
 
 [node name="GodotIcon" type="Sprite2D" parent="Player" unique_id=1553421816]
 scale = Vector2(0.34, 0.34)
