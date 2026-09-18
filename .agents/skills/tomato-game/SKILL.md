@@ -39,4 +39,4 @@ Implement the smallest complete change that solves the request. Prefer a simple,
 
 ## Scope
 
-This skill supplements the repository and workspace instructions. Follow higher-priority instructions when they conflict. The current project uses Godot 4.7 and runs `res://main.tscn` as its main scene.
+This skill supplements the repository and workspace instructions. Follow higher-priority instructions when they conflict. The current project uses Godot 4.7, keeps scenes under `res://scenes/`, and runs `res://scenes/main.tscn` as its main scene.
