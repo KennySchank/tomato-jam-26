@@ -245,9 +245,11 @@ func _on_enemy_attack_requested(enemy_position: Vector2, enemy: Node) -> void:
 	projectile.set_source(enemy)
 	var plant: Node = planted_tiles.get(target_tile)
 	if is_instance_valid(plant):
+		var plant_id := plant.get_instance_id()
 		projectile.set_target(plant)
 		projectile.impact_callback = func() -> void:
-			if planted_tiles.get(target_tile) == plant:
+			var current_plant: Node = planted_tiles.get(target_tile)
+			if is_instance_valid(current_plant) and current_plant.get_instance_id() == plant_id:
 				planted_tiles.erase(target_tile)
 				_check_loss_condition()
 	else:

@@ -9,7 +9,7 @@
 [ext_resource type="Script" uid="uid://dg750m8qqllep" path="res://scripts/interactable_highlight.gd" id="8_highlight"]
 [ext_resource type="Texture2D" uid="uid://dluoiye2tkt1i" path="res://icon.svg" id="9_preview_icon"]
 [ext_resource type="PackedScene" path="res://scenes/cloud_shadows.tscn" id="10_cloud_shadows"]
-[ext_resource type="PackedScene" uid="uid://4w4fwhoss4qx" path="res://scenes/hud.tscn" id="11_hud"]
+[ext_resource type="PackedScene" path="res://scenes/HUD.tscn" id="11_hud"]
 [ext_resource type="Script" uid="uid://p4w6735cfx72" path="res://scripts/placement_range_preview.gd" id="11_range_preview"]
 [ext_resource type="PackedScene" uid="uid://k365fy18v6d5" path="res://scenes/altar.tscn" id="12_eb6dy"]
 [ext_resource type="Script" path="res://scripts/wave_manager.gd" id="13_wave_mgr"]
