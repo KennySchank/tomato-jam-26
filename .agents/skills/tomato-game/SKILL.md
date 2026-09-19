@@ -30,6 +30,14 @@ Implement the smallest complete change that solves the request. Prefer a simple,
 - Keep editor-authored content legible: use descriptive node names, sensible hierarchy, and explicit scene properties.
 - Do not encode content in opaque strings or large generated data when the same result can be edited as scene nodes or resources.
 
+## Interactable Highlighting
+
+- Reuse `res://interactable_highlight.gd` for interactable targeting borders and tile-based interaction radius checks instead of duplicating highlight drawing or range math.
+- Add an `InteractableHighlight` child node to the interactable scene and configure its exported `interaction_range_tiles`, `border_color`, and `border_width` properties in the scene when those values need to be editor-visible.
+- Call `configure(map, player)` from the owning gameplay script, then call `set_target_tile(tile, rect, visible)` as the target changes. Use `is_in_range(tile)` for the interactable's gameplay range checks so the visual and gameplay radius stay consistent.
+- Use a rectangle target for tile-based interactions such as plantable soil. For sprite-shaped objects, assign `silhouette_sprite_path` and configure the sprite with `res://silhouette_outline.gdshader` through a `ShaderMaterial`; the shader expands the sprite quad to provide transparent padding for the outline.
+- Keep the reusable component local to each interactable scene rather than introducing a global interaction manager unless interaction arbitration becomes a demonstrated requirement.
+
 ## Verification
 
 - Validate changed GDScript with the Godot script checker or editor diagnostics.
