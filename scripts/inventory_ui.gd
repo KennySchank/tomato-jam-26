@@ -50,6 +50,16 @@ func open_altar() -> void:
 	chest_window.show()
 	_refresh()
 
+## Hide any open storage window and cancel any in-progress item transfer.
+## Used by round-end / game-over transitions so leftover UI doesn't sit on top
+## of the overlay.
+func close_all_windows() -> void:
+	selected_source = ""
+	selected_index = -1
+	if chest_window != null:
+		chest_window.hide()
+	_refresh()
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		chest_window.hide()

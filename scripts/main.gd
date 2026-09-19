@@ -81,6 +81,7 @@ func _on_harvest_time_expired() -> void:
 func _on_tomato_count_changed(count: int, goal: int) -> void:
 	if count >= goal and not _round_end_shown:
 		_round_end_shown = true
+		inventory_ui.close_all_windows()
 		round_end.show_round_end()
 
 func _on_round_end_closed() -> void:
@@ -91,6 +92,7 @@ func _on_round_end_closed() -> void:
 	_round_end_shown = false
 
 func _on_game_lost() -> void:
+	inventory_ui.close_all_windows()
 	game_over.show_game_over(game_state.total_tomatoes_deposited)
 
 func _count_brown_soil_tiles() -> int:
