@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/cloud_shadows.gd" id="1_cloud_shadows"]
+[ext_resource type="Shader" path="res://cloud_shadows.gdshader" id="2_cloud_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_cloud_shadows"]
+shader = ExtResource("2_cloud_shader")
+shader_parameter/shadow_color = Color(0.12, 0.19, 0.16, 1)
+shader_parameter/shadow_strength = 0.38
+shader_parameter/drift = Vector2(0.024, 0.001)
+shader_parameter/cloud_scale = Vector2(3, 1.8)
+shader_parameter/edge_start = 0.48
+shader_parameter/edge_end = 0.6
+
+[node name="CloudShadows" type="ColorRect"]
+offset_right = 1152.0
+offset_bottom = 648.0
+mouse_filter = 2
+z_index = 10
+material = SubResource("ShaderMaterial_cloud_shadows")
+color = Color(1, 1, 1, 1)
+script = ExtResource("1_cloud_shadows")
