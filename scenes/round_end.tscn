@@ -1,0 +1,31 @@
+[gd_scene load_steps=4 format=3 uid="uid://bx5dmihvw0rvt"]
+
+[ext_resource type="Texture2D" uid="uid://cts3baud7hwoo" path="res://assets/Altertop.png" id="1_naec3"]
+[ext_resource type="Script" path="res://scripts/round_end.gd" id="2_round_end"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_s1bhj"]
+size = Vector2(737, 571)
+
+[node name="RoundEnd" type="StaticBody2D" unique_id=1063412795]
+process_mode = 3
+script = ExtResource("2_round_end")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1304275248]
+position = Vector2(370.33334, 287.5)
+scale = Vector2(5.7395835, 5.7395835)
+texture = ExtResource("1_naec3")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=954498361]
+position = Vector2(366.5, 280.5)
+shape = SubResource("RectangleShape2D_s1bhj")
+
+[node name="Prompt" type="Label" parent="."]
+offset_left = 200.0
+offset_top = 520.0
+offset_right = 540.0
+offset_bottom = 560.0
+theme_override_colors/font_color = Color(0.95, 0.79, 0.41, 1)
+theme_override_font_sizes/font_size = 20
+text = "Click or press any key to continue"
+horizontal_alignment = 1
+vertical_alignment = 1

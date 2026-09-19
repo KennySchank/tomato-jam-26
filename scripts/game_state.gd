@@ -3,19 +3,22 @@ extends Node
 signal inventory_changed
 signal tomato_count_changed(count: int, goal: int)
 
-const FROG_CAPACITY := 1
+const FROG_CAPACITY := 2
 const CHEST_CAPACITY := 24
 const ALTAR_CAPACITY := 12
 const SEED_ITEM_ID := "tomato_seed"
 const FRUIT_ITEM_ID := "tomato"
 const CHEST_ITEM_ID := "godot_logo"
 
-@export var tomato_goal: int = 100
+@export var tomato_goal: int = 10
 
 var frog_inventory: Array[Dictionary] = []
 var chest_inventory: Array[Dictionary] = []
 var altar_inventory: Array[Dictionary] = []
 var tomato_count: int = 0
+var total_tomatoes_deposited: int = 0
+
+var _last_altar_tomato_count: int = 0
 
 func _ready() -> void:
 	reset_run()
@@ -32,15 +35,29 @@ func reset_run() -> void:
 		altar_inventory.append({})
 	frog_inventory[0] = {"id": SEED_ITEM_ID, "quantity": 10}
 	chest_inventory[0] = {"id": CHEST_ITEM_ID, "quantity": 1}
+	total_tomatoes_deposited = 0
+	_last_altar_tomato_count = 0
 	_recount_tomatoes()
 	inventory_changed.emit()
 	tomato_count_changed.emit(tomato_count, tomato_goal)
+
+## Clear the altar between rounds without disturbing the cumulative tally.
+func reset_altar_for_new_round() -> void:
+	for index in altar_inventory.size():
+		altar_inventory[index] = {}
+	_last_altar_tomato_count = 0
+	_recount_tomatoes()
+	inventory_changed.emit()
 
 func _recount_tomatoes() -> void:
 	var total := 0
 	for item: Dictionary in altar_inventory:
 		if not item.is_empty() and item.get("id") == FRUIT_ITEM_ID:
 			total += int(item.get("quantity", 0))
+	var delta: int = total - _last_altar_tomato_count
+	if delta > 0:
+		total_tomatoes_deposited += delta
+	_last_altar_tomato_count = total
 	tomato_count = total
 	tomato_count_changed.emit(tomato_count, tomato_goal)
 

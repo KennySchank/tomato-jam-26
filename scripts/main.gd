@@ -41,6 +41,10 @@ var brown_soil_count: int = 0
 @onready var inventory_ui: CanvasLayer = $InventoryUI
 @onready var wave_manager: WaveManager = $WaveManager
 @onready var hud: Node = $HUD
+@onready var round_end: StaticBody2D = $RoundEnd
+@onready var game_over: StaticBody2D = $GameOver
+
+var _round_end_shown: bool = false
 
 func _ready() -> void:
 	var start_cell := map.local_to_map(map.to_local(PLOT_CENTER))
@@ -51,7 +55,10 @@ func _ready() -> void:
 	brown_soil_count = _count_brown_soil_tiles()
 	wave_manager.spawn_requested.connect(_on_wave_spawn_requested)
 	wave_manager.wave_ended.connect(_on_wave_ended)
+	wave_manager.harvest_time_expired.connect(_on_harvest_time_expired)
+	wave_manager.game_lost.connect(_on_game_lost)
 	game_state.tomato_count_changed.connect(_on_tomato_count_changed)
+	round_end.closed.connect(_on_round_end_closed)
 	if hud.has_method("bind_wave_manager"):
 		hud.bind_wave_manager(wave_manager)
 	queue_redraw()
@@ -67,9 +74,24 @@ func _on_wave_ended(_wave_index: int, wave: WaveDefinition) -> void:
 	if leftover > 0:
 		push_warning("Wave reward overflow: %d seeds could not be stored." % leftover)
 
+func _on_harvest_time_expired() -> void:
+	if game_state.tomato_count < game_state.tomato_goal:
+		wave_manager.trigger_loss()
+
 func _on_tomato_count_changed(count: int, goal: int) -> void:
-	if count >= goal:
-		wave_manager.trigger_win()
+	if count >= goal and not _round_end_shown:
+		_round_end_shown = true
+		round_end.show_round_end()
+
+func _on_round_end_closed() -> void:
+	# Endless mode: reset the altar and restart the harvest countdown so the
+	# player has a fresh deadline for the next tribute cycle.
+	game_state.reset_altar_for_new_round()
+	wave_manager.restart_harvest_timer()
+	_round_end_shown = false
+
+func _on_game_lost() -> void:
+	game_over.show_game_over(game_state.total_tomatoes_deposited)
 
 func _count_brown_soil_tiles() -> int:
 	var count := 0
@@ -384,6 +406,7 @@ func _try_harvest(tile: Vector2i) -> bool:
 		return true
 	if not game_state.add_frog_item(game_state.FRUIT_ITEM_ID):
 		return true
+	game_state.add_chest_item(game_state.SEED_ITEM_ID, 1)
 	planted_tiles.erase(tile)
 	plant.queue_free()
 	return true

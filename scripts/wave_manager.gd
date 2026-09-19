@@ -10,6 +10,8 @@ signal all_waves_completed
 signal game_lost
 signal game_won
 signal spawn_requested(enemy_scene: PackedScene)
+signal harvest_time_changed(seconds_remaining: float)
+signal harvest_time_expired
 
 enum Phase { IDLE, PREPARING, ACTIVE, COMPLETED, LOST }
 
@@ -21,6 +23,10 @@ enum Phase { IDLE, PREPARING, ACTIVE, COMPLETED, LOST }
 @export var auto_start: bool = true
 ## Input action pressed during prep to skip straight to the wave.
 @export var skip_prep_action: StringName = &"ui_accept"
+
+@export_group("Harvest Deadline")
+## Seconds the player has to reach the tomato goal. Expiry triggers a loss.
+@export_range(0.0, 3600.0, 1.0) var harvest_time_limit: float = 120.0
 
 @export_group("Endless Mode")
 ## After the authored waves complete, keep spawning procedurally scaled waves.
@@ -43,8 +49,11 @@ var current_wave: WaveDefinition
 var _prep_time_remaining: float = 0.0
 var _spawn_cooldown: float = 0.0
 var _enemies_spawned: int = 0
+var _harvest_time_remaining: float = 0.0
 
 func _ready() -> void:
+	_harvest_time_remaining = harvest_time_limit
+	harvest_time_changed.emit(_harvest_time_remaining)
 	if auto_start:
 		start_next_wave_prep.call_deferred()
 
@@ -82,6 +91,12 @@ func trigger_win() -> void:
 	phase = Phase.COMPLETED
 	game_won.emit()
 
+## Restart the harvest countdown from its full limit. Used between rounds so the
+## player has a fresh deadline for the next tomato quota.
+func restart_harvest_timer() -> void:
+	_harvest_time_remaining = harvest_time_limit
+	harvest_time_changed.emit(_harvest_time_remaining)
+
 func _unhandled_input(event: InputEvent) -> void:
 	if phase != Phase.PREPARING:
 		return
@@ -89,11 +104,22 @@ func _unhandled_input(event: InputEvent) -> void:
 		skip_prep()
 
 func _process(delta: float) -> void:
+	_tick_harvest_timer(delta)
 	match phase:
 		Phase.PREPARING:
 			_tick_prep(delta)
 		Phase.ACTIVE:
 			_tick_active(delta)
+
+func _tick_harvest_timer(delta: float) -> void:
+	if phase == Phase.COMPLETED or phase == Phase.LOST:
+		return
+	if _harvest_time_remaining <= 0.0:
+		return
+	_harvest_time_remaining = maxf(0.0, _harvest_time_remaining - delta)
+	harvest_time_changed.emit(_harvest_time_remaining)
+	if _harvest_time_remaining <= 0.0:
+		harvest_time_expired.emit()
 
 func _tick_prep(delta: float) -> void:
 	_prep_time_remaining = maxf(0.0, _prep_time_remaining - delta)

@@ -16,6 +16,8 @@
 [ext_resource type="Script" path="res://scripts/wave_definition.gd" id="14_wave_def"]
 [ext_resource type="PackedScene" uid="uid://c7nrcu1lnd7wb" path="res://scenes/enemy.tscn" id="15_enemy"]
 [ext_resource type="PackedScene" uid="uid://t52lkh3pd8eb" path="res://scenes/enemies/enemy_raccoon.tscn" id="16_raccoon"]
+[ext_resource type="PackedScene" uid="uid://bx5dmihvw0rvt" path="res://scenes/round_end.tscn" id="17_round_end"]
+[ext_resource type="PackedScene" uid="uid://d0game0over0scn" path="res://scenes/game_over.tscn" id="18_game_over"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tbgi4"]
 texture = ExtResource("2_jyhfs")
@@ -122,6 +124,11 @@ position = Vector2(522, 73)
 script = ExtResource("13_wave_mgr")
 waves = Array[Resource]([SubResource("Wave_1"), SubResource("Wave_2"), SubResource("Wave_3")])
 endless_mode = true
+harvest_time_limit = 120.0
+
+[node name="RoundEnd" parent="." instance=ExtResource("17_round_end")]
+
+[node name="GameOver" parent="." instance=ExtResource("18_game_over")]
 
 [connection signal="opened" from="Chest" to="InventoryUI" method="open_chest"]
 [connection signal="opened" from="Altar" to="InventoryUI" method="open_altar"]
