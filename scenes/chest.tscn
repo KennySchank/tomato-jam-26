@@ -1,25 +1,28 @@
 [gd_scene format=3 uid="uid://ber4664758ss8"]
 
 [ext_resource type="Script" uid="uid://dpk7vh3k7dan2" path="res://scripts/chest.gd" id="1_chest"]
-[ext_resource type="Texture2D" uid="uid://dluoiye2tkt1i" path="res://icon.svg" id="2_icon"]
+[ext_resource type="Texture2D" uid="uid://d017yfbx77yoo" path="res://assets/BaseSpriteSheet.png" id="3_gqd3d"]
 [ext_resource type="Script" uid="uid://dg750m8qqllep" path="res://scripts/interactable_highlight.gd" id="3_highlight"]
-[ext_resource type="Shader" uid="uid://dlgk303kt8axa" path="res://silhouette_outline.gdshader" id="4_outline"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_outline"]
-shader = ExtResource("4_outline")
-shader_parameter/outline_enabled = false
-shader_parameter/outline_color = Color(1, 0.95, 0.45, 0.95)
-shader_parameter/outline_width = 4.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_o6xl0"]
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_yue2o"]
+atlas = ExtResource("3_gqd3d")
+region = Rect2(48, 32, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_kkyey"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yue2o")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 5.0
+}]
+
 [node name="Chest" type="StaticBody2D" unique_id=393992190 groups=["interactable"]]
 script = ExtResource("1_chest")
-
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=985818936]
-material = SubResource("ShaderMaterial_outline")
-scale = Vector2(0.375, 0.375)
-texture = ExtResource("2_icon")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1604088527]
 scale = Vector2(2.24, 2.24)
@@ -27,4 +30,7 @@ shape = SubResource("RectangleShape2D_o6xl0")
 
 [node name="InteractableHighlight" type="Node2D" parent="." unique_id=2142989687]
 script = ExtResource("3_highlight")
-silhouette_sprite_path = NodePath("../Sprite2D")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1259866846]
+scale = Vector2(2.775, 2.775)
+sprite_frames = SubResource("SpriteFrames_kkyey")
