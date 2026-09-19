@@ -9,6 +9,7 @@
 [ext_resource type="Script" uid="uid://dg750m8qqllep" path="res://scripts/interactable_highlight.gd" id="8_highlight"]
 [ext_resource type="Texture2D" uid="uid://dluoiye2tkt1i" path="res://icon.svg" id="9_preview_icon"]
 [ext_resource type="PackedScene" path="res://scenes/cloud_shadows.tscn" id="10_cloud_shadows"]
+[ext_resource type="Script" path="res://scripts/placement_range_preview.gd" id="11_range_preview"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tbgi4"]
 texture = ExtResource("2_jyhfs")
@@ -61,6 +62,12 @@ visible = false
 modulate = Color(1, 1, 1, 0.6)
 z_index = 1
 texture = ExtResource("9_preview_icon")
+
+[node name="PlacementRangePreview" type="Node2D" parent="." unique_id=187306679]
+visible = false
+z_index = 0
+script = ExtResource("11_range_preview")
+radius = 220.0
 
 [node name="CloudShadows" parent="." unique_id=198531367 instance=ExtResource("10_cloud_shadows")]
 shadow_color = Color(0, 0.14117648, 0.039215688, 1)
