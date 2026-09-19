@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://ber4664758ss8" path="res://scenes/chest.tscn" id="6_chest"]
 [ext_resource type="PackedScene" path="res://scenes/inventory_ui.tscn" id="7_inventory_ui"]
 [ext_resource type="Script" uid="uid://dg750m8qqllep" path="res://scripts/interactable_highlight.gd" id="8_highlight"]
+[ext_resource type="Texture2D" path="res://icon.svg" id="9_preview_icon"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tbgi4"]
 texture = ExtResource("2_jyhfs")
@@ -53,6 +54,12 @@ position = Vector2(840, 262)
 
 [node name="InteractableHighlight" type="Node2D" parent="."]
 script = ExtResource("8_highlight")
+
+[node name="PlacementPreview" type="Sprite2D" parent="."]
+visible = false
+z_index = 1
+modulate = Color(1, 1, 1, 0.6)
+texture = ExtResource("9_preview_icon")
 
 [node name="InventoryUI" parent="." unique_id=753763620 instance=ExtResource("7_inventory_ui")]
 

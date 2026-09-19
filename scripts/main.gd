@@ -26,6 +26,7 @@ var enemy_path: Array[Vector2] = []
 @onready var map: TileMapLayer = $Map
 @onready var chest: StaticBody2D = $Chest
 @onready var highlight: InteractableHighlight = $InteractableHighlight
+@onready var placement_preview: Sprite2D = $PlacementPreview
 @onready var game_state: Node = get_node("/root/GameState")
 @onready var inventory_ui: CanvasLayer = $InventoryUI
 
@@ -188,12 +189,19 @@ func _process(_delta: float) -> void:
 	if not is_node_ready():
 		return
 	var hover_is_valid := _is_plantable(hovered_tile)
+	var hover_is_harvest_target := _is_in_planting_range(hovered_tile) and planted_tiles.has(hovered_tile)
+	var preview_scale := Vector2.ZERO
 	if inventory_ui != null and inventory_ui.is_node_ready():
 		var selected_item: Dictionary = game_state.frog_inventory[inventory_ui.selected_frog_slot]
 		if not selected_item.is_empty():
 			var item_id: String = selected_item.get("id", "")
-			if item_id == game_state.SEED_ITEM_ID or item_id == game_state.FRUIT_ITEM_ID:
+			if not hover_is_harvest_target and (item_id == game_state.SEED_ITEM_ID or item_id == game_state.FRUIT_ITEM_ID):
 				hover_is_valid = _can_place_item(hovered_tile, item_id)
+				preview_scale = Vector2.ONE * (0.18 if item_id == game_state.SEED_ITEM_ID else 0.22)
+	placement_preview.visible = hover_is_valid and preview_scale != Vector2.ZERO
+	if placement_preview.visible:
+		placement_preview.global_position = _cell_center(hovered_tile)
+		placement_preview.scale = preview_scale
 	highlight.set_target_tile(
 		hovered_tile,
 		_soil_highlight_rect(hovered_tile),
