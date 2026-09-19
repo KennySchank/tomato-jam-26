@@ -24,6 +24,8 @@ var enemy_path: Array[Vector2] = []
 @onready var sprite: AnimatedSprite2D = $Player/AnimatedSprite2D
 @onready var navigation_agent: NavigationAgent2D = $Player/NavigationAgent2D
 @onready var map: TileMapLayer = $Map
+@onready var chest: Area2D = $Chest
+@onready var game_state: Node = get_node("/root/GameState")
 
 func _ready() -> void:
 	var start_cell := map.local_to_map(map.to_local(PLOT_CENTER))
@@ -52,7 +54,11 @@ func _unhandled_input(event: InputEvent) -> void:
 			if navigation_ready:
 				navigation_agent.target_position = destination
 		elif event.button_index == MOUSE_BUTTON_RIGHT:
-			_try_plant(clicked_cell)
+			var mouse_world_position := get_global_mouse_position()
+			if chest.can_interact_at(mouse_world_position) and chest.can_player_interact(player):
+				chest.interact()
+			else:
+				_try_plant(clicked_cell)
 		queue_redraw()
 
 func _cell_center(cell: Vector2i) -> Vector2:
@@ -188,6 +194,8 @@ func _try_plant(tile: Vector2i) -> void:
 	if planted_tiles.has(tile):
 		return
 	if not _is_plantable(tile):
+		return
+	if not game_state.consume_frog_item(0):
 		return
 
 	var plant := PLANT_SCENE.instantiate()

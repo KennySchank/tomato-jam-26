@@ -5,6 +5,8 @@
 [ext_resource type="Script" uid="uid://cygvhuqxu7xl" path="res://player.gd" id="2_player"]
 [ext_resource type="Texture2D" uid="uid://sr5va3nbm3lx" path="res://assets/frog.png" id="4_frog"]
 [ext_resource type="PackedScene" uid="uid://bhx1nsqac3jqa" path="res://scenes/frog_house.tscn" id="5_tbgi4"]
+[ext_resource type="PackedScene" uid="uid://ber4664758ss8" path="res://scenes/chest.tscn" id="6_chest"]
+[ext_resource type="Script" uid="uid://c7dj6xbp33leg" path="res://inventory_ui.gd" id="7_inventory_ui"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tbgi4"]
 texture = ExtResource("2_jyhfs")
@@ -75,6 +77,7 @@ tile_map_data = PackedByteArray("AAABAAEAAAAAAAAAAAACAAEAAAAAAAAAAAACAAIAAAAAAAA
 tile_set = SubResource("TileSet_lquwl")
 
 [node name="WalkableArea" type="NavigationRegion2D" parent="." unique_id=1247266027]
+visible = false
 navigation_polygon = SubResource("NavigationPolygon_main")
 
 [node name="Player" type="CharacterBody2D" parent="." unique_id=395082681]
@@ -101,3 +104,11 @@ shape = SubResource("CapsuleShape2D_player")
 z_index = -19
 position = Vector2(936.00006, 190)
 scale = Vector2(6.62, 6.62)
+
+[node name="Chest" parent="." unique_id=1258476236 instance=ExtResource("6_chest")]
+position = Vector2(840, 262)
+
+[node name="InventoryUI" type="CanvasLayer" parent="." unique_id=753763620]
+script = ExtResource("7_inventory_ui")
+
+[connection signal="opened" from="Chest" to="InventoryUI" method="open_chest"]
