@@ -13,12 +13,15 @@ const ENEMY_SCENE := preload("res://scenes/enemy.tscn")
 
 const CARDINAL_DIRECTIONS: Array[Vector2i] = [Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT, Vector2i.UP]
 
+@export var enemy_spawn_interval := 4.0
+
 var destination := PLOT_CENTER
 var navigation_ready := false
 var planted_tiles: Dictionary = {}
 var tower_tiles: Dictionary = {}
 var hovered_tile := Vector2i(999999, 999999)
 var enemy_path: Array[Vector2] = []
+var enemy_spawn_cooldown := 0.0
 
 @onready var player: CharacterBody2D = $Player
 @onready var sprite: AnimatedSprite2D = $Player/AnimatedSprite2D
@@ -37,6 +40,7 @@ func _ready() -> void:
 	highlight.configure(map, player)
 	enemy_path = _build_enemy_path()
 	_spawn_test_enemy()
+	enemy_spawn_cooldown = enemy_spawn_interval
 	queue_redraw()
 	_navigation_setup.call_deferred()
 
@@ -188,6 +192,10 @@ func _soil_highlight_rect(tile: Vector2i) -> Rect2:
 func _process(_delta: float) -> void:
 	if not is_node_ready():
 		return
+	enemy_spawn_cooldown -= _delta
+	if enemy_spawn_cooldown <= 0.0:
+		_spawn_test_enemy()
+		enemy_spawn_cooldown = enemy_spawn_interval
 	var hover_is_valid := _is_plantable(hovered_tile)
 	var hover_is_harvest_target := _is_in_planting_range(hovered_tile) and planted_tiles.has(hovered_tile)
 	var preview_scale := Vector2.ZERO
