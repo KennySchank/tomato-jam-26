@@ -1,0 +1,235 @@
+extends Node2D
+
+const PLAYER_SPEED := 120.0
+const PLANTABLE_DATA := "plantable"
+const BROWN_SOIL_ATLAS_COORDS := Vector2i(1, 0)
+const ENEMY_PATH_DATA := "enemy_path"
+const PLANTING_RANGE_TILES := 1
+const TARGET_BORDER_COLOR := Color(1.0, 0.95, 0.45, 0.95)
+# The 0-indexed frame (0, 1, 2, or 3) to show when stopped
+const IDLE_FRAME: int = 1
+const PLOT_CENTER := Vector2(576, 324)
+const PLANT_SCENE := preload("res://scenes/plant.tscn")
+const ENEMY_SCENE := preload("res://scenes/enemy.tscn")
+
+const CARDINAL_DIRECTIONS: Array[Vector2i] = [Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT, Vector2i.UP]
+
+var destination := PLOT_CENTER
+var navigation_ready := false
+var planted_tiles: Dictionary = {}
+var hovered_tile := Vector2i(999999, 999999)
+var enemy_path: Array[Vector2] = []
+
+@onready var player: CharacterBody2D = $Player
+@onready var sprite: AnimatedSprite2D = $Player/AnimatedSprite2D
+@onready var navigation_agent: NavigationAgent2D = $Player/NavigationAgent2D
+@onready var map: TileMapLayer = $Map
+
+func _ready() -> void:
+	var start_cell := map.local_to_map(map.to_local(PLOT_CENTER))
+	destination = _cell_center(start_cell)
+	player.position = destination
+	enemy_path = _build_enemy_path()
+	_spawn_test_enemy()
+	queue_redraw()
+	_navigation_setup.call_deferred()
+
+func _navigation_setup() -> void:
+	await get_tree().physics_frame
+	navigation_ready = true
+	navigation_agent.target_position = destination
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventMouseMotion:
+		hovered_tile = map.local_to_map(map.to_local(event.position))
+		queue_redraw()
+		return
+	if event is InputEventMouseButton and event.pressed:
+		var clicked_cell := map.local_to_map(map.to_local(event.position))
+		hovered_tile = clicked_cell
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			destination = _cell_center(clicked_cell)
+			if navigation_ready:
+				navigation_agent.target_position = destination
+		elif event.button_index == MOUSE_BUTTON_RIGHT:
+			_try_plant(clicked_cell)
+		queue_redraw()
+
+func _cell_center(cell: Vector2i) -> Vector2:
+	return map.to_global(map.map_to_local(cell))
+
+func _is_plantable(tile: Vector2i) -> bool:
+	var tile_data := map.get_cell_tile_data(tile)
+	if tile_data == null:
+		return false
+	var is_plantable: bool = tile_data.get_custom_data(PLANTABLE_DATA)
+	var is_brown_soil := map.get_cell_atlas_coords(tile) == BROWN_SOIL_ATLAS_COORDS
+	return is_plantable or is_brown_soil
+
+func _is_enemy_path(tile: Vector2i) -> bool:
+	var tile_data := map.get_cell_tile_data(tile)
+	return tile_data != null and tile_data.get_custom_data(ENEMY_PATH_DATA) == true
+
+func _build_enemy_path() -> Array[Vector2]:
+	var path_cells: Array[Vector2i] = []
+	for cell in map.get_used_cells():
+		if _is_enemy_path(cell):
+			path_cells.append(cell)
+
+	if path_cells.is_empty():
+		push_warning("No enemy path tiles found in the map.")
+		return []
+
+	var path_set: Dictionary = {}
+	for cell in path_cells:
+		path_set[cell] = true
+
+	var route_cells := _largest_path_component(path_cells, path_set)
+	var route_set: Dictionary = {}
+	for cell in route_cells:
+		route_set[cell] = true
+
+	var endpoints: Array[Vector2i] = []
+	for cell in route_cells:
+		if _path_neighbors(cell, route_set).size() == 1:
+			endpoints.append(cell)
+	if endpoints.size() < 2:
+		push_warning("Enemy path needs two endpoints to build a route to the plants.")
+		return []
+
+	var target_endpoint := endpoints[0]
+	var spawn_endpoint := endpoints[0]
+	for endpoint in endpoints:
+		if _cell_center(endpoint).distance_to(PLOT_CENTER) < _cell_center(target_endpoint).distance_to(PLOT_CENTER):
+			target_endpoint = endpoint
+		if _cell_center(endpoint).distance_to(PLOT_CENTER) > _cell_center(spawn_endpoint).distance_to(PLOT_CENTER):
+			spawn_endpoint = endpoint
+
+	var ordered_cells: Array[Vector2i] = []
+	var previous := Vector2i(999999, 999999)
+	var current := spawn_endpoint
+	while true:
+		ordered_cells.append(current)
+		if current == target_endpoint:
+			break
+		var next_cells: Array[Vector2i] = []
+		for neighbor in _path_neighbors(current, route_set):
+			if neighbor != previous and not ordered_cells.has(neighbor):
+				next_cells.append(neighbor)
+		if next_cells.is_empty():
+			break
+		previous = current
+		current = next_cells[0]
+
+	if current != target_endpoint:
+		push_warning("Could not connect the enemy spawn point to the plants.")
+		return []
+
+	var world_path: Array[Vector2] = []
+	for cell in ordered_cells:
+		world_path.append(_cell_center(cell))
+	return world_path
+
+func _largest_path_component(path_cells: Array[Vector2i], path_set: Dictionary) -> Array[Vector2i]:
+	var remaining: Dictionary = {}
+	for cell in path_cells:
+		remaining[cell] = true
+
+	var largest: Array[Vector2i] = []
+	while not remaining.is_empty():
+		var component: Array[Vector2i] = []
+		var frontier: Array[Vector2i] = [remaining.keys()[0]]
+		while not frontier.is_empty():
+			var cell: Vector2i = frontier.pop_back()
+			if not remaining.has(cell):
+				continue
+			remaining.erase(cell)
+			component.append(cell)
+			for neighbor in _path_neighbors(cell, path_set):
+				if remaining.has(neighbor):
+					frontier.append(neighbor)
+		if component.size() > largest.size():
+			largest = component
+	return largest
+
+func _path_neighbors(cell: Vector2i, path_set: Dictionary) -> Array[Vector2i]:
+	var neighbors: Array[Vector2i] = []
+	for direction: Vector2i in CARDINAL_DIRECTIONS:
+		var neighbor: Vector2i = cell + direction
+		if path_set.has(neighbor):
+			neighbors.append(neighbor)
+	return neighbors
+
+func _spawn_test_enemy() -> void:
+	if enemy_path.is_empty():
+		return
+	var enemy := ENEMY_SCENE.instantiate()
+	add_child(enemy)
+	enemy.set_route(enemy_path)
+
+func _is_in_planting_range(tile: Vector2i) -> bool:
+	var player_tile := map.local_to_map(map.to_local(player.global_position))
+	return max(abs(tile.x - player_tile.x), abs(tile.y - player_tile.y)) <= PLANTING_RANGE_TILES
+
+func _draw_tile_border(tile: Vector2i, color: Color, width: float) -> void:
+	var half_size := Vector2(map.tile_set.tile_size) * 0.5 * map.scale
+	var center := _cell_center(tile)
+	draw_rect(Rect2(to_local(center) - half_size, half_size * 2.0), color, false, width)
+
+func _draw() -> void:
+	if not is_node_ready():
+		return
+	if _is_plantable(hovered_tile) and _is_in_planting_range(hovered_tile):
+		_draw_tile_border(hovered_tile, TARGET_BORDER_COLOR, 4.0)
+
+func _try_plant(tile: Vector2i) -> void:
+	if not _is_in_planting_range(tile):
+		return
+	if planted_tiles.has(tile):
+		return
+	if not _is_plantable(tile):
+		return
+
+	var plant := PLANT_SCENE.instantiate()
+	plant.global_position = _cell_center(tile)
+	add_child(plant)
+	planted_tiles[tile] = plant
+
+func _physics_process(_delta: float) -> void:
+	queue_redraw()
+	# If navigation isn't ready yet, fall back to direct mouse steering
+	if not navigation_ready:
+		var offset := destination - player.position
+		if offset.length() > 4.0:
+			player.velocity = offset.normalized() * PLAYER_SPEED
+			player.move_and_slide()
+
+			# Play the stompWalk animation while moving
+			if not sprite.is_playing() or sprite.animation != "stompWalk":
+				sprite.play("stompWalk")
+		else:
+			player.velocity = Vector2.ZERO
+			# Freeze on the chosen frame when stopped
+			sprite.stop()
+			sprite.frame = IDLE_FRAME
+		return
+
+	# Use navigation agent when available
+	if navigation_agent.is_navigation_finished():
+		player.velocity = Vector2.ZERO
+		sprite.stop()
+		sprite.frame = IDLE_FRAME
+		return
+
+	var next_path_position := navigation_agent.get_next_path_position()
+	var offset := next_path_position - player.global_position
+	if offset.length() <= 1.0:
+		player.velocity = Vector2.ZERO
+		sprite.stop()
+		sprite.frame = IDLE_FRAME
+		return
+
+	player.velocity = offset.normalized() * PLAYER_SPEED
+	player.move_and_slide()
+	if not sprite.is_playing() or sprite.animation != "stompWalk":
+		sprite.play("stompWalk")

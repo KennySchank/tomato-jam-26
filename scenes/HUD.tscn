@@ -1,0 +1,79 @@
+[gd_scene format=3 uid="uid://bk0uxeqk3jwwp"]
+
+[ext_resource type="Script" uid="uid://bqdsggihcurqk" path="res://scripts/hud.gd" id="1_hud"]
+[ext_resource type="Texture2D" uid="uid://dckkhe35qu4eo" path="res://assets/Sprite-Mushroom-House.png" id="2_fls4u"]
+
+[sub_resource type="SystemFont" id="SystemFont_hud"]
+font_names = PackedStringArray("Consolas")
+subpixel_positioning = 0
+
+[sub_resource type="Theme" id="Theme_hud"]
+default_font = SubResource("SystemFont_hud")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hud"]
+bg_color = Color(0.08, 0.08, 0.1, 0.78)
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.95, 0.45, 0.9)
+corner_radius_bottom_right = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_separator"]
+content_margin_left = 1.5
+content_margin_right = 1.5
+bg_color = Color(1, 0.95, 0.45, 0.9)
+
+[node name="HUD" type="CanvasLayer" unique_id=1188521666]
+script = ExtResource("1_hud")
+
+[node name="Panel" type="PanelContainer" parent="." unique_id=1626887310]
+offset_right = 304.0
+offset_bottom = 64.0
+theme = SubResource("Theme_hud")
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud")
+
+[node name="Margin" type="MarginContainer" parent="Panel" unique_id=288430602]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 0
+
+[node name="Sections" type="HBoxContainer" parent="Panel/Margin" unique_id=1562431239]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TomatoSection" type="HBoxContainer" parent="Panel/Margin/Sections" unique_id=1330323396]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="TomatoIcon" type="TextureRect" parent="Panel/Margin/Sections/TomatoSection" unique_id=981015536]
+layout_mode = 2
+texture = ExtResource("2_fls4u")
+expand_mode = 3
+
+[node name="TomatoValue" type="Label" parent="Panel/Margin/Sections/TomatoSection" unique_id=1678582989]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 28
+text = "0 / 100"
+horizontal_alignment = 1
+
+[node name="Separator" type="VSeparator" parent="Panel/Margin/Sections" unique_id=1129474276]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxFlat_separator")
+
+[node name="TimerSection" type="VBoxContainer" parent="Panel/Margin/Sections" unique_id=129624878]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="TimerValue" type="Label" parent="Panel/Margin/Sections/TimerSection" unique_id=1999925067]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 28
+text = "0:00"
+horizontal_alignment = 1
