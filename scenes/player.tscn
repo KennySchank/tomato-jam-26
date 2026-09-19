@@ -54,8 +54,8 @@ animations = [{
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
-radius = 8.0
-height = 28.0
+radius = 16.0
+height = 42.0
 
 [node name="Player" type="CharacterBody2D" unique_id=34370671]
 z_index = 1
@@ -67,12 +67,14 @@ target_desired_distance = 4.0
 radius = 12.0
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1121884579]
-position = Vector2(0, 2.3841858e-07)
-scale = Vector2(2.0, 2.0)
+position = Vector2(0, -10)
+scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_frog")
 animation = &"stompWalk"
 autoplay = "stompWalk"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=970860440]
+position = Vector2(-0.99999994, 1.9999998)
 rotation = -1.5707964
+scale = Vector2(0.962687, 1.003289)
 shape = SubResource("CapsuleShape2D_player")
