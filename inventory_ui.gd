@@ -82,6 +82,8 @@ func _item_text(item: Dictionary) -> String:
 		return "Godot\n×%d" % quantity
 	if item_id == game_state.SEED_ITEM_ID:
 		return "Seeds\n×%d" % quantity
+	if item_id == game_state.FRUIT_ITEM_ID:
+		return "Tomato\n×%d" % quantity
 	return item_id
 
 func _on_slot_pressed(inventory_name: String, index: int) -> void:

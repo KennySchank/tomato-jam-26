@@ -8,6 +8,7 @@ const ENEMY_PATH_DATA := "enemy_path"
 const IDLE_FRAME: int = 1
 const PLOT_CENTER := Vector2(576, 324)
 const PLANT_SCENE := preload("res://scenes/plant.tscn")
+const TOWER_SCENE := preload("res://scenes/tower.tscn")
 const ENEMY_SCENE := preload("res://scenes/enemy.tscn")
 
 const CARDINAL_DIRECTIONS: Array[Vector2i] = [Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT, Vector2i.UP]
@@ -15,6 +16,7 @@ const CARDINAL_DIRECTIONS: Array[Vector2i] = [Vector2i.RIGHT, Vector2i.DOWN, Vec
 var destination := PLOT_CENTER
 var navigation_ready := false
 var planted_tiles: Dictionary = {}
+var tower_tiles: Dictionary = {}
 var hovered_tile := Vector2i(999999, 999999)
 var enemy_path: Array[Vector2] = []
 
@@ -58,7 +60,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			var mouse_world_position := get_global_mouse_position()
 			if chest.can_interact_at(mouse_world_position) and chest.can_player_interact(player):
 				chest.interact()
-			else:
+			elif not _try_harvest(clicked_cell) and not _try_place_tower(clicked_cell):
 				_try_plant(clicked_cell)
 		queue_redraw()
 
@@ -205,6 +207,33 @@ func _try_plant(tile: Vector2i) -> void:
 	plant.global_position = _cell_center(tile)
 	add_child(plant)
 	planted_tiles[tile] = plant
+
+func _try_harvest(tile: Vector2i) -> bool:
+	if not _is_in_planting_range(tile) or not planted_tiles.has(tile):
+		return false
+	var plant: Node = planted_tiles[tile]
+	if not plant.can_harvest():
+		return true
+	if not game_state.add_frog_item(game_state.FRUIT_ITEM_ID):
+		return true
+	planted_tiles.erase(tile)
+	plant.queue_free()
+	return true
+
+func _try_place_tower(tile: Vector2i) -> bool:
+	if not _is_in_planting_range(tile) or _is_enemy_path(tile):
+		return false
+	if planted_tiles.has(tile) or tower_tiles.has(tile) or map.get_cell_tile_data(tile) == null:
+		return false
+	if not game_state.frog_slot_has_item(inventory_ui.selected_frog_slot, game_state.FRUIT_ITEM_ID):
+		return false
+	if not game_state.consume_frog_item(inventory_ui.selected_frog_slot):
+		return false
+	var tower := TOWER_SCENE.instantiate()
+	tower.global_position = _cell_center(tile)
+	add_child(tower)
+	tower_tiles[tile] = tower
+	return true
 
 func _physics_process(_delta: float) -> void:
 	queue_redraw()
