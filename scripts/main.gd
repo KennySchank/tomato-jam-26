@@ -2,9 +2,10 @@ extends Node2D
 
 const PLAYER_SPEED := 120.0
 const PLANTABLE_DATA := "plantable"
-const BROWN_SOIL_ATLAS_COORDS := Vector2i(1, 0)
-const BASE_LAND_ATLAS_COORDS := Vector2i(0, 0)
-const ENEMY_PATH_DATA := "enemy_path"
+const TILLED_SOIL_SOURCE_ID := 3
+const GRASS_SOURCE_ID := 0
+const GRASS_ATLAS_COORDS := Vector2i(4, 0)
+const ENEMY_PATH_SOURCE_ID := 2
 # The 0-indexed frame (0, 1, 2, or 3) to show when stopped
 const IDLE_FRAME: int = 1
 const PLOT_CENTER := Vector2(576, 324)
@@ -98,7 +99,7 @@ func _on_game_lost() -> void:
 func _count_brown_soil_tiles() -> int:
 	var count := 0
 	for tile in map.get_used_cells():
-		if map.get_cell_atlas_coords(tile) == BROWN_SOIL_ATLAS_COORDS:
+		if _is_tilled_soil(tile):
 			count += 1
 	return count
 
@@ -146,12 +147,13 @@ func _is_plantable(tile: Vector2i) -> bool:
 	if tile_data == null:
 		return false
 	var is_plantable: bool = tile_data.get_custom_data(PLANTABLE_DATA)
-	var is_brown_soil := map.get_cell_atlas_coords(tile) == BROWN_SOIL_ATLAS_COORDS
-	return is_plantable or is_brown_soil
+	return is_plantable or _is_tilled_soil(tile)
+
+func _is_tilled_soil(tile: Vector2i) -> bool:
+	return map.get_cell_source_id(tile) == TILLED_SOIL_SOURCE_ID
 
 func _is_enemy_path(tile: Vector2i) -> bool:
-	var tile_data := map.get_cell_tile_data(tile)
-	return tile_data != null and tile_data.get_custom_data(ENEMY_PATH_DATA) == true
+	return map.get_cell_source_id(tile) == ENEMY_PATH_SOURCE_ID
 
 func _build_enemy_routes() -> Array[Array]:
 	var path_cells: Array[Vector2i] = []
@@ -298,7 +300,7 @@ func _find_enemy_target_tile(enemy_position: Vector2) -> Vector2i:
 	nearest_tile = Vector2i(999999, 999999)
 	nearest_distance = INF
 	for tile in map.get_used_cells():
-		if map.get_cell_atlas_coords(tile) != BROWN_SOIL_ATLAS_COORDS:
+		if not _is_tilled_soil(tile):
 			continue
 		var distance := _cell_center(tile).distance_to(enemy_position)
 		if distance <= interaction_radius and distance < nearest_distance:
@@ -307,7 +309,7 @@ func _find_enemy_target_tile(enemy_position: Vector2) -> Vector2i:
 	return nearest_tile
 
 func _damage_land(tile: Vector2i) -> void:
-	if map.get_cell_atlas_coords(tile) != BROWN_SOIL_ATLAS_COORDS:
+	if not _is_tilled_soil(tile):
 		return
 	_play_land_damage(tile)
 
@@ -333,7 +335,7 @@ func _play_land_damage(tile: Vector2i) -> void:
 	damage_tween.tween_property(damage_overlay, "position", original_position, 0.025)
 	damage_tween.tween_property(damage_overlay, "color", Color(1.0, 0.15, 0.15, 0.0), 0.08)
 	damage_tween.finished.connect(func() -> void:
-		map.set_cell(tile, 0, BASE_LAND_ATLAS_COORDS)
+		map.set_cell(tile, GRASS_SOURCE_ID, GRASS_ATLAS_COORDS)
 		damage_overlay.queue_free()
 		brown_soil_count = maxi(0, brown_soil_count - 1)
 		_check_loss_condition()
