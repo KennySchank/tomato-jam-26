@@ -1,12 +1,21 @@
 extends CharacterBody2D
 
 @export var speed := 45.0
+@export var max_health := 30.0
+
+var health := max_health
 
 var route: Array[Vector2] = []
 var route_index := 0
 
 func _ready() -> void:
 	add_to_group("enemies")
+	health = max_health
+
+func take_damage(amount: float) -> void:
+	health = maxf(health - amount, 0.0)
+	if health <= 0.0:
+		queue_free()
 
 func set_route(new_route: Array[Vector2]) -> void:
 	route = new_route
