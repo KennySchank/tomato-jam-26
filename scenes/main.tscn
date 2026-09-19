@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://dluoiye2tkt1i" path="res://icon.svg" id="9_preview_icon"]
 [ext_resource type="PackedScene" path="res://scenes/cloud_shadows.tscn" id="10_cloud_shadows"]
 [ext_resource type="Script" path="res://scripts/placement_range_preview.gd" id="11_range_preview"]
+[ext_resource type="PackedScene" uid="uid://bk0uxeqk3jwwp" path="res://scenes/HUD.tscn" id="11_hud"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tbgi4"]
 texture = ExtResource("2_jyhfs")
@@ -78,5 +79,7 @@ edge_start = 0.4
 edge_end = 0.55
 
 [node name="InventoryUI" parent="." unique_id=753763620 instance=ExtResource("7_inventory_ui")]
+
+[node name="HUD" parent="." instance=ExtResource("11_hud")]
 
 [connection signal="opened" from="Chest" to="InventoryUI" method="open_chest"]
