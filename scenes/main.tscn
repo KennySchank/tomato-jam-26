@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://sr5va3nbm3lx" path="res://assets/frog.png" id="4_frog"]
 [ext_resource type="PackedScene" uid="uid://bhx1nsqac3jqa" path="res://scenes/frog_house.tscn" id="5_tbgi4"]
 [ext_resource type="PackedScene" uid="uid://ber4664758ss8" path="res://scenes/chest.tscn" id="6_chest"]
-[ext_resource type="Script" uid="uid://c7dj6xbp33leg" path="res://inventory_ui.gd" id="7_inventory_ui"]
+[ext_resource type="PackedScene" path="res://scenes/inventory_ui.tscn" id="7_inventory_ui"]
 [ext_resource type="Script" path="res://interactable_highlight.gd" id="8_highlight"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tbgi4"]
@@ -112,7 +112,6 @@ position = Vector2(840, 262)
 [node name="InteractableHighlight" type="Node2D" parent="."]
 script = ExtResource("8_highlight")
 
-[node name="InventoryUI" type="CanvasLayer" parent="." unique_id=753763620]
-script = ExtResource("7_inventory_ui")
+[node name="InventoryUI" parent="." unique_id=753763620 instance=ExtResource("7_inventory_ui")]
 
 [connection signal="opened" from="Chest" to="InventoryUI" method="open_chest"]

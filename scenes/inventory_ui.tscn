@@ -1,0 +1,75 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://inventory_ui.gd" id="1_inventory_ui"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_inventory"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_chest"]
+
+[node name="InventoryUI" type="CanvasLayer"]
+script = ExtResource("1_inventory_ui")
+
+[node name="InventoryToolbar" type="PanelContainer" parent="."]
+layout_mode = 3
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -72.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxEmpty_inventory")
+
+[node name="Scroll" type="ScrollContainer" parent="InventoryToolbar"]
+layout_mode = 2
+horizontal_scroll_mode = 1
+
+[node name="Center" type="CenterContainer" parent="InventoryToolbar/Scroll"]
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ToolbarSlots" type="HBoxContainer" parent="InventoryToolbar/Scroll/Center"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ChestWindow" type="PanelContainer" parent="."]
+visible = false
+offset_left = 300.0
+offset_top = 120.0
+offset_right = 852.0
+offset_bottom = 510.0
+theme_override_styles/panel = SubResource("StyleBoxEmpty_chest")
+
+[node name="Margin" type="MarginContainer" parent="ChestWindow"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 16
+
+[node name="Column" type="VBoxContainer" parent="ChestWindow/Margin"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="ChestWindow/Margin/Column"]
+layout_mode = 2
+text = "Chest"
+horizontal_alignment = 1
+
+[node name="Hint" type="Label" parent="ChestWindow/Margin/Column"]
+layout_mode = 2
+text = "Drag items between slots, or click slots to move or swap items."
+horizontal_alignment = 1
+
+[node name="FrogSlots" type="HBoxContainer" parent="ChestWindow/Margin/Column"]
+layout_mode = 2
+alignment = 1
+
+[node name="Separator" type="HSeparator" parent="ChestWindow/Margin/Column"]
+layout_mode = 2
+
+[node name="ChestSlots" type="GridContainer" parent="ChestWindow/Margin/Column"]
+layout_mode = 2
+columns = 6
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8

@@ -25,6 +25,7 @@ var enemy_path: Array[Vector2] = []
 @onready var chest: Area2D = $Chest
 @onready var highlight: InteractableHighlight = $InteractableHighlight
 @onready var game_state: Node = get_node("/root/GameState")
+@onready var inventory_ui: CanvasLayer = $InventoryUI
 
 func _ready() -> void:
 	var start_cell := map.local_to_map(map.to_local(PLOT_CENTER))
@@ -197,7 +198,7 @@ func _try_plant(tile: Vector2i) -> void:
 		return
 	if not _is_plantable(tile):
 		return
-	if not game_state.consume_frog_item(0):
+	if not game_state.consume_frog_item(inventory_ui.selected_frog_slot):
 		return
 
 	var plant := PLANT_SCENE.instantiate()
