@@ -1,14 +1,14 @@
 [gd_scene format=3 uid="uid://cgfi57f7vmuab"]
 
-[ext_resource type="Script" uid="uid://cqeohk8rw803r" path="res://main.gd" id="1_main"]
-[ext_resource type="Script" uid="uid://cygvhuqxu7xl" path="res://player.gd" id="2_player"]
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="Script" path="res://scripts/player.gd" id="2_player"]
 [ext_resource type="Texture2D" uid="uid://sr5va3nbm3lx" path="res://assets/frog.png" id="3_h2yge"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_1bvp3"]
 [gd_scene format=3 uid="uid://merged-main-tscn"]
 
-[ext_resource type="Script" uid="uid://cqeohk8rw803r" path="res://main.gd" id="1_main"]
-[ext_resource type="Script" uid="uid://cygvhuqxu7xl" path="res://player.gd" id="2_player"]
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="Script" path="res://scripts/player.gd" id="2_player"]
 [ext_resource type="Texture2D" uid="uid://sr5va3nbm3lx" path="res://assets/frog.png" id="3_frog"]
 [ext_resource type="Texture2D" uid="uid://dluoiye2tkt1i" path="res://icon.svg" id="4_icon"]
 

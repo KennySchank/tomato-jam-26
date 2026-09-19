@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=4]
 
-[ext_resource type="Script" path="res://plant.gd" id="1_plant"]
+[ext_resource type="Script" uid="uid://dq7udt0aadhgs" path="res://scripts/plant.gd" id="1_plant"]
 [ext_resource type="Texture2D" path="res://icon.svg" id="2_icon"]
 
 [node name="Plant" type="Node2D"]

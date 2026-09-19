@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3]
 
-[ext_resource type="Script" path="res://inventory_ui.gd" id="1_inventory_ui"]
+[ext_resource type="Script" uid="uid://04c0pu5prsop" path="res://scripts/inventory_ui.gd" id="1_inventory_ui"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_inventory"]
 

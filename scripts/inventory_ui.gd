@@ -1,6 +1,6 @@
 extends CanvasLayer
 
-const INVENTORY_SLOT_SCENE := preload("res://inventory_slot.gd")
+const INVENTORY_SLOT_SCENE := preload("res://scripts/inventory_slot.gd")
 const SLOT_SIZE := Vector2(56, 56)
 const SLOT_COLOR := Color("263247")
 const SELECTED_COLOR := Color("f3c969")

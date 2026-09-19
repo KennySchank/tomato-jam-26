@@ -1,13 +1,13 @@
 [gd_scene format=4 uid="uid://o5s4h4vlw616"]
 
-[ext_resource type="Script" uid="uid://cqeohk8rw803r" path="res://main.gd" id="1_main"]
+[ext_resource type="Script" uid="uid://cva5thvk03khi" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Texture2D" uid="uid://b2dggjqohlxkh" path="res://assets/nasty nasty tiles.png" id="2_jyhfs"]
-[ext_resource type="Script" uid="uid://cygvhuqxu7xl" path="res://player.gd" id="2_player"]
+[ext_resource type="Script" uid="uid://bk84ccgj5trf0" path="res://scripts/player.gd" id="2_player"]
 [ext_resource type="Texture2D" uid="uid://sr5va3nbm3lx" path="res://assets/frog.png" id="4_frog"]
 [ext_resource type="PackedScene" uid="uid://bhx1nsqac3jqa" path="res://scenes/frog_house.tscn" id="5_tbgi4"]
 [ext_resource type="PackedScene" uid="uid://ber4664758ss8" path="res://scenes/chest.tscn" id="6_chest"]
 [ext_resource type="PackedScene" path="res://scenes/inventory_ui.tscn" id="7_inventory_ui"]
-[ext_resource type="Script" path="res://interactable_highlight.gd" id="8_highlight"]
+[ext_resource type="Script" uid="uid://dg750m8qqllep" path="res://scripts/interactable_highlight.gd" id="8_highlight"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tbgi4"]
 texture = ExtResource("2_jyhfs")
