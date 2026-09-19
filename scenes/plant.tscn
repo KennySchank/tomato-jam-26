@@ -7,6 +7,10 @@
 z_index = -5
 script = ExtResource("1_plant")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="SwayPivot" type="Node2D" parent="."]
+position = Vector2(0, 12)
+
+[node name="Sprite2D" type="Sprite2D" parent="SwayPivot"]
 texture = ExtResource("2_icon")
+position = Vector2(0, -12)
 scale = Vector2(0.18, 0.18)
