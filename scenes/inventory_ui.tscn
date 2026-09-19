@@ -11,25 +11,29 @@ script = ExtResource("1_inventory_ui")
 
 [node name="InventoryToolbar" type="PanelContainer" parent="."]
 layout_mode = 3
-anchors_preset = 12
-anchor_top = 1.0
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
 anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -72.0
-grow_horizontal = 2
-grow_vertical = 0
+anchor_bottom = 0.5
+offset_left = -72.0
+offset_top = -236.0
+offset_right = -8.0
+offset_bottom = 236.0
+grow_horizontal = 0
+grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxEmpty_inventory")
 
 [node name="Scroll" type="ScrollContainer" parent="InventoryToolbar"]
 layout_mode = 2
-horizontal_scroll_mode = 1
+vertical_scroll_mode = 1
 
 [node name="Center" type="CenterContainer" parent="InventoryToolbar/Scroll"]
-custom_minimum_size = Vector2(0, 72)
+custom_minimum_size = Vector2(64, 0)
 layout_mode = 2
-size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="ToolbarSlots" type="HBoxContainer" parent="InventoryToolbar/Scroll/Center"]
+[node name="ToolbarSlots" type="VBoxContainer" parent="InventoryToolbar/Scroll/Center"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
