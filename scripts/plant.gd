@@ -3,9 +3,11 @@ extends Node2D
 @export var growth_duration := 10.0
 
 var is_mature := false
+var damage_tween: Tween
 
 @onready var sway_pivot: Node2D = $SwayPivot
 @onready var sprite: Sprite2D = $SwayPivot/Sprite2D
+@onready var sprite_position := sprite.position
 
 func _ready() -> void:
 	sprite.modulate = Color(0.9, 0.12, 0.12)
@@ -27,3 +29,16 @@ func _on_growth_finished() -> void:
 
 func can_harvest() -> bool:
 	return is_mature
+
+func take_damage() -> void:
+	if damage_tween != null and damage_tween.is_valid():
+		damage_tween.kill()
+	sprite.position = sprite_position
+	var original_modulate := sprite.modulate
+	damage_tween = create_tween()
+	damage_tween.tween_property(sprite, "modulate", Color(1.0, 0.15, 0.15), 0.04)
+	damage_tween.parallel().tween_property(sprite, "position", sprite_position + Vector2(2.0, 0.0), 0.025)
+	damage_tween.tween_property(sprite, "position", sprite_position + Vector2(-2.0, 0.0), 0.05)
+	damage_tween.tween_property(sprite, "position", sprite_position, 0.025)
+	damage_tween.parallel().tween_property(sprite, "modulate", original_modulate, 0.08)
+	damage_tween.finished.connect(queue_free)

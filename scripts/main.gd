@@ -3,6 +3,7 @@ extends Node2D
 const PLAYER_SPEED := 120.0
 const PLANTABLE_DATA := "plantable"
 const BROWN_SOIL_ATLAS_COORDS := Vector2i(1, 0)
+const BASE_LAND_ATLAS_COORDS := Vector2i(0, 0)
 const ENEMY_PATH_DATA := "enemy_path"
 # The 0-indexed frame (0, 1, 2, or 3) to show when stopped
 const IDLE_FRAME: int = 1
@@ -14,6 +15,8 @@ const ENEMY_SCENES: Array[PackedScene] = [
 	preload("res://scenes/enemy.tscn"),
 	preload("res://scenes/enemies/enemy_raccoon.tscn"),
 ]
+const PROJECTILE_SCENE := preload("res://scenes/projectile.tscn")
+const ENEMY_ATTACK_RADIUS_TILES := 4.0
 
 const CARDINAL_DIRECTIONS: Array[Vector2i] = [Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT, Vector2i.UP]
 
@@ -194,7 +197,83 @@ func _spawn_enemy(enemy_scene: PackedScene = null) -> void:
 		enemy_scene = ENEMY_SCENES.pick_random()
 	var enemy := enemy_scene.instantiate()
 	add_child(enemy)
+	enemy.attack_requested.connect(_on_enemy_attack_requested.bind(enemy))
 	enemy.set_route(enemy_routes.pick_random())
+
+func _on_enemy_attack_requested(enemy_position: Vector2, enemy: Node) -> void:
+	var target_tile := _find_enemy_target_tile(enemy_position)
+	if target_tile == Vector2i(999999, 999999):
+		return
+
+	var projectile := PROJECTILE_SCENE.instantiate()
+	projectile.global_position = enemy_position
+	projectile.set_source(enemy)
+	var plant: Node = planted_tiles.get(target_tile)
+	if is_instance_valid(plant):
+		projectile.set_target(plant)
+		projectile.impact_callback = func() -> void:
+			if planted_tiles.get(target_tile) == plant:
+				planted_tiles.erase(target_tile)
+	else:
+		projectile.set_target_position(_cell_center(target_tile))
+		projectile.impact_callback = func() -> void:
+			_damage_land(target_tile)
+	add_child(projectile)
+
+func _find_enemy_target_tile(enemy_position: Vector2) -> Vector2i:
+	var interaction_radius := Vector2(map.tile_set.tile_size).x * map.scale.x * ENEMY_ATTACK_RADIUS_TILES
+	var nearest_tile := Vector2i(999999, 999999)
+	var nearest_distance := INF
+	for tile in planted_tiles:
+		var distance := _cell_center(tile).distance_to(enemy_position)
+		if distance <= interaction_radius and distance < nearest_distance:
+			nearest_tile = tile
+			nearest_distance = distance
+
+	if nearest_tile != Vector2i(999999, 999999):
+		return nearest_tile
+
+	nearest_tile = Vector2i(999999, 999999)
+	nearest_distance = INF
+	for tile in map.get_used_cells():
+		if map.get_cell_atlas_coords(tile) != BROWN_SOIL_ATLAS_COORDS:
+			continue
+		var distance := _cell_center(tile).distance_to(enemy_position)
+		if distance <= interaction_radius and distance < nearest_distance:
+			nearest_tile = tile
+			nearest_distance = distance
+	return nearest_tile
+
+func _damage_land(tile: Vector2i) -> void:
+	if map.get_cell_atlas_coords(tile) != BROWN_SOIL_ATLAS_COORDS:
+		return
+	_play_land_damage(tile)
+
+func _play_land_damage(tile: Vector2i) -> void:
+	var damage_overlay := Polygon2D.new()
+	var half_size := Vector2(map.tile_set.tile_size) * 0.5 * map.scale
+	damage_overlay.polygon = PackedVector2Array([
+		Vector2(-half_size.x, -half_size.y),
+		Vector2(half_size.x, -half_size.y),
+		Vector2(half_size.x, half_size.y),
+		Vector2(-half_size.x, half_size.y),
+	])
+	damage_overlay.position = _cell_center(tile)
+	damage_overlay.z_index = -1
+	damage_overlay.color = Color(1.0, 0.15, 0.15, 0.65)
+	add_child(damage_overlay)
+
+	var original_position := damage_overlay.position
+	var damage_tween := create_tween()
+	damage_tween.tween_property(damage_overlay, "color", Color(1.0, 0.15, 0.15, 0.9), 0.04)
+	damage_tween.parallel().tween_property(damage_overlay, "position", original_position + Vector2(2.0, 0.0), 0.025)
+	damage_tween.tween_property(damage_overlay, "position", original_position + Vector2(-2.0, 0.0), 0.05)
+	damage_tween.tween_property(damage_overlay, "position", original_position, 0.025)
+	damage_tween.tween_property(damage_overlay, "color", Color(1.0, 0.15, 0.15, 0.0), 0.08)
+	damage_tween.finished.connect(func() -> void:
+		map.set_cell(tile, 0, BASE_LAND_ATLAS_COORDS)
+		damage_overlay.queue_free()
+	)
 
 func _next_enemy_spawn_delay() -> float:
 	return randf_range(enemy_spawn_interval_min, enemy_spawn_interval_max)
