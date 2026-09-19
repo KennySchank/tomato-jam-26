@@ -1,10 +1,17 @@
 [gd_scene format=3 uid="uid://ber4664758ss8"]
 
 [ext_resource type="Script" uid="uid://bwij4p6txt1fb" path="res://chest.gd" id="1_chest"]
+[ext_resource type="Script" path="res://interactable_highlight.gd" id="3_highlight"]
 [ext_resource type="Texture2D" uid="uid://dluoiye2tkt1i" path="res://icon.svg" id="2_icon"]
+[ext_resource type="Shader" path="res://silhouette_outline.gdshader" id="4_outline"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_chest"]
 radius = 24.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_outline"]
+shader = ExtResource("4_outline")
+shader_parameter/outline_color = Color(1, 0.95, 0.45, 0.95)
+shader_parameter/outline_width = 4.0
 
 [node name="Chest" type="Area2D" unique_id=393992190 groups=["interactable"]]
 script = ExtResource("1_chest")
@@ -12,6 +19,11 @@ script = ExtResource("1_chest")
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=985818936]
 scale = Vector2(0.375, 0.375)
 texture = ExtResource("2_icon")
+material = SubResource("ShaderMaterial_outline")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1604088527]
 shape = SubResource("CircleShape2D_chest")
+
+[node name="InteractableHighlight" type="Node2D" parent="."]
+script = ExtResource("3_highlight")
+silhouette_sprite_path = NodePath("../Sprite2D")

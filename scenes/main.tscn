@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://bhx1nsqac3jqa" path="res://scenes/frog_house.tscn" id="5_tbgi4"]
 [ext_resource type="PackedScene" uid="uid://ber4664758ss8" path="res://scenes/chest.tscn" id="6_chest"]
 [ext_resource type="Script" uid="uid://c7dj6xbp33leg" path="res://inventory_ui.gd" id="7_inventory_ui"]
+[ext_resource type="Script" path="res://interactable_highlight.gd" id="8_highlight"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tbgi4"]
 texture = ExtResource("2_jyhfs")
@@ -107,6 +108,9 @@ scale = Vector2(6.62, 6.62)
 
 [node name="Chest" parent="." unique_id=1258476236 instance=ExtResource("6_chest")]
 position = Vector2(840, 262)
+
+[node name="InteractableHighlight" type="Node2D" parent="."]
+script = ExtResource("8_highlight")
 
 [node name="InventoryUI" type="CanvasLayer" parent="." unique_id=753763620]
 script = ExtResource("7_inventory_ui")

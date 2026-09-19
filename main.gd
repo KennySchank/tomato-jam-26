@@ -4,8 +4,6 @@ const PLAYER_SPEED := 120.0
 const PLANTABLE_DATA := "plantable"
 const BROWN_SOIL_ATLAS_COORDS := Vector2i(1, 0)
 const ENEMY_PATH_DATA := "enemy_path"
-const PLANTING_RANGE_TILES := 1
-const TARGET_BORDER_COLOR := Color(1.0, 0.95, 0.45, 0.95)
 # The 0-indexed frame (0, 1, 2, or 3) to show when stopped
 const IDLE_FRAME: int = 1
 const PLOT_CENTER := Vector2(576, 324)
@@ -25,12 +23,14 @@ var enemy_path: Array[Vector2] = []
 @onready var navigation_agent: NavigationAgent2D = $Player/NavigationAgent2D
 @onready var map: TileMapLayer = $Map
 @onready var chest: Area2D = $Chest
+@onready var highlight: InteractableHighlight = $InteractableHighlight
 @onready var game_state: Node = get_node("/root/GameState")
 
 func _ready() -> void:
 	var start_cell := map.local_to_map(map.to_local(PLOT_CENTER))
 	destination = _cell_center(start_cell)
 	player.position = destination
+	highlight.configure(map, player)
 	enemy_path = _build_enemy_path()
 	_spawn_test_enemy()
 	queue_redraw()
@@ -174,19 +174,21 @@ func _spawn_test_enemy() -> void:
 	enemy.set_route(enemy_path)
 
 func _is_in_planting_range(tile: Vector2i) -> bool:
-	var player_tile := map.local_to_map(map.to_local(player.global_position))
-	return max(abs(tile.x - player_tile.x), abs(tile.y - player_tile.y)) <= PLANTING_RANGE_TILES
+	return highlight.is_in_range(tile)
 
-func _draw_tile_border(tile: Vector2i, color: Color, width: float) -> void:
+func _soil_highlight_rect(tile: Vector2i) -> Rect2:
 	var half_size := Vector2(map.tile_set.tile_size) * 0.5 * map.scale
 	var center := _cell_center(tile)
-	draw_rect(Rect2(to_local(center) - half_size, half_size * 2.0), color, false, width)
+	return Rect2(to_local(center) - half_size, half_size * 2.0)
 
-func _draw() -> void:
+func _process(_delta: float) -> void:
 	if not is_node_ready():
 		return
-	if _is_plantable(hovered_tile) and _is_in_planting_range(hovered_tile):
-		_draw_tile_border(hovered_tile, TARGET_BORDER_COLOR, 4.0)
+	highlight.set_target_tile(
+		hovered_tile,
+		_soil_highlight_rect(hovered_tile),
+		_is_plantable(hovered_tile)
+	)
 
 func _try_plant(tile: Vector2i) -> void:
 	if not _is_in_planting_range(tile):
