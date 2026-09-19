@@ -1,9 +1,12 @@
 extends CharacterBody2D
 
-@export var speed := 75.0
+@export var speed := 45.0
 
 var route: Array[Vector2] = []
 var route_index := 0
+
+func _ready() -> void:
+	add_to_group("enemies")
 
 func set_route(new_route: Array[Vector2]) -> void:
 	route = new_route

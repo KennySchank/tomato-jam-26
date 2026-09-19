@@ -63,6 +63,12 @@ z_index = 1
 texture = ExtResource("9_preview_icon")
 
 [node name="CloudShadows" parent="." unique_id=198531367 instance=ExtResource("10_cloud_shadows")]
+shadow_color = Color(0, 0.14117648, 0.039215688, 1)
+shadow_strength = 0.17
+horizontal_speed = 0.05299999999999999
+vertical_speed = -0.0020000000000000018
+edge_start = 0.4
+edge_end = 0.55
 
 [node name="InventoryUI" parent="." unique_id=753763620 instance=ExtResource("7_inventory_ui")]
 
