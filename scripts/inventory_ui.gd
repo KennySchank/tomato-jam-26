@@ -10,7 +10,7 @@ var selected_source := ""
 var selected_index := -1
 var selected_frog_slot := 0
 
-@onready var chest: Area2D = get_parent().get_node("Chest")
+@onready var chest: StaticBody2D = get_parent().get_node("Chest")
 @onready var player: Node2D = get_parent().get_node("Player")
 @onready var game_state: Node = get_node("/root/GameState")
 @onready var toolbar_slots: VBoxContainer = $InventoryToolbar/Scroll/Center/ToolbarSlots

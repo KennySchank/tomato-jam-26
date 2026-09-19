@@ -13,7 +13,7 @@ shader_parameter/outline_width = 4.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_o6xl0"]
 
-[node name="Chest" type="Area2D" unique_id=393992190 groups=["interactable"]]
+[node name="Chest" type="StaticBody2D" unique_id=393992190 groups=["interactable"]]
 script = ExtResource("1_chest")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=985818936]

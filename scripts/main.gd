@@ -24,7 +24,7 @@ var enemy_path: Array[Vector2] = []
 @onready var sprite: AnimatedSprite2D = $Player/AnimatedSprite2D
 @onready var navigation_agent: NavigationAgent2D = $Player/NavigationAgent2D
 @onready var map: TileMapLayer = $Map
-@onready var chest: Area2D = $Chest
+@onready var chest: StaticBody2D = $Chest
 @onready var highlight: InteractableHighlight = $InteractableHighlight
 @onready var game_state: Node = get_node("/root/GameState")
 @onready var inventory_ui: CanvasLayer = $InventoryUI
@@ -187,18 +187,33 @@ func _soil_highlight_rect(tile: Vector2i) -> Rect2:
 func _process(_delta: float) -> void:
 	if not is_node_ready():
 		return
+	var hover_is_valid := _is_plantable(hovered_tile)
+	if inventory_ui != null and inventory_ui.is_node_ready():
+		var selected_item: Dictionary = game_state.frog_inventory[inventory_ui.selected_frog_slot]
+		if not selected_item.is_empty():
+			var item_id: String = selected_item.get("id", "")
+			if item_id == game_state.SEED_ITEM_ID or item_id == game_state.FRUIT_ITEM_ID:
+				hover_is_valid = _can_place_item(hovered_tile, item_id)
 	highlight.set_target_tile(
 		hovered_tile,
 		_soil_highlight_rect(hovered_tile),
-		_is_plantable(hovered_tile)
+		hover_is_valid
 	)
+	queue_redraw()
+
+func _can_place_item(tile: Vector2i, item_id: String) -> bool:
+	if not _is_in_planting_range(tile) or map.get_cell_tile_data(tile) == null:
+		return false
+	if planted_tiles.has(tile) or tower_tiles.has(tile):
+		return false
+	if item_id == game_state.SEED_ITEM_ID:
+		return _is_plantable(tile)
+	if item_id == game_state.FRUIT_ITEM_ID:
+		return not _is_enemy_path(tile)
+	return false
 
 func _try_plant(tile: Vector2i) -> void:
-	if not _is_in_planting_range(tile):
-		return
-	if planted_tiles.has(tile):
-		return
-	if not _is_plantable(tile):
+	if not _can_place_item(tile, game_state.SEED_ITEM_ID):
 		return
 	if not game_state.consume_frog_item(inventory_ui.selected_frog_slot):
 		return
@@ -221,9 +236,7 @@ func _try_harvest(tile: Vector2i) -> bool:
 	return true
 
 func _try_place_tower(tile: Vector2i) -> bool:
-	if not _is_in_planting_range(tile) or _is_enemy_path(tile):
-		return false
-	if planted_tiles.has(tile) or tower_tiles.has(tile) or map.get_cell_tile_data(tile) == null:
+	if not _can_place_item(tile, game_state.FRUIT_ITEM_ID):
 		return false
 	if not game_state.frog_slot_has_item(inventory_ui.selected_frog_slot, game_state.FRUIT_ITEM_ID):
 		return false

@@ -2,8 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cva5thvk03khi" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Texture2D" uid="uid://b2dggjqohlxkh" path="res://assets/nasty nasty tiles.png" id="2_jyhfs"]
-[ext_resource type="Script" uid="uid://bk84ccgj5trf0" path="res://scripts/player.gd" id="2_player"]
-[ext_resource type="Texture2D" uid="uid://sr5va3nbm3lx" path="res://assets/frog.png" id="4_frog"]
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2_player"]
 [ext_resource type="PackedScene" uid="uid://bhx1nsqac3jqa" path="res://scenes/frog_house.tscn" id="5_tbgi4"]
 [ext_resource type="PackedScene" uid="uid://ber4664758ss8" path="res://scenes/chest.tscn" id="6_chest"]
 [ext_resource type="PackedScene" path="res://scenes/inventory_ui.tscn" id="7_inventory_ui"]
@@ -28,46 +27,6 @@ vertices = PackedVector2Array(16, 16, 1136, 16, 1136, 632, 16, 632)
 polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
 agent_radius = 16.0
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_frog_0"]
-atlas = ExtResource("4_frog")
-region = Rect2(0, 0, 16, 16)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_frog_1"]
-atlas = ExtResource("4_frog")
-region = Rect2(16, 0, 16, 16)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_frog_2"]
-atlas = ExtResource("4_frog")
-region = Rect2(32, 0, 16, 16)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_frog_3"]
-atlas = ExtResource("4_frog")
-region = Rect2(48, 0, 16, 16)
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_frog"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_frog_0")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_frog_1")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_frog_2")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_frog_3")
-}],
-"loop": 1,
-"name": &"stompWalk",
-"speed": 12.0
-}]
-
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
-radius = 11.0
-height = 38.0
-
 [node name="TowerDefenseBaseline" type="Node2D" unique_id=621228746]
 script = ExtResource("1_main")
 
@@ -81,25 +40,8 @@ tile_set = SubResource("TileSet_lquwl")
 visible = false
 navigation_polygon = SubResource("NavigationPolygon_main")
 
-[node name="Player" type="CharacterBody2D" parent="." unique_id=395082681]
+[node name="Player" parent="." instance=ExtResource("2_player")]
 position = Vector2(576, 324)
-script = ExtResource("2_player")
-
-[node name="NavigationAgent2D" type="NavigationAgent2D" parent="Player" unique_id=2077773446]
-path_desired_distance = 4.0
-target_desired_distance = 4.0
-radius = 16.0
-
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Player" unique_id=1751033779]
-position = Vector2(0, 2.3841858e-07)
-scale = Vector2(2.75, 2.75)
-sprite_frames = SubResource("SpriteFrames_frog")
-animation = &"stompWalk"
-autoplay = "stompWalk"
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=1573934267]
-rotation = -1.5707964
-shape = SubResource("CapsuleShape2D_player")
 
 [node name="Frog House" parent="." unique_id=312209468 instance=ExtResource("5_tbgi4")]
 z_index = -19
