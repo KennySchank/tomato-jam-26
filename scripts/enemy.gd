@@ -5,6 +5,10 @@ signal attack_requested(global_position: Vector2)
 @export var speed := 45.0
 @export var max_health := 30.0
 @export var attack_interval := 1.0
+@export var turn_speed_deg := 540.0
+## Angle the sprite art naturally faces when unrotated.
+## 0 = right, 90 = down, -90 = up, 180 = left.
+@export var sprite_facing_deg := -90.0
 
 var health := max_health
 
@@ -45,6 +49,11 @@ func set_route(new_route: Array[Vector2]) -> void:
 	attack_cooldown = 0.0
 	if route.size() > 0:
 		global_position = route[0]
+		# Face the first segment immediately so we don't whip around on spawn.
+		if route.size() > 1:
+			var initial_dir := route[1] - route[0]
+			if not initial_dir.is_zero_approx():
+				sprite.rotation = initial_dir.angle() - deg_to_rad(sprite_facing_deg)
 
 func _physics_process(_delta: float) -> void:
 	if route_index >= route.size():
@@ -63,6 +72,14 @@ func _physics_process(_delta: float) -> void:
 
 	velocity = offset.normalized() * speed
 	move_and_slide()
+	_face_movement_direction(_delta)
+
+func _face_movement_direction(delta: float) -> void:
+	if velocity.is_zero_approx():
+		return
+	var target_angle := velocity.angle() - deg_to_rad(sprite_facing_deg)
+	var turn_rate := deg_to_rad(turn_speed_deg)
+	sprite.rotation = rotate_toward(sprite.rotation, target_angle, turn_rate * delta)
 
 func _process_endpoint_attack(delta: float) -> void:
 	attack_cooldown -= delta
