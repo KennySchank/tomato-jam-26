@@ -10,6 +10,10 @@ const PLOT_CENTER := Vector2(576, 324)
 const PLANT_SCENE := preload("res://scenes/plant.tscn")
 const TOWER_SCENE := preload("res://scenes/tower.tscn")
 const ENEMY_SCENE := preload("res://scenes/enemy.tscn")
+const ENEMY_SCENES: Array[PackedScene] = [
+	preload("res://scenes/enemy.tscn"),
+	preload("res://scenes/enemies/enemy_raccoon.tscn"),
+]
 
 const CARDINAL_DIRECTIONS: Array[Vector2i] = [Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT, Vector2i.UP]
 
@@ -183,9 +187,11 @@ func _path_neighbors(cell: Vector2i, path_set: Dictionary) -> Array[Vector2i]:
 			neighbors.append(neighbor)
 	return neighbors
 
-func _spawn_enemy(enemy_scene: PackedScene = ENEMY_SCENE) -> void:
+func _spawn_enemy(enemy_scene: PackedScene = null) -> void:
 	if enemy_routes.is_empty() or get_tree().get_nodes_in_group("enemies").size() >= max_active_enemies:
 		return
+	if enemy_scene == null:
+		enemy_scene = ENEMY_SCENES.pick_random()
 	var enemy := enemy_scene.instantiate()
 	add_child(enemy)
 	enemy.set_route(enemy_routes.pick_random())
@@ -283,6 +289,20 @@ func _try_place_tower(tile: Vector2i) -> bool:
 
 func _physics_process(_delta: float) -> void:
 	queue_redraw()
+
+	# Keyboard/arrow input takes priority over click-to-move.
+	var input_vector := Input.get_vector("move_left", "move_right", "move_up", "move_down")
+	if input_vector != Vector2.ZERO:
+		# Cancel any pending click destination so nav doesn't resume when keys release.
+		destination = player.global_position
+		if navigation_ready:
+			navigation_agent.target_position = player.global_position
+		player.velocity = input_vector * PLAYER_SPEED
+		player.move_and_slide()
+		if not sprite.is_playing() or sprite.animation != "stompWalk":
+			sprite.play("stompWalk")
+		return
+
 	# If navigation isn't ready yet, fall back to direct mouse steering
 	if not navigation_ready:
 		var offset := destination - player.position
