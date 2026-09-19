@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://k365fy18v6d5"]
+[gd_scene format=3 uid="uid://k365fy18v6d5"]
 
 [ext_resource type="Script" uid="uid://b1ltrgd2xr7k9" path="res://scripts/altar.gd" id="1_altar"]
 [ext_resource type="Script" uid="uid://dg750m8qqllep" path="res://scripts/interactable_highlight.gd" id="2_highlight"]
