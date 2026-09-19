@@ -186,4 +186,5 @@ shape = SubResource("CapsuleShape2D_1g4kx")
 position = Vector2(12, -17)
 sprite_frames = SubResource("SpriteFrames_kkyey")
 animation = &"smoke puff"
+autoplay = "smoke puff"
 frame_progress = 0.5944247

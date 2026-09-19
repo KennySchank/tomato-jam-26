@@ -99,5 +99,5 @@ shape = SubResource("CapsuleShape2D_player")
 
 [node name="Frog House" parent="." unique_id=312209468 instance=ExtResource("5_tbgi4")]
 z_index = -19
-position = Vector2(992, 125)
+position = Vector2(936.00006, 190)
 scale = Vector2(6.62, 6.62)
