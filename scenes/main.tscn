@@ -12,6 +12,10 @@
 [ext_resource type="PackedScene" uid="uid://4w4fwhoss4qx" path="res://scenes/hud.tscn" id="11_hud"]
 [ext_resource type="Script" uid="uid://p4w6735cfx72" path="res://scripts/placement_range_preview.gd" id="11_range_preview"]
 [ext_resource type="PackedScene" uid="uid://k365fy18v6d5" path="res://scenes/altar.tscn" id="12_eb6dy"]
+[ext_resource type="Script" path="res://scripts/wave_manager.gd" id="13_wave_mgr"]
+[ext_resource type="Script" path="res://scripts/wave_definition.gd" id="14_wave_def"]
+[ext_resource type="PackedScene" uid="uid://c7nrcu1lnd7wb" path="res://scenes/enemy.tscn" id="15_enemy"]
+[ext_resource type="PackedScene" uid="uid://t52lkh3pd8eb" path="res://scenes/enemies/enemy_raccoon.tscn" id="16_raccoon"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tbgi4"]
 texture = ExtResource("2_jyhfs")
@@ -31,6 +35,36 @@ sources/0 = SubResource("TileSetAtlasSource_tbgi4")
 vertices = PackedVector2Array(16, 16, 1136, 16, 1136, 632, 16, 632)
 polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
 agent_radius = 16.0
+
+[sub_resource type="Resource" id="Wave_1"]
+script = ExtResource("14_wave_def")
+prep_time = 45.0
+enemy_count = 6
+spawn_interval_min = 2.5
+spawn_interval_max = 4.0
+max_concurrent = 4
+enemy_scenes = Array[PackedScene]([ExtResource("15_enemy")])
+reward_seeds = 3
+
+[sub_resource type="Resource" id="Wave_2"]
+script = ExtResource("14_wave_def")
+prep_time = 25.0
+enemy_count = 10
+spawn_interval_min = 1.75
+spawn_interval_max = 3.0
+max_concurrent = 6
+enemy_scenes = Array[PackedScene]([ExtResource("15_enemy"), ExtResource("16_raccoon")])
+reward_seeds = 4
+
+[sub_resource type="Resource" id="Wave_3"]
+script = ExtResource("14_wave_def")
+prep_time = 20.0
+enemy_count = 16
+spawn_interval_min = 1.0
+spawn_interval_max = 2.25
+max_concurrent = 10
+enemy_scenes = Array[PackedScene]([ExtResource("15_enemy"), ExtResource("16_raccoon")])
+reward_seeds = 5
 
 [node name="TowerDefenseBaseline" type="Node2D" unique_id=621228746]
 script = ExtResource("1_main")
@@ -83,6 +117,11 @@ edge_end = 0.55
 
 [node name="Altar" parent="." unique_id=294149674 instance=ExtResource("12_eb6dy")]
 position = Vector2(522, 73)
+
+[node name="WaveManager" type="Node" parent="."]
+script = ExtResource("13_wave_mgr")
+waves = Array[Resource]([SubResource("Wave_1"), SubResource("Wave_2"), SubResource("Wave_3")])
+endless_mode = true
 
 [connection signal="opened" from="Chest" to="InventoryUI" method="open_chest"]
 [connection signal="opened" from="Altar" to="InventoryUI" method="open_altar"]

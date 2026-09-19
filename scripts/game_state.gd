@@ -41,8 +41,6 @@ func _recount_tomatoes() -> void:
 	for item: Dictionary in altar_inventory:
 		if not item.is_empty() and item.get("id") == FRUIT_ITEM_ID:
 			total += int(item.get("quantity", 0))
-	if total == tomato_count:
-		return
 	tomato_count = total
 	tomato_count_changed.emit(tomato_count, tomato_goal)
 
@@ -73,30 +71,55 @@ func frog_slot_has_item(slot_index: int, item_id: String) -> bool:
 	return slot_index >= 0 and slot_index < frog_inventory.size() and frog_inventory[slot_index].get("id") == item_id and int(frog_inventory[slot_index].get("quantity", 0)) > 0
 
 func add_frog_item(item_id: String, amount: int = 1) -> bool:
+	return _add_item(frog_inventory, item_id, amount)
+
+func add_chest_item(item_id: String, amount: int = 1) -> bool:
+	return _add_item(chest_inventory, item_id, amount)
+
+## Add items to the first available storage: frog slot(s) first, then the chest.
+## Returns the number of items that could not be placed anywhere.
+func grant_item(item_id: String, amount: int) -> int:
 	if amount <= 0:
-		return false
+		return 0
+	var remaining := amount
+	var frog_space := _capacity_for(frog_inventory, item_id)
+	var to_frog: int = mini(remaining, frog_space)
+	if to_frog > 0 and add_frog_item(item_id, to_frog):
+		remaining -= to_frog
+	var chest_space := _capacity_for(chest_inventory, item_id)
+	var to_chest: int = mini(remaining, chest_space)
+	if to_chest > 0 and add_chest_item(item_id, to_chest):
+		remaining -= to_chest
+	return remaining
+
+func _capacity_for(inventory: Array[Dictionary], item_id: String) -> int:
 	var available := 0
-	for item: Dictionary in frog_inventory:
+	for item: Dictionary in inventory:
 		if item.is_empty():
 			available += 10
 		elif item.get("id") == item_id:
 			available += 10 - int(item.get("quantity", 0))
-	if available < amount:
+	return available
+
+func _add_item(inventory: Array[Dictionary], item_id: String, amount: int) -> bool:
+	if amount <= 0:
+		return false
+	if _capacity_for(inventory, item_id) < amount:
 		return false
 	var remaining := amount
-	for index in frog_inventory.size():
-		var item: Dictionary = frog_inventory[index]
+	for index in inventory.size():
+		var item: Dictionary = inventory[index]
 		if not item.is_empty() and item.get("id") == item_id and int(item.get("quantity", 0)) < 10:
 			var space := 10 - int(item["quantity"])
 			var added := mini(space, remaining)
 			item["quantity"] = int(item["quantity"]) + added
 			remaining -= added
-	for index in frog_inventory.size():
+	for index in inventory.size():
 		if remaining <= 0:
 			break
-		if frog_inventory[index].is_empty():
+		if inventory[index].is_empty():
 			var added := mini(remaining, 10)
-			frog_inventory[index] = {"id": item_id, "quantity": added}
+			inventory[index] = {"id": item_id, "quantity": added}
 			remaining -= added
 	if remaining > 0:
 		return false

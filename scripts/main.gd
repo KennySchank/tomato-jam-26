@@ -20,18 +20,13 @@ const ENEMY_ATTACK_RADIUS_TILES := 4.0
 
 const CARDINAL_DIRECTIONS: Array[Vector2i] = [Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT, Vector2i.UP]
 
-@export var enemy_spawn_interval_min := 2.5
-@export var enemy_spawn_interval_max := 5.0
-@export var max_active_enemies := 12
-@export var enemy_initial_spawn_delay := 2.0
-
 var destination := PLOT_CENTER
 var navigation_ready := false
 var planted_tiles: Dictionary = {}
 var tower_tiles: Dictionary = {}
 var hovered_tile := Vector2i(999999, 999999)
 var enemy_routes: Array[Array] = []
-var enemy_spawn_cooldown := 0.0
+var brown_soil_count: int = 0
 
 @onready var player: CharacterBody2D = $Player
 @onready var sprite: AnimatedSprite2D = $Player/AnimatedSprite2D
@@ -44,6 +39,8 @@ var enemy_spawn_cooldown := 0.0
 @onready var placement_range_preview: Node2D = $PlacementRangePreview
 @onready var game_state: Node = get_node("/root/GameState")
 @onready var inventory_ui: CanvasLayer = $InventoryUI
+@onready var wave_manager: WaveManager = $WaveManager
+@onready var hud: Node = $HUD
 
 func _ready() -> void:
 	var start_cell := map.local_to_map(map.to_local(PLOT_CENTER))
@@ -51,9 +48,44 @@ func _ready() -> void:
 	player.position = destination
 	highlight.configure(map, player)
 	enemy_routes = _build_enemy_routes()
-	enemy_spawn_cooldown = enemy_initial_spawn_delay
+	brown_soil_count = _count_brown_soil_tiles()
+	wave_manager.spawn_requested.connect(_on_wave_spawn_requested)
+	wave_manager.wave_ended.connect(_on_wave_ended)
+	game_state.tomato_count_changed.connect(_on_tomato_count_changed)
+	if hud.has_method("bind_wave_manager"):
+		hud.bind_wave_manager(wave_manager)
 	queue_redraw()
 	_navigation_setup.call_deferred()
+
+func _on_wave_spawn_requested(enemy_scene: PackedScene) -> void:
+	_spawn_enemy(enemy_scene)
+
+func _on_wave_ended(_wave_index: int, wave: WaveDefinition) -> void:
+	if wave == null or wave.reward_seeds <= 0:
+		return
+	var leftover: int = game_state.grant_item(game_state.SEED_ITEM_ID, wave.reward_seeds)
+	if leftover > 0:
+		push_warning("Wave reward overflow: %d seeds could not be stored." % leftover)
+
+func _on_tomato_count_changed(count: int, goal: int) -> void:
+	if count >= goal:
+		wave_manager.trigger_win()
+
+func _count_brown_soil_tiles() -> int:
+	var count := 0
+	for tile in map.get_used_cells():
+		if map.get_cell_atlas_coords(tile) == BROWN_SOIL_ATLAS_COORDS:
+			count += 1
+	return count
+
+func _check_loss_condition() -> void:
+	# Losing means the player has nothing left to grow tomatoes on: no soil and no
+	# living plants. Towers alone cannot produce tomatoes, so the run is unwinnable.
+	if brown_soil_count > 0:
+		return
+	if not planted_tiles.is_empty():
+		return
+	wave_manager.trigger_loss()
 
 func _navigation_setup() -> void:
 	await get_tree().physics_frame
@@ -194,7 +226,7 @@ func _path_neighbors(cell: Vector2i, path_set: Dictionary) -> Array[Vector2i]:
 	return neighbors
 
 func _spawn_enemy(enemy_scene: PackedScene = null) -> void:
-	if enemy_routes.is_empty() or get_tree().get_nodes_in_group("enemies").size() >= max_active_enemies:
+	if enemy_routes.is_empty():
 		return
 	if enemy_scene == null:
 		enemy_scene = ENEMY_SCENES.pick_random()
@@ -217,6 +249,7 @@ func _on_enemy_attack_requested(enemy_position: Vector2, enemy: Node) -> void:
 		projectile.impact_callback = func() -> void:
 			if planted_tiles.get(target_tile) == plant:
 				planted_tiles.erase(target_tile)
+				_check_loss_condition()
 	else:
 		projectile.set_target_position(_cell_center(target_tile))
 		projectile.impact_callback = func() -> void:
@@ -276,10 +309,9 @@ func _play_land_damage(tile: Vector2i) -> void:
 	damage_tween.finished.connect(func() -> void:
 		map.set_cell(tile, 0, BASE_LAND_ATLAS_COORDS)
 		damage_overlay.queue_free()
+		brown_soil_count = maxi(0, brown_soil_count - 1)
+		_check_loss_condition()
 	)
-
-func _next_enemy_spawn_delay() -> float:
-	return randf_range(enemy_spawn_interval_min, enemy_spawn_interval_max)
 
 func _is_in_planting_range(tile: Vector2i) -> bool:
 	return highlight.is_in_range(tile)
@@ -292,10 +324,6 @@ func _soil_highlight_rect(tile: Vector2i) -> Rect2:
 func _process(_delta: float) -> void:
 	if not is_node_ready():
 		return
-	enemy_spawn_cooldown -= _delta
-	if enemy_spawn_cooldown <= 0.0:
-		_spawn_enemy()
-		enemy_spawn_cooldown = _next_enemy_spawn_delay()
 	var hover_is_valid := _is_plantable(hovered_tile)
 	var hover_is_harvest_target := _is_in_planting_range(hovered_tile) and planted_tiles.has(hovered_tile)
 	var preview_scale := Vector2.ZERO
@@ -330,6 +358,8 @@ func _can_place_item(tile: Vector2i, item_id: String) -> bool:
 	if item_id == game_state.SEED_ITEM_ID:
 		return _is_plantable(tile)
 	if item_id == game_state.FRUIT_ITEM_ID:
+		if altar.blocks_tower_at(tile):
+			return false
 		return not _is_enemy_path(tile)
 	return false
 

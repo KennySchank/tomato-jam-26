@@ -80,8 +80,19 @@ func _refresh() -> void:
 		_add_slot(frog_slots, "frog", index, game_state.frog_inventory[index])
 		if index < TOOLBAR_SLOT_COUNT:
 			_add_slot(toolbar_slots, "frog", index, game_state.frog_inventory[index])
-	for index in storage_inventory.size():
+	var visible_slot_count: int = _visible_storage_slot_count(storage_inventory)
+	for index in visible_slot_count:
 		_add_slot(chest_slots, open_storage, index, storage_inventory[index])
+
+## The altar shows exactly one open drop slot: one icon per completed stack of
+## 10 tomatoes plus a single empty slot for the next deposit, capped by the
+## goal. All other storages render every backing slot.
+func _visible_storage_slot_count(storage_inventory: Array[Dictionary]) -> int:
+	if open_storage != "altar":
+		return storage_inventory.size()
+	var max_slots: int = mini(storage_inventory.size(), int(ceil(float(game_state.tomato_goal) / 10.0)))
+	var visible: int = int(floor(float(game_state.tomato_count) / 10.0)) + 1
+	return clampi(visible, 1, max_slots)
 
 func _clear(container: Container) -> void:
 	for child in container.get_children():
