@@ -1,12 +1,16 @@
 extends CharacterBody2D
 
+signal attack_requested(global_position: Vector2)
+
 @export var speed := 45.0
 @export var max_health := 30.0
+@export var attack_interval := 1.0
 
 var health := max_health
 
 var route: Array[Vector2] = []
 var route_index := 0
+var attack_cooldown := 0.0
 var damage_tween: Tween
 
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
@@ -38,12 +42,14 @@ func _play_damage_animation() -> void:
 func set_route(new_route: Array[Vector2]) -> void:
 	route = new_route
 	route_index = 0
+	attack_cooldown = 0.0
 	if route.size() > 0:
 		global_position = route[0]
 
 func _physics_process(_delta: float) -> void:
 	if route_index >= route.size():
 		velocity = Vector2.ZERO
+		_process_endpoint_attack(_delta)
 		return
 
 	var offset := route[route_index] - global_position
@@ -51,8 +57,16 @@ func _physics_process(_delta: float) -> void:
 		route_index += 1
 		if route_index >= route.size():
 			velocity = Vector2.ZERO
+			_process_endpoint_attack(_delta)
 			return
 		offset = route[route_index] - global_position
 
 	velocity = offset.normalized() * speed
 	move_and_slide()
+
+func _process_endpoint_attack(delta: float) -> void:
+	attack_cooldown -= delta
+	if attack_cooldown > 0.0:
+		return
+	attack_requested.emit(global_position)
+	attack_cooldown = attack_interval
