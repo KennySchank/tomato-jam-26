@@ -1,10 +1,171 @@
 [gd_scene format=3 uid="uid://bhx1nsqac3jqa"]
 
 [ext_resource type="Texture2D" uid="uid://dckkhe35qu4eo" path="res://assets/Sprite-Mushroom-House.png" id="1_nmnuq"]
+[ext_resource type="Texture2D" uid="uid://cs3f777v6yb35" path="res://assets/Sprite-House-Smoke.png" id="2_j5x3l"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_1g4kx"]
 radius = 6.0
 height = 18.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gunyq"]
+atlas = ExtResource("2_j5x3l")
+region = Rect2(112, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a5oac"]
+atlas = ExtResource("2_j5x3l")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lvgq6"]
+atlas = ExtResource("2_j5x3l")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5rfef"]
+atlas = ExtResource("2_j5x3l")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ry45y"]
+atlas = ExtResource("2_j5x3l")
+region = Rect2(48, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2dpac"]
+atlas = ExtResource("2_j5x3l")
+region = Rect2(64, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qxdmu"]
+atlas = ExtResource("2_j5x3l")
+region = Rect2(80, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cvckw"]
+atlas = ExtResource("2_j5x3l")
+region = Rect2(96, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_kkyey"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a5oac")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lvgq6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5rfef")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ry45y")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2dpac")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qxdmu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cvckw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}],
+"loop": 1,
+"name": &"smoke puff",
+"speed": 4.0
+}]
 
 [node name="Frog House" type="StaticBody2D" unique_id=312209468]
 
@@ -20,3 +181,9 @@ position = Vector2(1, -1)
 rotation = 1.5707964
 scale = Vector2(1.24, 1.24)
 shape = SubResource("CapsuleShape2D_1g4kx")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=159177348]
+position = Vector2(12, -17)
+sprite_frames = SubResource("SpriteFrames_kkyey")
+animation = &"smoke puff"
+frame_progress = 0.5944247

@@ -3,17 +3,22 @@ extends Node2D
 const PLAYER_SPEED := 120.0
 const PLANTABLE_DATA := "plantable"
 const BROWN_SOIL_ATLAS_COORDS := Vector2i(1, 0)
+const ENEMY_PATH_DATA := "enemy_path"
 const PLANTING_RANGE_TILES := 1
 const TARGET_BORDER_COLOR := Color(1.0, 0.95, 0.45, 0.95)
 # The 0-indexed frame (0, 1, 2, or 3) to show when stopped
 const IDLE_FRAME: int = 1
 const PLOT_CENTER := Vector2(576, 324)
 const PLANT_SCENE := preload("res://scenes/plant.tscn")
+const ENEMY_SCENE := preload("res://scenes/enemy.tscn")
+
+const CARDINAL_DIRECTIONS: Array[Vector2i] = [Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT, Vector2i.UP]
 
 var destination := PLOT_CENTER
 var navigation_ready := false
 var planted_tiles: Dictionary = {}
 var hovered_tile := Vector2i(999999, 999999)
+var enemy_path: Array[Vector2] = []
 
 @onready var player: CharacterBody2D = $Player
 @onready var sprite: AnimatedSprite2D = $Player/AnimatedSprite2D
@@ -24,6 +29,8 @@ func _ready() -> void:
 	var start_cell := map.local_to_map(map.to_local(PLOT_CENTER))
 	destination = _cell_center(start_cell)
 	player.position = destination
+	enemy_path = _build_enemy_path()
+	_spawn_test_enemy()
 	queue_redraw()
 	_navigation_setup.call_deferred()
 
@@ -58,6 +65,107 @@ func _is_plantable(tile: Vector2i) -> bool:
 	var is_plantable: bool = tile_data.get_custom_data(PLANTABLE_DATA)
 	var is_brown_soil := map.get_cell_atlas_coords(tile) == BROWN_SOIL_ATLAS_COORDS
 	return is_plantable or is_brown_soil
+
+func _is_enemy_path(tile: Vector2i) -> bool:
+	var tile_data := map.get_cell_tile_data(tile)
+	return tile_data != null and tile_data.get_custom_data(ENEMY_PATH_DATA) == true
+
+func _build_enemy_path() -> Array[Vector2]:
+	var path_cells: Array[Vector2i] = []
+	for cell in map.get_used_cells():
+		if _is_enemy_path(cell):
+			path_cells.append(cell)
+
+	if path_cells.is_empty():
+		push_warning("No enemy path tiles found in the map.")
+		return []
+
+	var path_set: Dictionary = {}
+	for cell in path_cells:
+		path_set[cell] = true
+
+	var route_cells := _largest_path_component(path_cells, path_set)
+	var route_set: Dictionary = {}
+	for cell in route_cells:
+		route_set[cell] = true
+
+	var endpoints: Array[Vector2i] = []
+	for cell in route_cells:
+		if _path_neighbors(cell, route_set).size() == 1:
+			endpoints.append(cell)
+	if endpoints.size() < 2:
+		push_warning("Enemy path needs two endpoints to build a route to the plants.")
+		return []
+
+	var target_endpoint := endpoints[0]
+	var spawn_endpoint := endpoints[0]
+	for endpoint in endpoints:
+		if _cell_center(endpoint).distance_to(PLOT_CENTER) < _cell_center(target_endpoint).distance_to(PLOT_CENTER):
+			target_endpoint = endpoint
+		if _cell_center(endpoint).distance_to(PLOT_CENTER) > _cell_center(spawn_endpoint).distance_to(PLOT_CENTER):
+			spawn_endpoint = endpoint
+
+	var ordered_cells: Array[Vector2i] = []
+	var previous := Vector2i(999999, 999999)
+	var current := spawn_endpoint
+	while true:
+		ordered_cells.append(current)
+		if current == target_endpoint:
+			break
+		var next_cells: Array[Vector2i] = []
+		for neighbor in _path_neighbors(current, route_set):
+			if neighbor != previous and not ordered_cells.has(neighbor):
+				next_cells.append(neighbor)
+		if next_cells.is_empty():
+			break
+		previous = current
+		current = next_cells[0]
+
+	if current != target_endpoint:
+		push_warning("Could not connect the enemy spawn point to the plants.")
+		return []
+
+	var world_path: Array[Vector2] = []
+	for cell in ordered_cells:
+		world_path.append(_cell_center(cell))
+	return world_path
+
+func _largest_path_component(path_cells: Array[Vector2i], path_set: Dictionary) -> Array[Vector2i]:
+	var remaining: Dictionary = {}
+	for cell in path_cells:
+		remaining[cell] = true
+
+	var largest: Array[Vector2i] = []
+	while not remaining.is_empty():
+		var component: Array[Vector2i] = []
+		var frontier: Array[Vector2i] = [remaining.keys()[0]]
+		while not frontier.is_empty():
+			var cell: Vector2i = frontier.pop_back()
+			if not remaining.has(cell):
+				continue
+			remaining.erase(cell)
+			component.append(cell)
+			for neighbor in _path_neighbors(cell, path_set):
+				if remaining.has(neighbor):
+					frontier.append(neighbor)
+		if component.size() > largest.size():
+			largest = component
+	return largest
+
+func _path_neighbors(cell: Vector2i, path_set: Dictionary) -> Array[Vector2i]:
+	var neighbors: Array[Vector2i] = []
+	for direction: Vector2i in CARDINAL_DIRECTIONS:
+		var neighbor: Vector2i = cell + direction
+		if path_set.has(neighbor):
+			neighbors.append(neighbor)
+	return neighbors
+
+func _spawn_test_enemy() -> void:
+	if enemy_path.is_empty():
+		return
+	var enemy := ENEMY_SCENE.instantiate()
+	add_child(enemy)
+	enemy.set_route(enemy_path)
 
 func _is_in_planting_range(tile: Vector2i) -> bool:
 	var player_tile := map.local_to_map(map.to_local(player.global_position))

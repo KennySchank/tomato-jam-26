@@ -11,10 +11,13 @@ texture = ExtResource("2_jyhfs")
 0:0/0 = 0
 1:0/0 = 0
 2:0/0 = 0
+2:0/0/custom_data_1 = true
 
 [sub_resource type="TileSet" id="TileSet_lquwl"]
 custom_data_layer_0/name = "plantable"
 custom_data_layer_0/type = 1
+custom_data_layer_1/name = "enemy_path"
+custom_data_layer_1/type = 1
 sources/0 = SubResource("TileSetAtlasSource_tbgi4")
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_main"]
