@@ -9,24 +9,42 @@ const TOOLBAR_SLOT_COUNT := 8
 var selected_source := ""
 var selected_index := -1
 var selected_frog_slot := 0
+var open_storage := "chest"
 
 @onready var chest: StaticBody2D = get_parent().get_node("Chest")
+@onready var altar: StaticBody2D = get_parent().get_node("Altar")
 @onready var player: Node2D = get_parent().get_node("Player")
 @onready var game_state: Node = get_node("/root/GameState")
 @onready var toolbar_slots: VBoxContainer = $InventoryToolbar/Scroll/Center/ToolbarSlots
 @onready var chest_window: PanelContainer = $ChestWindow
 @onready var frog_slots: HBoxContainer = $ChestWindow/Margin/Column/FrogSlots
 @onready var chest_slots: GridContainer = $ChestWindow/Margin/Column/ChestSlots
+@onready var window_title: Label = $ChestWindow/Margin/Column/Title
+@onready var window_hint: Label = $ChestWindow/Margin/Column/Hint
 
 func _ready() -> void:
 	game_state.inventory_changed.connect(_refresh)
 	_refresh()
 
 func _process(_delta: float) -> void:
-	if chest_window.visible and not chest.can_player_interact(player):
-		chest_window.hide()
+	if not chest_window.visible:
+		return
+	if open_storage == "altar":
+		if not altar.can_player_interact(player):
+			chest_window.hide()
+	else:
+		if not chest.can_player_interact(player):
+			chest_window.hide()
 
 func open_chest() -> void:
+	open_storage = "chest"
+	selected_source = ""
+	selected_index = -1
+	chest_window.show()
+	_refresh()
+
+func open_altar() -> void:
+	open_storage = "altar"
 	selected_source = ""
 	selected_index = -1
 	chest_window.show()
@@ -46,15 +64,24 @@ func _refresh() -> void:
 		return
 	if frog_slots == null or chest_slots == null:
 		return
+	if window_title != null:
+		window_title.text = "Altar" if open_storage == "altar" else "Chest"
+	if window_hint != null:
+		window_hint.text = (
+			"Deposit tomatoes here. Once offered, they cannot be taken back."
+			if open_storage == "altar"
+			else "Drag items between slots, or click slots to move or swap items."
+		)
 	_clear(frog_slots)
 	_clear(chest_slots)
 	_clear(toolbar_slots)
+	var storage_inventory: Array[Dictionary] = game_state.altar_inventory if open_storage == "altar" else game_state.chest_inventory
 	for index in game_state.frog_inventory.size():
 		_add_slot(frog_slots, "frog", index, game_state.frog_inventory[index])
 		if index < TOOLBAR_SLOT_COUNT:
 			_add_slot(toolbar_slots, "frog", index, game_state.frog_inventory[index])
-	for index in game_state.chest_inventory.size():
-		_add_slot(chest_slots, "chest", index, game_state.chest_inventory[index])
+	for index in storage_inventory.size():
+		_add_slot(chest_slots, open_storage, index, storage_inventory[index])
 
 func _clear(container: Container) -> void:
 	for child in container.get_children():
@@ -91,7 +118,10 @@ func _on_slot_pressed(inventory_name: String, index: int) -> void:
 		_select_frog_slot(index)
 
 	if selected_source.is_empty():
-		var inventory: Array[Dictionary] = game_state.frog_inventory if inventory_name == "frog" else game_state.chest_inventory
+		# Altar items are one-way; never let a click promote one to a move source.
+		if inventory_name == "altar":
+			return
+		var inventory: Array[Dictionary] = _inventory_for_ui(inventory_name)
 		if not inventory[index].is_empty():
 			selected_source = inventory_name
 			selected_index = index
@@ -106,6 +136,15 @@ func _on_slot_pressed(inventory_name: String, index: int) -> void:
 	selected_source = ""
 	selected_index = -1
 	_refresh()
+
+func _inventory_for_ui(inventory_name: String) -> Array[Dictionary]:
+	match inventory_name:
+		"frog":
+			return game_state.frog_inventory
+		"altar":
+			return game_state.altar_inventory
+		_:
+			return game_state.chest_inventory
 
 func _select_frog_slot(index: int) -> void:
 	if index < 0 or index >= game_state.frog_inventory.size():

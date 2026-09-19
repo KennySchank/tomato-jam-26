@@ -1,15 +1,21 @@
 extends Node
 
 signal inventory_changed
+signal tomato_count_changed(count: int, goal: int)
 
 const FROG_CAPACITY := 1
 const CHEST_CAPACITY := 24
+const ALTAR_CAPACITY := 12
 const SEED_ITEM_ID := "tomato_seed"
 const FRUIT_ITEM_ID := "tomato"
 const CHEST_ITEM_ID := "godot_logo"
 
+@export var tomato_goal: int = 100
+
 var frog_inventory: Array[Dictionary] = []
 var chest_inventory: Array[Dictionary] = []
+var altar_inventory: Array[Dictionary] = []
+var tomato_count: int = 0
 
 func _ready() -> void:
 	reset_run()
@@ -17,13 +23,39 @@ func _ready() -> void:
 func reset_run() -> void:
 	frog_inventory.clear()
 	chest_inventory.clear()
+	altar_inventory.clear()
 	for _i in FROG_CAPACITY:
 		frog_inventory.append({})
 	for _i in CHEST_CAPACITY:
 		chest_inventory.append({})
+	for _i in ALTAR_CAPACITY:
+		altar_inventory.append({})
 	frog_inventory[0] = {"id": SEED_ITEM_ID, "quantity": 10}
 	chest_inventory[0] = {"id": CHEST_ITEM_ID, "quantity": 1}
+	_recount_tomatoes()
 	inventory_changed.emit()
+	tomato_count_changed.emit(tomato_count, tomato_goal)
+
+func _recount_tomatoes() -> void:
+	var total := 0
+	for item: Dictionary in altar_inventory:
+		if not item.is_empty() and item.get("id") == FRUIT_ITEM_ID:
+			total += int(item.get("quantity", 0))
+	if total == tomato_count:
+		return
+	tomato_count = total
+	tomato_count_changed.emit(tomato_count, tomato_goal)
+
+func _inventory_for(name: String) -> Array[Dictionary]:
+	match name:
+		"frog":
+			return frog_inventory
+		"chest":
+			return chest_inventory
+		"altar":
+			return altar_inventory
+		_:
+			return frog_inventory
 
 func consume_frog_item(slot_index: int, amount: int = 1) -> bool:
 	if slot_index < 0 or slot_index >= frog_inventory.size():
@@ -72,8 +104,11 @@ func add_frog_item(item_id: String, amount: int = 1) -> bool:
 	return true
 
 func move_item(source: String, source_index: int, destination: String, destination_index: int) -> bool:
-	var source_inventory := frog_inventory if source == "frog" else chest_inventory
-	var destination_inventory := frog_inventory if destination == "frog" else chest_inventory
+	# Altar is one-way, tomato-only: nothing leaves it, nothing but tomatoes enters.
+	if source == "altar":
+		return false
+	var source_inventory := _inventory_for(source)
+	var destination_inventory := _inventory_for(destination)
 	if source_index < 0 or source_index >= source_inventory.size():
 		return false
 	if destination_index < 0 or destination_index >= destination_inventory.size():
@@ -82,6 +117,8 @@ func move_item(source: String, source_index: int, destination: String, destinati
 		return false
 
 	var source_item: Dictionary = source_inventory[source_index]
+	if destination == "altar" and source_item.get("id") != FRUIT_ITEM_ID:
+		return false
 	var destination_item: Dictionary = destination_inventory[destination_index]
 	if destination_item.is_empty():
 		destination_inventory[destination_index] = source_item.duplicate()
@@ -94,8 +131,13 @@ func move_item(source: String, source_index: int, destination: String, destinati
 		if source_item["quantity"] <= 0:
 			source_inventory[source_index] = {}
 	else:
+		# The altar never returns anything, so refuse swaps that would push a
+		# destination item back out of it.
+		if destination == "altar":
+			return false
 		var swapped := destination_item.duplicate()
 		destination_inventory[destination_index] = source_item.duplicate()
 		source_inventory[source_index] = swapped
+	_recount_tomatoes()
 	inventory_changed.emit()
 	return true

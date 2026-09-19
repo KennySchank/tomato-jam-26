@@ -38,6 +38,7 @@ var enemy_spawn_cooldown := 0.0
 @onready var navigation_agent: NavigationAgent2D = $Player/NavigationAgent2D
 @onready var map: TileMapLayer = $Map
 @onready var chest: StaticBody2D = $Chest
+@onready var altar: StaticBody2D = $Altar
 @onready var highlight: InteractableHighlight = $InteractableHighlight
 @onready var placement_preview: Sprite2D = $PlacementPreview
 @onready var placement_range_preview: Node2D = $PlacementRangePreview
@@ -73,7 +74,9 @@ func _unhandled_input(event: InputEvent) -> void:
 				navigation_agent.target_position = destination
 		elif event.button_index == MOUSE_BUTTON_RIGHT:
 			var mouse_world_position := get_global_mouse_position()
-			if chest.can_interact_at(mouse_world_position) and chest.can_player_interact(player):
+			if altar.can_interact_at(mouse_world_position) and altar.can_player_interact(player):
+				altar.interact()
+			elif chest.can_interact_at(mouse_world_position) and chest.can_player_interact(player):
 				chest.interact()
 			elif not _try_harvest(clicked_cell) and not _try_place_tower(clicked_cell):
 				_try_plant(clicked_cell)

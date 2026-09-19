@@ -1,9 +1,0 @@
-[gd_scene format=3 uid="uid://klugov8ql8ys"]
-
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_2ytov"]
-load_path = "res://.godot/imported/Tomato-for-your-gods.png-d1e87c64a78a9ec0dc58c49ec297cb20.ctex"
-
-[node name="TomatoSingle" type="Sprite2D" unique_id=1356209737]
-texture = SubResource("CompressedTexture2D_2ytov")
-region_enabled = true
-region_rect = Rect2(144, 0, 16, 16)
