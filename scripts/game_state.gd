@@ -16,7 +16,7 @@ signal seed_types_changed
 ## Emitted when the player switches which reserve they'll plant from next.
 signal active_seed_changed(seed_id: String)
 
-const FROG_CAPACITY := 6
+const FROG_CAPACITY := 2
 const CHEST_CAPACITY := 24
 const ALTAR_CAPACITY := 12
 const MAX_STACK_SIZE := 50
@@ -96,7 +96,6 @@ func reset_run() -> void:
 		chest_inventory.append({})
 	for _i in ALTAR_CAPACITY:
 		altar_inventory.append({})
-	chest_inventory[0] = {"id": CHEST_ITEM_ID, "quantity": 1}
 	seed_counts = {TOMATO_SEED_ID: 10}
 	unlocked_seeds = [TOMATO_SEED_ID]
 	active_seed_id = TOMATO_SEED_ID
@@ -257,8 +256,11 @@ func add_chest_item(item_id: String, amount: int = 1) -> bool:
 func grant_item(item_id: String, amount: int) -> int:
 	if amount <= 0:
 		return 0
-	if item_id == SEED_ITEM_ID:
-		return add_seeds(amount)
+	# Seeds never sit in the frog/chest inventory — they belong in the seed
+	# reserves. Route any known seed id there and report any overflow back to
+	# the caller so wave rewards still surface "you're capped" feedback.
+	if seed_counts.has(item_id) or item_id == TOMATO_SEED_ID or item_id == CORN_SEED_ID or item_id == PUMPKIN_SEED_ID:
+		return add_seeds(amount, item_id)
 	var remaining := amount
 	var frog_space := _capacity_for(frog_inventory, item_id)
 	var to_frog: int = mini(remaining, frog_space)
