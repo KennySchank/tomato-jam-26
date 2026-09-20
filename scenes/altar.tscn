@@ -1,40 +1,78 @@
 [gd_scene format=3 uid="uid://k365fy18v6d5"]
 
-[ext_resource type="Script" uid="uid://b1ltrgd2xr7k9" path="res://scripts/altar.gd" id="1_altar"]
+[ext_resource type="Script" uid="uid://b1ltrgd2xr7la" path="res://scripts/altar.gd" id="1_altar"]
+[ext_resource type="Texture2D" uid="uid://cwsiueyqc5vd7" path="res://assets/Game-Altar.png" id="2_dwhmf"]
 [ext_resource type="Script" uid="uid://dg750m8qqllep" path="res://scripts/interactable_highlight.gd" id="2_highlight"]
-[ext_resource type="Shader" uid="uid://dlgk303kt8axa" path="res://silhouette_outline.gdshader" id="3_outline"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_altar_outline"]
-shader = ExtResource("3_outline")
-shader_parameter/outline_enabled = false
-shader_parameter/outline_color = Color(1, 0.95, 0.45, 0.95)
-shader_parameter/outline_width = 4.0
+[sub_resource type="AtlasTexture" id="AtlasTexture_7ynsc"]
+atlas = ExtResource("2_dwhmf")
+region = Rect2(0, 0, 64, 32)
 
-[sub_resource type="Gradient" id="Gradient_1t48s"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_agrp7"]
+atlas = ExtResource("2_dwhmf")
+region = Rect2(64, 0, 64, 32)
 
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_si8oa"]
-gradient = SubResource("Gradient_1t48s")
-metadata/_snap_enabled = true
-metadata/_snap_count = 25
+[sub_resource type="AtlasTexture" id="AtlasTexture_00bwv"]
+atlas = ExtResource("2_dwhmf")
+region = Rect2(128, 0, 64, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uiuje"]
+atlas = ExtResource("2_dwhmf")
+region = Rect2(192, 0, 64, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_n0xjl"]
+atlas = ExtResource("2_dwhmf")
+region = Rect2(256, 0, 64, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_di7i1"]
+atlas = ExtResource("2_dwhmf")
+region = Rect2(320, 0, 64, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_assu6"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7ynsc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_agrp7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_00bwv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uiuje")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_n0xjl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_di7i1")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 5.0
+}]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_s1bhj"]
-size = Vector2(153, 56)
+size = Vector2(153, 31.24999)
 
 [node name="Altar" type="StaticBody2D" unique_id=1373918369 groups=["interactable"]]
+scale = Vector2(1.5999994, 1.5999994)
 disable_mode = 1
 script = ExtResource("1_altar")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1100425486]
-material = SubResource("ShaderMaterial_altar_outline")
-position = Vector2(77, 28)
-scale = Vector2(2.34375, 0.84374994)
-texture = SubResource("GradientTexture2D_si8oa")
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=70125650]
+position = Vector2(79, 26)
+scale = Vector2(2.4400005, 2.4400005)
+sprite_frames = SubResource("SpriteFrames_assu6")
+autoplay = "default"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1558174773]
-position = Vector2(77, 27)
-scale = Vector2(0.99999994, 0.99999994)
+position = Vector2(77, 39.374992)
+scale = Vector2(0.99999976, 0.99999976)
 shape = SubResource("RectangleShape2D_s1bhj")
 
-[node name="InteractableHighlight" type="Node2D" parent="."]
+[node name="InteractableHighlight" type="Node2D" parent="." unique_id=789455485]
+position = Vector2(76.87503, 11.250004)
 script = ExtResource("2_highlight")
-silhouette_sprite_path = NodePath("../Sprite2D")
