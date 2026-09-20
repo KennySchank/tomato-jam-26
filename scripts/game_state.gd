@@ -3,10 +3,12 @@ extends Node
 signal inventory_changed
 signal tomato_count_changed(count: int, goal: int)
 signal boon_activated(boon_id: String)
+signal seed_count_changed(count: int, maximum: int)
 
 const FROG_CAPACITY := 2
 const CHEST_CAPACITY := 24
 const ALTAR_CAPACITY := 12
+const MAX_SEEDS := 30
 const SEED_ITEM_ID := "tomato_seed"
 const FRUIT_ITEM_ID := "tomato"
 const CHEST_ITEM_ID := "godot_logo"
@@ -18,6 +20,7 @@ var chest_inventory: Array[Dictionary] = []
 var altar_inventory: Array[Dictionary] = []
 var tomato_count: int = 0
 var total_tomatoes_deposited: int = 0
+var seed_count: int = 10
 
 ## Boons the player has chosen this run. Keyed by the boon scene's resource
 ## path (e.g. `res://scenes/boons/cowboy_hat.tscn`) so we can look them up
@@ -53,8 +56,8 @@ func reset_run() -> void:
 		chest_inventory.append({})
 	for _i in ALTAR_CAPACITY:
 		altar_inventory.append({})
-	frog_inventory[0] = {"id": SEED_ITEM_ID, "quantity": 10}
 	chest_inventory[0] = {"id": CHEST_ITEM_ID, "quantity": 1}
+	seed_count = 10
 	total_tomatoes_deposited = 0
 	_last_altar_tomato_count = 0
 	active_boons.clear()
@@ -70,6 +73,22 @@ func reset_run() -> void:
 	_recount_tomatoes()
 	inventory_changed.emit()
 	tomato_count_changed.emit(tomato_count, tomato_goal)
+	seed_count_changed.emit(seed_count, MAX_SEEDS)
+
+func add_seeds(amount: int) -> int:
+	if amount <= 0:
+		return 0
+	var added := mini(amount, MAX_SEEDS - seed_count)
+	seed_count += added
+	seed_count_changed.emit(seed_count, MAX_SEEDS)
+	return amount - added
+
+func consume_seed() -> bool:
+	if seed_count <= 0:
+		return false
+	seed_count -= 1
+	seed_count_changed.emit(seed_count, MAX_SEEDS)
+	return true
 
 ## Records that the player has picked a boon. `boon_id` is the boon scene's
 ## resource path. Emits `boon_activated` so systems that care about permanent
@@ -141,6 +160,8 @@ func add_chest_item(item_id: String, amount: int = 1) -> bool:
 ## Add items to the first available storage: frog slot(s) first, then the chest.
 ## Returns the number of items that could not be placed anywhere.
 func grant_item(item_id: String, amount: int) -> int:
+	if item_id == SEED_ITEM_ID:
+		return add_seeds(amount)
 	if amount <= 0:
 		return 0
 	var remaining := amount

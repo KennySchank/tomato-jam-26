@@ -21,10 +21,13 @@ var open_storage := "chest"
 @onready var chest_slots: GridContainer = $ChestWindow/Margin/Column/ChestSlots
 @onready var window_title: Label = $ChestWindow/Margin/Column/Title
 @onready var window_hint: Label = $ChestWindow/Margin/Column/Hint
+@onready var seed_reserve: Label = $SeedReserve
 
 func _ready() -> void:
 	game_state.inventory_changed.connect(_refresh)
+	game_state.seed_count_changed.connect(_on_seed_count_changed)
 	_refresh()
+	_on_seed_count_changed(game_state.seed_count, game_state.MAX_SEEDS)
 
 func _process(_delta: float) -> void:
 	if not chest_window.visible:
@@ -85,6 +88,7 @@ func _refresh() -> void:
 	_clear(frog_slots)
 	_clear(chest_slots)
 	_clear(toolbar_slots)
+	_on_seed_count_changed(game_state.seed_count, game_state.MAX_SEEDS)
 	var storage_inventory: Array[Dictionary] = game_state.altar_inventory if open_storage == "altar" else game_state.chest_inventory
 	for index in game_state.frog_inventory.size():
 		_add_slot(frog_slots, "frog", index, game_state.frog_inventory[index])
@@ -133,6 +137,10 @@ func _item_text(item: Dictionary) -> String:
 	if item_id == game_state.FRUIT_ITEM_ID:
 		return "Tomato\n×%d" % quantity
 	return item_id
+
+func _on_seed_count_changed(count: int, maximum: int) -> void:
+	if seed_reserve != null:
+		seed_reserve.text = "Seeds\n×%d / %d" % [count, maximum]
 
 func _on_slot_pressed(inventory_name: String, index: int) -> void:
 	if inventory_name == "frog":

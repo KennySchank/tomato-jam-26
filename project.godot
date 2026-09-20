@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 MCPRuntimeServer="*res://addons/godot_mcp_toolkit/runtime/mcp_runtime_server.gd"
 GameState="*res://scripts/game_state.gd"
+Music="*uid://ca6yvv5a5v6c4"
 RunStats="*res://scripts/run_stats.gd"
 
 [display]

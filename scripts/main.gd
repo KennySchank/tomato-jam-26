@@ -102,7 +102,7 @@ func _on_wave_spawn_requested(enemy_scene: PackedScene) -> void:
 func _on_wave_ended(_wave_index: int, wave: WaveDefinition) -> void:
 	if wave == null or wave.reward_seeds <= 0:
 		return
-	var leftover: int = game_state.grant_item(game_state.SEED_ITEM_ID, wave.reward_seeds)
+	var leftover: int = game_state.add_seeds(wave.reward_seeds)
 	if leftover > 0:
 		push_warning("Wave reward overflow: %d seeds could not be stored." % leftover)
 
@@ -472,10 +472,14 @@ func _process(_delta: float) -> void:
 		if not selected_item.is_empty():
 			var item_id: String = selected_item.get("id", "")
 			tower_is_selected = item_id == game_state.FRUIT_ITEM_ID
-			if not hover_is_harvest_target and (item_id == game_state.SEED_ITEM_ID or item_id == game_state.FRUIT_ITEM_ID):
+			if not hover_is_harvest_target and item_id == game_state.FRUIT_ITEM_ID:
 				hover_is_valid = _can_place_item(hovered_tile, item_id)
-				preview_scale = Vector2.ONE * (0.18 if item_id == game_state.SEED_ITEM_ID else 1.68)
-				preview_node = plant_preview if item_id == game_state.SEED_ITEM_ID else placement_preview
+				preview_scale = Vector2.ONE * 1.68
+				preview_node = placement_preview
+		elif game_state.seed_count > 0 and not hover_is_harvest_target:
+			hover_is_valid = _can_place_item(hovered_tile, game_state.SEED_ITEM_ID)
+			preview_scale = Vector2.ONE * 0.18
+			preview_node = plant_preview
 	placement_preview.visible = false
 	plant_preview.visible = false
 	preview_node.visible = hover_is_valid and preview_scale != Vector2.ZERO
@@ -511,7 +515,7 @@ func _can_place_item(tile: Vector2i, item_id: String) -> bool:
 func _try_plant(tile: Vector2i) -> void:
 	if not _can_place_item(tile, game_state.SEED_ITEM_ID):
 		return
-	if not game_state.consume_frog_item(inventory_ui.selected_frog_slot):
+	if not game_state.consume_seed():
 		return
 
 	var plant := PLANT_SCENE.instantiate()

@@ -24,7 +24,7 @@ text = "Beam me up, Scotty"
 horizontal_alignment = 1
 
 [node name="Item Image" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="3" unique_id=1198312682]
-position = Vector2(4.307695, -41.07692)
+position = Vector2(4.307695, -37.84615)
 scale = Vector2(1.3343954, 1.3343954)
 texture = ExtResource("2_kb004")
 region_enabled = true
