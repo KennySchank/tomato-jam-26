@@ -35,13 +35,14 @@ const SEED_DISPLAY_NAMES := {
 }
 const FRUIT_ITEM_ID := "tomato"
 const CHEST_ITEM_ID := "godot_logo"
+const DEFAULT_TOMATO_GOAL := 10
 
 ## Debug: boon scene paths to auto-apply at the start of every run. Leave the
 ## array empty to disable. Applied by `main.gd::_ready` after autoloads are
 ## ready so `get_tree()`-dependent boons work identically to a live pick.
 const DEBUG_STARTING_BOONS: Array[String] = []
 
-@export var tomato_goal: int = 10
+@export var tomato_goal: int = DEFAULT_TOMATO_GOAL
 
 var frog_inventory: Array[Dictionary] = []
 var chest_inventory: Array[Dictionary] = []
@@ -79,10 +80,17 @@ var hoe_charges: int = 0
 
 var _last_altar_tomato_count: int = 0
 
+## Increase the tribute requirement for the next round.
+func increase_tomato_goal(amount: int = 2) -> void:
+	if amount <= 0:
+		return
+	tomato_goal += amount
+
 func _ready() -> void:
 	reset_run()
 
 func reset_run() -> void:
+	tomato_goal = DEFAULT_TOMATO_GOAL
 	frog_inventory.clear()
 	chest_inventory.clear()
 	altar_inventory.clear()
@@ -318,13 +326,20 @@ func move_item(source: String, source_index: int, destination: String, destinati
 	var source_item: Dictionary = source_inventory[source_index]
 	if destination == "altar" and source_item.get("id") != FRUIT_ITEM_ID:
 		return false
+	var transfer_amount := int(source_item.get("quantity", 0))
+	if destination == "altar":
+		transfer_amount = mini(transfer_amount, maxi(0, tomato_goal - tomato_count))
+		if transfer_amount <= 0:
+			return false
 	var destination_item: Dictionary = destination_inventory[destination_index]
 	if destination_item.is_empty():
-		destination_inventory[destination_index] = source_item.duplicate()
-		source_inventory[source_index] = {}
+		destination_inventory[destination_index] = {"id": source_item.get("id"), "quantity": transfer_amount}
+		source_item["quantity"] = int(source_item["quantity"]) - transfer_amount
+		if source_item["quantity"] <= 0:
+			source_inventory[source_index] = {}
 	elif destination_item.get("id") == source_item.get("id") and int(destination_item.get("quantity", 0)) < MAX_STACK_SIZE:
 		var space := MAX_STACK_SIZE - int(destination_item["quantity"])
-		var moved := mini(space, int(source_item["quantity"]))
+		var moved := mini(space, transfer_amount)
 		destination_item["quantity"] = int(destination_item["quantity"]) + moved
 		source_item["quantity"] = int(source_item["quantity"]) - moved
 		if source_item["quantity"] <= 0:

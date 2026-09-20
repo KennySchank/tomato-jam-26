@@ -3,5 +3,6 @@
 [ext_resource type="AudioStream" uid="uid://2enj8ls8xvd7" path="res://assets/lil frog song.wav" id="1_0j54u"]
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" unique_id=1421320381]
+process_mode = 3
 stream = ExtResource("1_0j54u")
 autoplay = true

@@ -271,6 +271,7 @@ func _on_round_end_closed() -> void:
 		run_stats.record_round_completed()
 	# Endless mode: reset the altar and restart the harvest countdown so the
 	# player has a fresh deadline for the next tribute cycle.
+	game_state.increase_tomato_goal()
 	game_state.reset_altar_for_new_round()
 	wave_manager.restart_harvest_timer()
 	_round_end_shown = false
