@@ -27,6 +27,9 @@ const TILLED_SOIL_HITS := 3
 const NAIL_INTERVAL := 15.0
 const NAIL_RADIUS_TILES := 2.0
 const NAIL_DAMAGE := 5.0
+const PROPELLER_INTERVAL := 8.0
+const PROPELLER_RADIUS_TILES := 4.0
+const PROPELLER_PUSH_DISTANCE := 48.0
 
 const CARDINAL_DIRECTIONS: Array[Vector2i] = [Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT, Vector2i.UP]
 
@@ -65,6 +68,7 @@ var _round_end_shown: bool = false
 # Countdown until the next Nail-boon pulse. Only ticks while the boon is
 # owned; resets to NAIL_INTERVAL after each pulse fires.
 var _nail_cooldown: float = NAIL_INTERVAL
+var _propeller_cooldown: float = PROPELLER_INTERVAL
 
 func _ready() -> void:
 	var plant_scene_instance := PLANT_SCENE.instantiate()
@@ -746,6 +750,8 @@ func _physics_process(_delta: float) -> void:
 
 	if game_state.has_nail:
 		_tick_nail_pulse(_delta)
+	if game_state.has_propeller_hat:
+		_tick_propeller_hat(_delta)
 
 	# Keyboard/arrow input takes priority over click-to-move.
 	var input_vector := Input.get_vector("move_left", "move_right", "move_up", "move_down")
@@ -838,6 +844,22 @@ func _tick_nail_pulse(delta: float) -> void:
 			hit_any = true
 	if hit_any:
 		_play_nail_pulse_effect(origin, radius_px)
+
+func _tick_propeller_hat(delta: float) -> void:
+	_propeller_cooldown -= delta
+	if _propeller_cooldown > 0.0:
+		return
+	_propeller_cooldown = PROPELLER_INTERVAL
+	var tile_size_px: float = float(Vector2(map.tile_set.tile_size).x) * float(map.scale.x)
+	var radius_px := tile_size_px * PROPELLER_RADIUS_TILES
+	var origin := player.global_position
+	for enemy in get_tree().get_nodes_in_group("enemies"):
+		if not is_instance_valid(enemy) or not enemy is Node2D:
+			continue
+		if origin.distance_to((enemy as Node2D).global_position) > radius_px:
+			continue
+		if enemy.has_method("nudge_backward"):
+			enemy.nudge_backward(PROPELLER_PUSH_DISTANCE)
 
 func _play_nail_pulse_effect(origin: Vector2, radius_px: float) -> void:
 	# Cheap tell that the pulse fired: expanding red ring drawn behind the
