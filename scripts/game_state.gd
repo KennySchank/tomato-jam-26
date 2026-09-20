@@ -33,6 +33,13 @@ const SEED_DISPLAY_NAMES := {
 	CORN_SEED_ID: "Corn Seeds",
 	PUMPKIN_SEED_ID: "Pumpkin Seeds",
 }
+## Short placement hints surfaced by the reserve buttons' tooltips so the
+## player can discover where each seed can be planted without opening a card.
+const SEED_PLACEMENT_HINTS := {
+	TOMATO_SEED_ID: "Click a tilled soil tile to plant a tomato",
+	CORN_SEED_ID: "Click a grass tile (off the enemy path) to plant",
+	PUMPKIN_SEED_ID: "Click an enemy path tile to plant",
+}
 const FRUIT_ITEM_ID := "tomato"
 const CHEST_ITEM_ID := "godot_logo"
 const DEFAULT_TOMATO_GOAL := 10
@@ -40,7 +47,10 @@ const DEFAULT_TOMATO_GOAL := 10
 ## Debug: boon scene paths to auto-apply at the start of every run. Leave the
 ## array empty to disable. Applied by `main.gd::_ready` after autoloads are
 ## ready so `get_tree()`-dependent boons work identically to a live pick.
-const DEBUG_STARTING_BOONS: Array[String] = []
+const DEBUG_STARTING_BOONS: Array[String] = [
+	"res://scenes/boons/corn_seeds.tscn",
+	"res://scenes/boons/pumpkin_seeds.tscn",
+]
 
 @export var tomato_goal: int = DEFAULT_TOMATO_GOAL
 

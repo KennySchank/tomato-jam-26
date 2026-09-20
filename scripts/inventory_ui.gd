@@ -227,6 +227,9 @@ func _rebuild_seed_reserves() -> void:
 			game_state.get_seed_count(seed_id),
 			game_state.get_seed_max(seed_id),
 		)
+		# Placement hint on hover so the player can discover where each seed
+		# type actually goes without opening the boon card.
+		button.tooltip_text = game_state.SEED_PLACEMENT_HINTS.get(seed_id, "")
 		# Toggle-mode buttons give us a persistent pressed StyleBox that stays
 		# visible through hover and re-focus, unlike a `modulate` tint which
 		# the hover style washes out.
