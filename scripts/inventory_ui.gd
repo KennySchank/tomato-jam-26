@@ -2,7 +2,8 @@ extends CanvasLayer
 
 const INVENTORY_SLOT_SCENE := preload("res://scripts/inventory_slot.gd")
 const SLOT_SIZE := Vector2(56, 56)
-const SLOT_COLOR := Color("263247")
+const SLOT_COLOR := Color("40536b")
+const SLOT_BORDER_COLOR := Color("71849a")
 const SELECTED_COLOR := Color("f3c969")
 const TOOLBAR_SLOT_COUNT := 8
 ## Fixed size for each seed-reserve button in the right-hand column so the UI
@@ -152,6 +153,7 @@ func _add_slot(container: Container, inventory_name: String, index: int, item: D
 	var button := INVENTORY_SLOT_SCENE.new()
 	button.custom_minimum_size = SLOT_SIZE
 	button.focus_mode = Control.FOCUS_NONE
+	_apply_slot_styles(button)
 	button.modulate = SELECTED_COLOR if inventory_name == "frog" and index == selected_frog_slot else Color.WHITE
 	button.text = _item_text(item)
 	if not item.is_empty() and item.get("id") == game_state.CHEST_ITEM_ID:
@@ -160,6 +162,22 @@ func _add_slot(container: Container, inventory_name: String, index: int, item: D
 	button.setup(inventory_name, index, item, _on_item_dropped)
 	button.pressed.connect(_on_slot_pressed.bind(inventory_name, index))
 	container.add_child(button)
+
+func _apply_slot_styles(button: Button) -> void:
+	var normal_style := StyleBoxFlat.new()
+	normal_style.bg_color = SLOT_COLOR
+	normal_style.border_color = SLOT_BORDER_COLOR
+	normal_style.set_border_width_all(2)
+	normal_style.set_corner_radius_all(3)
+	button.add_theme_stylebox_override("normal", normal_style)
+
+	var hover_style := normal_style.duplicate()
+	hover_style.bg_color = Color("526982")
+	button.add_theme_stylebox_override("hover", hover_style)
+
+	var pressed_style := normal_style.duplicate()
+	pressed_style.bg_color = Color("607792")
+	button.add_theme_stylebox_override("pressed", pressed_style)
 
 func _item_text(item: Dictionary) -> String:
 	if item.is_empty():

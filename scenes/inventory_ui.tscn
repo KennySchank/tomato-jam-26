@@ -28,7 +28,7 @@ anchor_right = 1.0
 offset_left = -88.0
 offset_top = 60.0
 offset_right = -8.0
-offset_bottom = 260.0
+offset_bottom = 320.0
 grow_horizontal = 0
 theme_override_styles/panel = SubResource("StyleBoxEmpty_inventory")
 
@@ -78,6 +78,7 @@ offset_right = -19.0
 offset_bottom = -8.0
 grow_horizontal = 2
 grow_vertical = 2
+scale = Vector2(1, 0.96)
 mouse_filter = 2
 
 [node name="Column" type="VBoxContainer" parent="ChestWindow/Margin" unique_id=2060201824]
