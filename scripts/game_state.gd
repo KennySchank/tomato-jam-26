@@ -4,7 +4,7 @@ signal inventory_changed
 signal tomato_count_changed(count: int, goal: int)
 signal boon_activated(boon_id: String)
 
-const FROG_CAPACITY := 2
+const FROG_CAPACITY := 6
 const CHEST_CAPACITY := 24
 const ALTAR_CAPACITY := 12
 const MAX_STACK_SIZE := 50
