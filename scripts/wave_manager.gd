@@ -37,6 +37,10 @@ enum Phase { IDLE, PREPARING, ACTIVE, COMPLETED, LOST }
 @export_range(0, 40) var endless_enemy_step: int = 4
 ## Extra concurrent enemies allowed per endless wave.
 @export_range(0, 20) var endless_concurrent_step: int = 1
+## Enemy movement, health, and attack pressure increase per endless wave.
+@export_range(1.0, 1.5, 0.01) var endless_speed_multiplier_step: float = 1.04
+@export_range(1.0, 1.5, 0.01) var endless_health_multiplier_step: float = 1.06
+@export_range(0.5, 1.0, 0.01) var endless_attack_interval_factor: float = 0.97
 ## Spawn interval is multiplied by this factor each endless wave (min & max).
 @export_range(0.5, 1.0, 0.01) var endless_spawn_interval_factor: float = 0.92
 ## Lower bound clamp for endless spawn interval min.
@@ -175,6 +179,9 @@ func _generate_endless_wave(index: int) -> WaveDefinition:
 	generated.prep_time = endless_prep_time
 	generated.enemy_count = base.enemy_count + endless_enemy_step * steps
 	generated.max_concurrent = base.max_concurrent + endless_concurrent_step * steps
+	generated.enemy_speed_multiplier = base.enemy_speed_multiplier * pow(endless_speed_multiplier_step, steps)
+	generated.enemy_health_multiplier = base.enemy_health_multiplier * pow(endless_health_multiplier_step, steps)
+	generated.enemy_attack_interval_multiplier = base.enemy_attack_interval_multiplier * pow(endless_attack_interval_factor, steps)
 	var factor: float = pow(endless_spawn_interval_factor, steps)
 	generated.spawn_interval_min = maxf(endless_min_spawn_interval, base.spawn_interval_min * factor)
 	generated.spawn_interval_max = maxf(generated.spawn_interval_min + 0.25, base.spawn_interval_max * factor)

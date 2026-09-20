@@ -31,6 +31,12 @@ func take_damage(amount: float) -> void:
 	if health <= 0.0:
 		queue_free()
 
+func apply_difficulty(speed_multiplier: float, health_multiplier: float, attack_interval_multiplier: float) -> void:
+	speed *= speed_multiplier
+	max_health *= health_multiplier
+	attack_interval = maxf(0.25, attack_interval * attack_interval_multiplier)
+	health = max_health
+
 func _play_damage_animation() -> void:
 	if damage_tween != null and damage_tween.is_valid():
 		damage_tween.kill()
