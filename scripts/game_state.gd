@@ -13,6 +13,15 @@ const SEED_ITEM_ID := "tomato_seed"
 const FRUIT_ITEM_ID := "tomato"
 const CHEST_ITEM_ID := "godot_logo"
 
+## Debug: boon scene paths to auto-apply at the start of every run. Leave the
+## array empty to disable. Applied by `main.gd::_ready` after autoloads are
+## ready so `get_tree()`-dependent boons work identically to a live pick.
+const DEBUG_STARTING_BOONS: Array[String] = [
+	"res://scenes/boons/wheelbarrow.tscn",
+	"res://scenes/boons/gloves.tscn",
+	"res://scenes/boons/watering_can.tscn",
+]
+
 @export var tomato_goal: int = 10
 
 var frog_inventory: Array[Dictionary] = []

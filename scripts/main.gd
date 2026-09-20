@@ -95,6 +95,31 @@ func _ready() -> void:
 		hud.bind_wave_manager(wave_manager)
 	queue_redraw()
 	_navigation_setup.call_deferred()
+	_apply_debug_starting_boons.call_deferred()
+
+## Applies every boon listed in `GameState.DEBUG_STARTING_BOONS` at the start
+## of the run. Deferred so it runs after `_ready` completes and the scene tree
+## is settled — matches how `round_end.gd` applies a live pick.
+func _apply_debug_starting_boons() -> void:
+	if game_state.DEBUG_STARTING_BOONS.is_empty():
+		return
+	for boon_path in game_state.DEBUG_STARTING_BOONS:
+		if game_state.has_boon(boon_path):
+			continue
+		var packed: PackedScene = load(boon_path)
+		if packed == null:
+			push_warning("Debug starting boon not found: %s" % boon_path)
+			continue
+		var boon: Node = packed.instantiate()
+		# Hide and disable interaction so the card doesn't render or trap clicks
+		# while it applies its effect.
+		if boon is CanvasItem:
+			(boon as CanvasItem).visible = false
+		add_child(boon)
+		game_state.activate_boon(boon_path)
+		if boon.has_method("apply_effect"):
+			boon.call("apply_effect")
+		boon.queue_free()
 
 func _on_wave_spawn_requested(enemy_scene: PackedScene) -> void:
 	_spawn_enemy(enemy_scene)
@@ -533,10 +558,10 @@ func _try_harvest(tile: Vector2i) -> bool:
 		return true
 	if not game_state.add_frog_item(game_state.FRUIT_ITEM_ID):
 		return true
-	game_state.add_chest_item(game_state.SEED_ITEM_ID, 1)
-	# Gloves boon: chance to drop an extra tomato seed into the chest.
+	game_state.add_seeds(1)
+	# Gloves boon: chance to drop an extra tomato seed into the seed reserve.
 	if game_state.bonus_seed_chance > 0.0 and randf() < game_state.bonus_seed_chance:
-		game_state.add_chest_item(game_state.SEED_ITEM_ID, 1)
+		game_state.add_seeds(1)
 	planted_tiles.erase(tile)
 	plant.queue_free()
 	return true
@@ -737,9 +762,9 @@ func _run_sickle_harvest() -> void:
 			continue
 		if not game_state.add_frog_item(game_state.FRUIT_ITEM_ID):
 			continue
-		game_state.add_chest_item(game_state.SEED_ITEM_ID, 1)
+		game_state.add_seeds(1)
 		if game_state.bonus_seed_chance > 0.0 and randf() < game_state.bonus_seed_chance:
-			game_state.add_chest_item(game_state.SEED_ITEM_ID, 1)
+			game_state.add_seeds(1)
 		planted_tiles.erase(tile)
 		plant.queue_free()
 
