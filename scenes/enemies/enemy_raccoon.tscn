@@ -44,8 +44,8 @@ size = Vector2(20, 16)
 
 [node name="Enemy" unique_id=371982480 instance=ExtResource("1_dq7g4")]
 modulate = Color(1, 1, 1, 1)
-speed = 60.0
-max_health = 20.0
+speed = 50.0
+max_health = 50.0
 
 [node name="AnimatedSprite2D" parent="." index="0" unique_id=779821457]
 sprite_frames = SubResource("SpriteFrames_2ytov")

@@ -289,6 +289,12 @@ func _spawn_enemy(enemy_scene: PackedScene = null) -> void:
 		enemy_scene = ENEMY_SCENES.pick_random()
 	var enemy := enemy_scene.instantiate()
 	add_child(enemy)
+	if enemy.has_method("apply_difficulty") and wave_manager.current_wave != null:
+		enemy.apply_difficulty(
+			wave_manager.current_wave.enemy_speed_multiplier,
+			wave_manager.current_wave.enemy_health_multiplier,
+			wave_manager.current_wave.enemy_attack_interval_multiplier
+		)
 	enemy.attack_requested.connect(_on_enemy_attack_requested.bind(enemy))
 	enemy.set_route(enemy_routes.pick_random())
 
