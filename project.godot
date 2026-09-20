@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="A Tomato for Your Gods"
+config/name="A Tomato for Your God"
 run/main_scene="res://scenes/title_screen.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 boot_splash/bg_color=Color(0.0784314, 0.0470588, 0.109804, 1)
@@ -20,10 +20,10 @@ gui/theme/custom="res://themes/pixel_theme.tres"
 
 [autoload]
 
-MCPRuntimeServer="*res://addons/godot_mcp_toolkit/runtime/mcp_runtime_server.gd"
 GameState="*res://scripts/game_state.gd"
 RunStats="*res://scripts/run_stats.gd"
 Music="*uid://ca6yvv5a5v6c4"
+MCPRuntimeServer="*res://addons/godot_mcp_toolkit/runtime/mcp_runtime_server.gd"
 
 [display]
 
