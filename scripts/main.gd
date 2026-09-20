@@ -138,7 +138,7 @@ func _on_wave_spawn_requested(enemy_scene: PackedScene) -> void:
 func _on_wave_ended(_wave_index: int, wave: WaveDefinition) -> void:
 	if wave == null or wave.reward_seeds <= 0:
 		return
-	var leftover: int = game_state.grant_item(game_state.SEED_ITEM_ID, wave.reward_seeds)
+	var leftover: int = game_state.add_seeds(wave.reward_seeds)
 	if leftover > 0:
 		push_warning("Wave reward overflow: %d seeds could not be stored." % leftover)
 
@@ -634,10 +634,10 @@ func _try_harvest(tile: Vector2i) -> bool:
 		return true
 	if not game_state.add_frog_item(game_state.FRUIT_ITEM_ID):
 		return true
-	game_state.grant_item(game_state.SEED_ITEM_ID, 1)
+	game_state.add_seeds(1)
 	# Gloves boon: chance to drop an extra tomato seed.
 	if game_state.bonus_seed_chance > 0.0 and randf() < game_state.bonus_seed_chance:
-		game_state.grant_item(game_state.SEED_ITEM_ID, 1)
+		game_state.add_seeds(1)
 	planted_tiles.erase(tile)
 	plant.queue_free()
 	return true
@@ -818,9 +818,9 @@ func _run_sickle_harvest() -> void:
 			continue
 		if not game_state.add_frog_item(game_state.FRUIT_ITEM_ID):
 			continue
-		game_state.grant_item(game_state.SEED_ITEM_ID, 1)
+		game_state.add_seeds(1)
 		if game_state.bonus_seed_chance > 0.0 and randf() < game_state.bonus_seed_chance:
-			game_state.grant_item(game_state.SEED_ITEM_ID, 1)
+			game_state.add_seeds(1)
 		planted_tiles.erase(tile)
 		plant.queue_free()
 
