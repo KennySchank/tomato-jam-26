@@ -32,6 +32,7 @@ func _process(delta: float) -> void:
 	if target == null:
 		return
 
+	sprite.flip_h = target.global_position.x < global_position.x
 	var projectile := PROJECTILE_SCENE.instantiate()
 	projectile.global_position = global_position
 	projectile.set_target(target)

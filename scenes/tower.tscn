@@ -82,7 +82,8 @@ scale = Vector2(0.22, 0.22)
 texture = ExtResource("1_icon")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=84853571]
-scale = Vector2(0.22, 0.22)
+position = Vector2(6.36, 0)
+scale = Vector2(1.68, 1.68)
 sprite_frames = SubResource("SpriteFrames_kkyey")
 animation = &"Idle"
 
