@@ -3,29 +3,27 @@ extends StaticBody2D
 
 ## Base class for boon cards. Instances of `res://scenes/boon_card.tscn` (and
 ## anything that inherits it) get this script, giving them:
-##   - rarity + data-driven effect knobs
+##   - rarity (drives draw odds in `round_end.gd`)
 ##   - hover lift + tint on mouse over
 ##   - `chosen` signal fired when the card is clicked
 ##
 ## To make a new boon:
 ##   1. Duplicate `scenes/boon_card.tscn` into `scenes/boons/<name>.tscn` (or
 ##      copy an existing boon like `cowboy_hat.tscn`).
-##   2. In the inspector, set `rarity` and any effect knobs (e.g. `bonus_seeds`).
+##   2. In the inspector, set `rarity`.
 ##   3. Override the Item Name / Description / Bottom Text / Item Image nodes.
+##   4. If the boon needs behavior, attach a subclass script that overrides
+##      `apply_effect()` (see `scripts/boons/` for examples).
 ##
-## For effects that don't fit the built-in knobs, extend this script (see
-## `scripts/boons/cowboy_hat.gd` for the pattern) and override `apply_effect()`.
+## The scene's resource path acts as the boon's unique ID. GameState records
+## picked boons under that path so `round_end.gd` can filter already-owned
+## boons out of future rerolls.
 
 enum Rarity { COMMON, UNCOMMON, RARE, LEGENDARY }
 
 signal chosen(boon: Boon)
 
 @export var rarity: Rarity = Rarity.COMMON
-
-@export_group("Effects")
-## Seeds granted when this boon is chosen. Filled into the frog inventory
-## first, then the chest. Overflow is dropped with a warning.
-@export_range(0, 100) var bonus_seeds: int = 0
 
 const HOVER_LIFT := Vector2(0, -8)
 const HOVER_TINT := Color(1.15, 1.15, 1.05, 1.0)
@@ -71,14 +69,8 @@ func _on_mouse_exited() -> void:
 	modulate = _base_modulate
 	z_index = _base_z_index
 
-## Applies this boon's effects. Data-driven boons should just tweak the
-## exported effect knobs; boons with bespoke logic should override this method
-## in a subclass and call `super.apply_effect()` if they still want the
-## exported knobs to fire.
+## Applies this boon's effects. The base implementation does nothing; concrete
+## boons override this method in a subclass script placed under
+## `scripts/boons/`.
 func apply_effect() -> void:
-	if bonus_seeds > 0:
-		var game_state := get_node_or_null("/root/GameState")
-		if game_state != null and game_state.has_method("grant_item"):
-			var leftover: int = game_state.grant_item(game_state.SEED_ITEM_ID, bonus_seeds)
-			if leftover > 0:
-				push_warning("Boon reward overflow: %d seeds could not be stored." % leftover)
+	pass

@@ -2,9 +2,10 @@
 
 [ext_resource type="PackedScene" uid="uid://bfrbfa7x4r32e" path="res://scenes/boon_card.tscn" id="1_boon_card"]
 [ext_resource type="Texture2D" uid="uid://bmkp8hmyuqi2t" path="res://assets/Sprite-Cowboy-Hat.png" id="2_cowboy_hat"]
+[ext_resource type="Script" path="res://scripts/boons/cowboy_hat.gd" id="3_cowboy_hat_script"]
 
 [node name="BoonCard2" unique_id=1183607124 instance=ExtResource("1_boon_card")]
-bonus_seeds = 2
+script = ExtResource("3_cowboy_hat_script")
 
 [node name="Item Name" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="0" unique_id=877095802]
 text = "Cowboy Hat"

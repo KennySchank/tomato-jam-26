@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://cfenceentity"]
+
+[ext_resource type="Script" path="res://scripts/fence.gd" id="1_fence_script"]
+
+[node name="Fence" type="Node2D"]
+script = ExtResource("1_fence_script")
+
+[node name="Body" type="Polygon2D" parent="."]
+color = Color(0.45, 0.28, 0.15, 1.0)
+polygon = PackedVector2Array(-96, -6, 96, -6, 96, 6, -96, 6)
+
+[node name="Post1" type="Polygon2D" parent="Body"]
+color = Color(0.3, 0.18, 0.08, 1.0)
+polygon = PackedVector2Array(-72, -12, -64, -12, -64, 12, -72, 12)
+
+[node name="Post2" type="Polygon2D" parent="Body"]
+color = Color(0.3, 0.18, 0.08, 1.0)
+polygon = PackedVector2Array(-8, -12, 0, -12, 0, 12, -8, 12)
+
+[node name="Post3" type="Polygon2D" parent="Body"]
+color = Color(0.3, 0.18, 0.08, 1.0)
+polygon = PackedVector2Array(64, -12, 72, -12, 72, 12, 64, 12)

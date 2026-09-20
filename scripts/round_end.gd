@@ -108,7 +108,7 @@ func _cache_boon_scenes() -> void:
 				var packed: PackedScene = load(res_path)
 				if packed != null:
 					var rarity_val: int = _probe_rarity(packed)
-					_boon_entries.append({"packed": packed, "rarity": rarity_val})
+					_boon_entries.append({"packed": packed, "rarity": rarity_val, "path": res_path})
 		file_name = dir.get_next()
 	dir.list_dir_end()
 
@@ -135,12 +135,19 @@ func _cache_slot_positions_and_remove_placeholders() -> void:
 		slot.queue_free()
 
 ## Frees the previous round's boon nodes and instances a fresh random selection
-## — one boon per slot, using rarity-weighted draws without replacement.
+## — one boon per slot, using rarity-weighted draws without replacement. Boons
+## already picked earlier this run are filtered out so no boon can stack.
 func _reroll_boons() -> void:
 	_clear_active_boons()
-	if _boon_entries.is_empty() or _slot_positions.is_empty():
+	var available: Array = _filter_owned_boons(_boon_entries)
+	if available.is_empty() or _slot_positions.is_empty():
+		# Nothing left to offer — close the round-end overlay so the run keeps
+		# going instead of soft-locking on an empty screen.
+		if available.is_empty() and not _boon_entries.is_empty():
+			push_warning("RoundEnd: player owns every boon; closing without a pick.")
+		call_deferred("_close")
 		return
-	var picks: Array[PackedScene] = _pick_random_boons(_slot_positions.size())
+	var picks: Array[PackedScene] = _pick_random_boons(_slot_positions.size(), available)
 	for i in picks.size():
 		var packed: PackedScene = picks[i]
 		var instance: Node = packed.instantiate()
@@ -153,18 +160,32 @@ func _reroll_boons() -> void:
 			(instance as Boon).chosen.connect(_on_boon_chosen)
 		_active_boons.append(instance)
 
-## Draws `count` boons from the cache using rarity weights. Sampling is
+## Returns the subset of `entries` whose scene paths are not already recorded
+## in `GameState.active_boons`. If GameState is unavailable, no filtering is
+## applied so the round-end screen still functions in isolation.
+func _filter_owned_boons(entries: Array) -> Array:
+	var game_state := get_node_or_null("/root/GameState")
+	if game_state == null or not game_state.has_method("has_boon"):
+		return entries.duplicate()
+	var filtered: Array = []
+	for entry in entries:
+		var path: String = entry.get("path", "")
+		if path.is_empty() or not game_state.has_boon(path):
+			filtered.append(entry)
+	return filtered
+
+## Draws `count` boons from the supplied pool using rarity weights. Sampling is
 ## without-replacement within a single reroll; if the pool empties before we've
-## filled every slot (fewer boons in catalogue than slots on screen) the pool
-## refills so no slot is ever blank.
-func _pick_random_boons(count: int) -> Array[PackedScene]:
+## filled every slot (fewer boons available than slots on screen) the pool
+## refills from the same source so no slot is ever blank.
+func _pick_random_boons(count: int, source: Array) -> Array[PackedScene]:
 	var results: Array[PackedScene] = []
-	if _boon_entries.is_empty():
+	if source.is_empty():
 		return results
-	var pool: Array = _boon_entries.duplicate()
+	var pool: Array = source.duplicate()
 	for _i in count:
 		if pool.is_empty():
-			pool = _boon_entries.duplicate()
+			pool = source.duplicate()
 		var pick_index: int = _weighted_pick_index(pool)
 		results.append(pool[pick_index]["packed"])
 		pool.remove_at(pick_index)
@@ -188,8 +209,14 @@ func _weight_for(rarity_val: int) -> int:
 	return int(RARITY_WEIGHTS.get(rarity_val, 1))
 
 func _on_boon_chosen(boon: Boon) -> void:
-	if boon != null and boon.has_method("apply_effect"):
-		boon.apply_effect()
+	if boon != null:
+		# Register ownership before applying so subclass effects can query
+		# `GameState.has_boon()` on themselves if they ever need to.
+		var game_state := get_node_or_null("/root/GameState")
+		if game_state != null and game_state.has_method("activate_boon"):
+			game_state.activate_boon(boon.scene_file_path)
+		if boon.has_method("apply_effect"):
+			boon.apply_effect()
 	var run_stats := get_node_or_null("/root/RunStats")
 	if run_stats != null and run_stats.has_method("record_boon_collected"):
 		run_stats.record_boon_collected()

@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://cpumpkinwall0"]
+
+[ext_resource type="Script" path="res://scripts/pumpkin_wall.gd" id="1_pumpkin_wall_script"]
+[ext_resource type="Texture2D" uid="uid://cykecu0lfio8m" path="res://assets/Exploding-plant.png" id="2_pumpkin_tex"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pumpkin_frame"]
+atlas = ExtResource("2_pumpkin_tex")
+region = Rect2(0, 0, 32, 32)
+
+[node name="PumpkinWall" type="Node2D"]
+script = ExtResource("1_pumpkin_wall_script")
+
+[node name="Body" type="Node2D" parent="."]
+
+[node name="Sprite" type="Sprite2D" parent="Body"]
+texture = SubResource("AtlasTexture_pumpkin_frame")
+scale = Vector2(2, 2)
+modulate = Color(1.2, 0.7, 0.3, 1.0)

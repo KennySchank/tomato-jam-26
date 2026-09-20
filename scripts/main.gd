@@ -19,6 +19,12 @@ const ENEMY_SCENES: Array[PackedScene] = [
 const PROJECTILE_SCENE := preload("res://scenes/projectile.tscn")
 const ENEMY_ATTACK_RADIUS_TILES := 4.0
 
+# Nail boon knobs. Every NAIL_INTERVAL seconds any enemy within
+# NAIL_RADIUS_TILES of the frog takes NAIL_DAMAGE HP.
+const NAIL_INTERVAL := 15.0
+const NAIL_RADIUS_TILES := 2.0
+const NAIL_DAMAGE := 5.0
+
 const CARDINAL_DIRECTIONS: Array[Vector2i] = [Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT, Vector2i.UP]
 
 var destination := PLOT_CENTER
@@ -49,6 +55,9 @@ var plant_preview_scale := Vector2.ONE
 @onready var game_over: StaticBody2D = $GameOver
 
 var _round_end_shown: bool = false
+# Countdown until the next Nail-boon pulse. Only ticks while the boon is
+# owned; resets to NAIL_INTERVAL after each pulse fires.
+var _nail_cooldown: float = NAIL_INTERVAL
 
 func _ready() -> void:
 	var plant_scene_instance := PLANT_SCENE.instantiate()
@@ -299,8 +308,24 @@ func _spawn_enemy(enemy_scene: PackedScene = null) -> void:
 	enemy.set_route(enemy_routes.pick_random())
 
 func _on_enemy_attack_requested(enemy_position: Vector2, enemy: Node) -> void:
+	# Pumpkin wall takes priority: if the enemy is within attack range of the
+	# wall, redirect the shot there and skip the plot-targeting logic below.
+	var interaction_radius := Vector2(map.tile_set.tile_size).x * map.scale.x * ENEMY_ATTACK_RADIUS_TILES
+	var pumpkin: Node = get_tree().get_first_node_in_group("pumpkin_wall")
+	if is_instance_valid(pumpkin) and pumpkin is Node2D \
+			and enemy_position.distance_to((pumpkin as Node2D).global_position) <= interaction_radius:
+		_spawn_shield_projectile(enemy, enemy_position, pumpkin)
+		return
+
 	var target_tile := _find_enemy_target_tile(enemy_position)
 	if target_tile == Vector2i(999999, 999999):
+		return
+
+	# Fence and scarecrow blanket-protect the plot: any incoming plot attack
+	# is redirected to the fence first, then the scarecrow, until they break.
+	var shield: Node = _get_plot_shield()
+	if shield != null:
+		_spawn_shield_projectile(enemy, enemy_position, shield)
 		return
 
 	var projectile := PROJECTILE_SCENE.instantiate()
@@ -312,7 +337,10 @@ func _on_enemy_attack_requested(enemy_position: Vector2, enemy: Node) -> void:
 		projectile.set_target(plant)
 		projectile.impact_callback = func() -> void:
 			var current_plant: Node = planted_tiles.get(target_tile)
-			if is_instance_valid(current_plant) and current_plant.get_instance_id() == plant_id:
+			# The plant may have absorbed the hit (Watering Can). Only clean
+			# up the tile entry if it actually died on impact.
+			if is_instance_valid(current_plant) and current_plant.get_instance_id() == plant_id \
+				and current_plant.has_method("is_alive") and not current_plant.is_alive():
 				planted_tiles.erase(target_tile)
 				_check_loss_condition()
 	else:
@@ -320,6 +348,27 @@ func _on_enemy_attack_requested(enemy_position: Vector2, enemy: Node) -> void:
 		projectile.impact_callback = func() -> void:
 			_damage_land(target_tile)
 	add_child(projectile)
+
+## Spawns a projectile targeted at a shield entity (fence / scarecrow /
+## pumpkin wall). The shield's `take_damage()` handles its own destruction, so
+## no impact_callback is needed.
+func _spawn_shield_projectile(enemy: Node, enemy_position: Vector2, shield: Node) -> void:
+	var projectile := PROJECTILE_SCENE.instantiate()
+	projectile.global_position = enemy_position
+	projectile.set_source(enemy)
+	projectile.set_target(shield)
+	add_child(projectile)
+
+## Returns the first living shield in the fence group, then the scarecrow
+## group. Both apply blanket protection to the whole plot.
+func _get_plot_shield() -> Node:
+	var fence: Node = get_tree().get_first_node_in_group("fence")
+	if is_instance_valid(fence) and fence.has_method("is_alive") and fence.is_alive():
+		return fence
+	var scarecrow: Node = get_tree().get_first_node_in_group("scarecrow")
+	if is_instance_valid(scarecrow) and scarecrow.has_method("is_alive") and scarecrow.is_alive():
+		return scarecrow
+	return null
 
 func _find_enemy_target_tile(enemy_position: Vector2) -> Vector2i:
 	var interaction_radius := Vector2(map.tile_set.tile_size).x * map.scale.x * ENEMY_ATTACK_RADIUS_TILES
@@ -348,7 +397,31 @@ func _find_enemy_target_tile(enemy_position: Vector2) -> Vector2i:
 func _damage_land(tile: Vector2i) -> void:
 	if not _is_tilled_soil(tile):
 		return
+	# Hoe boon spends a charge to save the plot before it turns to grass.
+	if game_state.hoe_charges > 0:
+		game_state.hoe_charges -= 1
+		_play_land_repair(tile)
+		return
 	_play_land_damage(tile)
+
+func _play_land_repair(tile: Vector2i) -> void:
+	# Green flash so the player can tell the plot survived. Same shape as the
+	# damage overlay so both animations feel like the same "hit" language.
+	var repair_overlay := Polygon2D.new()
+	var half_size := Vector2(map.tile_set.tile_size) * 0.5 * map.scale
+	repair_overlay.polygon = PackedVector2Array([
+		Vector2(-half_size.x, -half_size.y),
+		Vector2(half_size.x, -half_size.y),
+		Vector2(half_size.x, half_size.y),
+		Vector2(-half_size.x, half_size.y),
+	])
+	repair_overlay.position = _cell_center(tile)
+	repair_overlay.z_index = -1
+	repair_overlay.color = Color(0.35, 0.9, 0.35, 0.65)
+	add_child(repair_overlay)
+	var tween := create_tween()
+	tween.tween_property(repair_overlay, "color", Color(0.35, 0.9, 0.35, 0.0), 0.35)
+	tween.finished.connect(repair_overlay.queue_free)
 
 func _play_land_damage(tile: Vector2i) -> void:
 	var damage_overlay := Polygon2D.new()
@@ -455,6 +528,9 @@ func _try_harvest(tile: Vector2i) -> bool:
 	if not game_state.add_frog_item(game_state.FRUIT_ITEM_ID):
 		return true
 	game_state.add_chest_item(game_state.SEED_ITEM_ID, 1)
+	# Gloves boon: chance to drop an extra tomato seed into the chest.
+	if game_state.bonus_seed_chance > 0.0 and randf() < game_state.bonus_seed_chance:
+		game_state.add_chest_item(game_state.SEED_ITEM_ID, 1)
 	planted_tiles.erase(tile)
 	plant.queue_free()
 	return true
@@ -476,8 +552,118 @@ func _try_place_tower(tile: Vector2i) -> bool:
 func _on_tower_died(tile: Vector2i) -> void:
 	tower_tiles.erase(tile)
 
+## Spawns a Corn Tower on a random tilled soil tile that has no plant or tower
+## on it yet. Called by the Corn Seeds boon after the round-end screen closes.
+## Returns true when a tower was placed.
+func spawn_corn_tower() -> bool:
+	const CORN_TOWER_SCENE := preload("res://scenes/corn_tower.tscn")
+	var candidates: Array[Vector2i] = []
+	for tile in map.get_used_cells():
+		if not _is_tilled_soil(tile):
+			continue
+		if planted_tiles.has(tile) or tower_tiles.has(tile):
+			continue
+		candidates.append(tile)
+	if candidates.is_empty():
+		push_warning("Corn Seeds boon: no empty tilled soil to plant the corn tower on.")
+		return false
+	var tile: Vector2i = candidates.pick_random()
+	var tower := CORN_TOWER_SCENE.instantiate()
+	tower.global_position = _cell_center(tile)
+	add_child(tower)
+	tower.died.connect(_on_tower_died.bind(tile))
+	tower_tiles[tile] = tower
+	return true
+
+## Spawns a Fence entity spanning the south edge of the tomato plot. Only one
+## fence can exist at a time (the boon is deduped from re-picks).
+func spawn_fence() -> bool:
+	const FENCE_SCENE := preload("res://scenes/fence.tscn")
+	var bounds := _tilled_soil_bounds()
+	if bounds.size == Vector2i.ZERO:
+		push_warning("Fence boon: no tilled soil found; cannot place fence.")
+		return false
+	var tile_size := Vector2(map.tile_set.tile_size) * map.scale
+	var south_row_y := bounds.position.y + bounds.size.y # one row below the last plot row
+	var world_x := (float(bounds.position.x) + float(bounds.size.x) * 0.5) * tile_size.x
+	var world_y := _cell_center(Vector2i(bounds.position.x, south_row_y)).y
+	var fence := FENCE_SCENE.instantiate()
+	fence.global_position = Vector2(world_x, world_y)
+	# Base fence polygon spans 192 px wide; scale x so it covers the full plot.
+	fence.scale = Vector2(float(bounds.size.x) * tile_size.x / 192.0, 1.0)
+	add_child(fence)
+	return true
+
+## Spawns a Scarecrow on the center-most tilled soil tile.
+func spawn_scarecrow() -> bool:
+	const SCARECROW_SCENE := preload("res://scenes/scarecrow.tscn")
+	var tilled: Array[Vector2i] = []
+	for tile in map.get_used_cells():
+		if _is_tilled_soil(tile):
+			tilled.append(tile)
+	if tilled.is_empty():
+		push_warning("Scarecrow boon: no tilled soil found.")
+		return false
+	var best_tile: Vector2i = tilled[0]
+	var best_dist := INF
+	for tile in tilled:
+		var d := _cell_center(tile).distance_to(PLOT_CENTER)
+		if d < best_dist:
+			best_dist = d
+			best_tile = tile
+	var scarecrow := SCARECROW_SCENE.instantiate()
+	scarecrow.global_position = _cell_center(best_tile)
+	add_child(scarecrow)
+	return true
+
+## Spawns a Pumpkin Wall at the endpoint of the shortest enemy route so that
+## enemies stop and attack it there rather than continuing to the plot.
+func spawn_pumpkin_wall() -> bool:
+	const PUMPKIN_WALL_SCENE := preload("res://scenes/pumpkin_wall.tscn")
+	if enemy_routes.is_empty():
+		push_warning("Pumpkin Seeds boon: no enemy routes available.")
+		return false
+	var shortest: Array = enemy_routes[0]
+	for route in enemy_routes:
+		if route.size() < shortest.size():
+			shortest = route
+	if shortest.is_empty():
+		return false
+	var wall := PUMPKIN_WALL_SCENE.instantiate()
+	wall.global_position = shortest.back()
+	add_child(wall)
+	return true
+
+## Returns the tile-space bounding rect covering every tilled soil tile on the
+## map. Size is zero when no tilled soil exists.
+func _tilled_soil_bounds() -> Rect2i:
+	var min_tile := Vector2i(0x7FFFFFFF, 0x7FFFFFFF)
+	var max_tile := Vector2i(-0x7FFFFFFF, -0x7FFFFFFF)
+	var any := false
+	for tile in map.get_used_cells():
+		if not _is_tilled_soil(tile):
+			continue
+		any = true
+		min_tile.x = min(min_tile.x, tile.x)
+		min_tile.y = min(min_tile.y, tile.y)
+		max_tile.x = max(max_tile.x, tile.x)
+		max_tile.y = max(max_tile.y, tile.y)
+	if not any:
+		return Rect2i()
+	return Rect2i(min_tile, max_tile - min_tile + Vector2i.ONE)
+
 func _physics_process(_delta: float) -> void:
 	queue_redraw()
+
+	var player_speed := _current_player_speed()
+
+	# Sickle boon runs before movement so the harvest picks up plants at the
+	# frog's current tile, not the tile it's about to leave.
+	if game_state.has_sickle:
+		_run_sickle_harvest()
+
+	if game_state.has_nail:
+		_tick_nail_pulse(_delta)
 
 	# Keyboard/arrow input takes priority over click-to-move.
 	var input_vector := Input.get_vector("move_left", "move_right", "move_up", "move_down")
@@ -486,7 +672,7 @@ func _physics_process(_delta: float) -> void:
 		destination = player.global_position
 		if navigation_ready:
 			navigation_agent.target_position = player.global_position
-		player.velocity = input_vector * PLAYER_SPEED
+		player.velocity = input_vector * player_speed
 		player.move_and_slide()
 		if not sprite.is_playing() or sprite.animation != "stompWalk":
 			sprite.play("stompWalk")
@@ -496,7 +682,7 @@ func _physics_process(_delta: float) -> void:
 	if not navigation_ready:
 		var offset := destination - player.position
 		if offset.length() > 4.0:
-			player.velocity = offset.normalized() * PLAYER_SPEED
+			player.velocity = offset.normalized() * player_speed
 			player.move_and_slide()
 
 			# Play the stompWalk animation while moving
@@ -524,7 +710,76 @@ func _physics_process(_delta: float) -> void:
 		sprite.frame = IDLE_FRAME
 		return
 
-	player.velocity = offset.normalized() * PLAYER_SPEED
+	player.velocity = offset.normalized() * player_speed
 	player.move_and_slide()
 	if not sprite.is_playing() or sprite.animation != "stompWalk":
 		sprite.play("stompWalk")
+
+func _current_player_speed() -> float:
+	# Scaled by any active boon that modifies frog speed (e.g. Rubber Boots).
+	return PLAYER_SPEED * float(game_state.player_speed_multiplier)
+
+func _run_sickle_harvest() -> void:
+	# Duplicate the keys so we can mutate `planted_tiles` mid-iteration when a
+	# harvest succeeds. Silently skip tiles whose harvest fails (e.g. frog
+	# inventory full) so the sickle just resumes once the player deposits.
+	for tile in planted_tiles.keys():
+		if not _is_in_planting_range(tile):
+			continue
+		var plant: Node = planted_tiles.get(tile)
+		if not is_instance_valid(plant) or not plant.can_harvest():
+			continue
+		if not game_state.add_frog_item(game_state.FRUIT_ITEM_ID):
+			continue
+		game_state.add_chest_item(game_state.SEED_ITEM_ID, 1)
+		if game_state.bonus_seed_chance > 0.0 and randf() < game_state.bonus_seed_chance:
+			game_state.add_chest_item(game_state.SEED_ITEM_ID, 1)
+		planted_tiles.erase(tile)
+		plant.queue_free()
+
+func _tick_nail_pulse(delta: float) -> void:
+	_nail_cooldown -= delta
+	if _nail_cooldown > 0.0:
+		return
+	_nail_cooldown = NAIL_INTERVAL
+	var tile_size_px: float = float(Vector2(map.tile_set.tile_size).x) * float(map.scale.x)
+	var radius_px: float = tile_size_px * NAIL_RADIUS_TILES
+	var origin := player.global_position
+	var hit_any := false
+	for enemy in get_tree().get_nodes_in_group("enemies"):
+		if not is_instance_valid(enemy) or not enemy is Node2D:
+			continue
+		if origin.distance_to((enemy as Node2D).global_position) > radius_px:
+			continue
+		if enemy.has_method("take_damage"):
+			enemy.take_damage(NAIL_DAMAGE)
+			hit_any = true
+	if hit_any:
+		_play_nail_pulse_effect(origin, radius_px)
+
+func _play_nail_pulse_effect(origin: Vector2, radius_px: float) -> void:
+	# Cheap tell that the pulse fired: expanding red ring drawn behind the
+	# frog. No assets required.
+	var ring := Node2D.new()
+	ring.global_position = origin
+	ring.z_index = -1
+	add_child(ring)
+	var flash_color := Color(1.0, 0.35, 0.35, 0.75)
+	ring.set_meta("radius", 4.0)
+	ring.set_meta("color", flash_color)
+	ring.draw.connect(func() -> void:
+		var r: float = float(ring.get_meta("radius", 4.0))
+		var c: Color = ring.get_meta("color", flash_color)
+		ring.draw_arc(Vector2.ZERO, r, 0.0, TAU, 32, c, 3.0)
+	)
+	ring.queue_redraw()
+	var tween := create_tween()
+	tween.tween_method(func(value: float) -> void:
+		ring.set_meta("radius", value)
+		ring.queue_redraw(), 4.0, radius_px, 0.35)
+	tween.parallel().tween_method(func(alpha: float) -> void:
+		var c: Color = flash_color
+		c.a = alpha
+		ring.set_meta("color", c)
+		ring.queue_redraw(), 0.75, 0.0, 0.35)
+	tween.finished.connect(ring.queue_free)

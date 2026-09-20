@@ -1,32 +1,31 @@
-[gd_scene format=3 uid="uid://bpiwqq6mwx8yw"]
+[gd_scene format=3 uid="uid://cwsicklboons"]
 
-[ext_resource type="PackedScene" uid="uid://bfrbfa7x4r32e" path="res://scenes/boon_card.tscn" id="1_pbir8"]
-[ext_resource type="Texture2D" uid="uid://weliog5porjr" path="res://assets/boons1.png" id="2_q8brq"]
-[ext_resource type="Script" path="res://scripts/boons/hoe.gd" id="3_hoe_script"]
+[ext_resource type="PackedScene" uid="uid://bfrbfa7x4r32e" path="res://scenes/boon_card.tscn" id="1_boon_card"]
+[ext_resource type="Texture2D" uid="uid://weliog5porjr" path="res://assets/boons1.png" id="2_sickle_icon"]
+[ext_resource type="Script" path="res://scripts/boons/sickle.gd" id="3_sickle_script"]
 
-[node name="BoonCard" unique_id=662996127 instance=ExtResource("1_pbir8")]
-script = ExtResource("3_hoe_script")
-
+[node name="BoonCard" instance=ExtResource("1_boon_card")]
+script = ExtResource("3_sickle_script")
 
 [node name="Item Name" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="0" unique_id=877095802]
 theme_override_font_sizes/font_size = 18
-text = "Corn Seeds"
+text = "Sickle"
 vertical_alignment = 1
 
 [node name="Item Description" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="1" unique_id=736839144]
 offset_top = 6.7353287
 offset_bottom = 81.73533
-text = "Unlocks planting corn towers"
+text = "Auto-harvest ripe tomatoes in reach"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Item Bottom Text" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="2" unique_id=152119621]
-text = "It's got the juice"
+text = "Reap what you sow"
 horizontal_alignment = 1
 
 [node name="Item Image" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="3" unique_id=1198312682]
-position = Vector2(2.3841858e-06, -37.84615)
+position = Vector2(0.0, -41.07692)
 scale = Vector2(1.3343954, 1.3343954)
-texture = ExtResource("2_q8brq")
+texture = ExtResource("2_sickle_icon")
 region_enabled = true
-region_rect = Rect2(96, 0, 32, 32)
+region_rect = Rect2(0, 32, 32, 32)

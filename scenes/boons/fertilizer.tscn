@@ -2,9 +2,10 @@
 
 [ext_resource type="PackedScene" uid="uid://bfrbfa7x4r32e" path="res://scenes/boon_card.tscn" id="1_pgp7h"]
 [ext_resource type="Texture2D" uid="uid://weliog5porjr" path="res://assets/boons1.png" id="2_pgp7h"]
+[ext_resource type="Script" path="res://scripts/boons/fertilizer.gd" id="3_fertilizer_script"]
 
 [node name="BoonCard" unique_id=662996127 instance=ExtResource("1_pgp7h")]
-bonus_seeds = 2
+script = ExtResource("3_fertilizer_script")
 
 [node name="Item Name" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="0" unique_id=877095802]
 offset_left = -68.92308

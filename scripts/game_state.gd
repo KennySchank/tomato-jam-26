@@ -2,6 +2,7 @@ extends Node
 
 signal inventory_changed
 signal tomato_count_changed(count: int, goal: int)
+signal boon_activated(boon_id: String)
 
 const FROG_CAPACITY := 2
 const CHEST_CAPACITY := 24
@@ -17,6 +18,25 @@ var chest_inventory: Array[Dictionary] = []
 var altar_inventory: Array[Dictionary] = []
 var tomato_count: int = 0
 var total_tomatoes_deposited: int = 0
+
+## Boons the player has chosen this run. Keyed by the boon scene's resource
+## path (e.g. `res://scenes/boons/cowboy_hat.tscn`) so we can look them up
+## without having to hand-author IDs. Values are always `true` today, but
+## the dict form leaves room for per-boon state (charges, stacks) later.
+var active_boons: Dictionary = {}
+
+# Per-run modifiers driven by boons. Each boon subclass mutates the field it
+# owns; gameplay code reads these values instead of hard-coded constants so
+# multiple effects can compose without every boon knowing about every system.
+var wearing_cowboy_hat: bool = false
+var player_speed_multiplier: float = 1.0
+var plant_growth_multiplier: float = 1.0
+var tower_damage_multiplier: float = 1.0
+var bonus_seed_chance: float = 0.0
+var plant_bonus_hp: int = 0
+var has_sickle: bool = false
+var has_nail: bool = false
+var hoe_charges: int = 0
 
 var _last_altar_tomato_count: int = 0
 
@@ -37,9 +57,31 @@ func reset_run() -> void:
 	chest_inventory[0] = {"id": CHEST_ITEM_ID, "quantity": 1}
 	total_tomatoes_deposited = 0
 	_last_altar_tomato_count = 0
+	active_boons.clear()
+	wearing_cowboy_hat = false
+	player_speed_multiplier = 1.0
+	plant_growth_multiplier = 1.0
+	tower_damage_multiplier = 1.0
+	bonus_seed_chance = 0.0
+	plant_bonus_hp = 0
+	has_sickle = false
+	has_nail = false
+	hoe_charges = 0
 	_recount_tomatoes()
 	inventory_changed.emit()
 	tomato_count_changed.emit(tomato_count, tomato_goal)
+
+## Records that the player has picked a boon. `boon_id` is the boon scene's
+## resource path. Emits `boon_activated` so systems that care about permanent
+## modifiers (player speed, growth rate, etc.) can refresh themselves.
+func activate_boon(boon_id: String) -> void:
+	if boon_id.is_empty():
+		return
+	active_boons[boon_id] = true
+	boon_activated.emit(boon_id)
+
+func has_boon(boon_id: String) -> bool:
+	return active_boons.has(boon_id)
 
 ## Clear the altar between rounds without disturbing the cumulative tally.
 func reset_altar_for_new_round() -> void:

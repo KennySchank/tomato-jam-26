@@ -7,6 +7,10 @@ const PROJECTILE_SCENE := preload("res://scenes/projectile.tscn")
 @export var lifetime := 60.0
 @export var deterioration_duration := 20.0
 @export var shake_start_time := 45.0
+## Damage each projectile applies on hit. Set to a negative value to fall back
+## to the projectile scene's authored default. Wheelbarrow-style boons still
+## multiply this at spawn time inside `projectile.gd`.
+@export var projectile_damage := -1.0
 
 var fire_cooldown := 0.0
 var age := 0.0
@@ -55,6 +59,8 @@ func _process(delta: float) -> void:
 	sprite.flip_h = target.global_position.x < global_position.x
 	var projectile := PROJECTILE_SCENE.instantiate()
 	projectile.global_position = global_position
+	if projectile_damage >= 0.0:
+		projectile.damage = projectile_damage
 	projectile.set_target(target)
 	get_parent().add_child(projectile)
 	_play_shooting()

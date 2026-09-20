@@ -1,0 +1,62 @@
+[gd_scene format=3 uid="uid://ccorntowerplc"]
+
+[ext_resource type="Texture2D" uid="uid://dluoiye2tkt1i" path="res://icon.svg" id="1_icon"]
+[ext_resource type="Script" uid="uid://dcdr7rnt8lgtv" path="res://scripts/tower.gd" id="2_tower"]
+[ext_resource type="Texture2D" uid="uid://dcygkxkmwoq0q" path="res://assets/Corn-Tower.png" id="3_corn"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_corn_idle"]
+atlas = ExtResource("3_corn")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_corn_shoot"]
+atlas = ExtResource("3_corn")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_corn_death"]
+atlas = ExtResource("3_corn")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_corn"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_corn_idle")
+}],
+"loop": true,
+"name": &"Idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_corn_shoot")
+}],
+"loop": true,
+"name": &"Shooting",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_corn_death")
+}],
+"loop": false,
+"name": &"Death",
+"speed": 5.0
+}]
+
+[node name="Tower" type="Node2D"]
+script = ExtResource("2_tower")
+range = 320.0
+projectile_damage = 5.0
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+visible = false
+scale = Vector2(0.22, 0.22)
+texture = ExtResource("1_icon")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(6.36, 0)
+scale = Vector2(1.68, 1.68)
+sprite_frames = SubResource("SpriteFrames_corn")
+animation = &"Idle"
+
+[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]

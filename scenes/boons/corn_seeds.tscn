@@ -2,9 +2,11 @@
 
 [ext_resource type="PackedScene" uid="uid://bfrbfa7x4r32e" path="res://scenes/boon_card.tscn" id="1_hng4c"]
 [ext_resource type="Texture2D" uid="uid://weliog5porjr" path="res://assets/boons1.png" id="2_eh7ui"]
+[ext_resource type="Script" path="res://scripts/boons/corn_seeds.gd" id="3_corn_seeds_script"]
 
 [node name="BoonCard" unique_id=662996127 instance=ExtResource("1_hng4c")]
-bonus_seeds = 2
+script = ExtResource("3_corn_seeds_script")
+
 
 [node name="Item Name" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="0" unique_id=877095802]
 theme_override_font_sizes/font_size = 18

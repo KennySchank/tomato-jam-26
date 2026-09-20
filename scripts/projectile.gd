@@ -17,6 +17,12 @@ func set_source(new_source: Node) -> void:
 
 func _ready() -> void:
 	body_entered.connect(_on_body_entered)
+	# Wheelbarrow boon scales every projectile's damage once at spawn so live
+	# projectiles keep the value they were fired with even if the multiplier
+	# changes mid-flight.
+	var game_state := get_node_or_null("/root/GameState")
+	if game_state != null:
+		damage *= float(game_state.tower_damage_multiplier)
 
 func set_target(new_target: Node2D) -> void:
 	target = new_target
