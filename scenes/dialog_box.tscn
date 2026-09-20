@@ -1,0 +1,67 @@
+[gd_scene format=3 uid="uid://cpu8k7o7yyqu8"]
+
+[ext_resource type="Texture2D" uid="uid://d3ij5ju4ikgw0" path="res://assets/Sprite-Crow-Profile-_Talking.png" id="1_xvd2c"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_5tybl"]
+load_path = "res://.godot/imported/DialogCards-Sheet.png-c2fbbe351a44114e61d88014549b2dd4.ctex"
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_clbpt"]
+atlas = ExtResource("1_xvd2c")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6njrm"]
+atlas = ExtResource("1_xvd2c")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gey14"]
+atlas = ExtResource("1_xvd2c")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tcj5s"]
+atlas = ExtResource("1_xvd2c")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_s1bhj"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_clbpt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6njrm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gey14")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tcj5s")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="DialogBox" type="Sprite2D" unique_id=144182113]
+texture = SubResource("CompressedTexture2D_5tybl")
+region_enabled = true
+region_rect = Rect2(296, 8, 680, 168)
+
+[node name="Prompt" type="Label" parent="." unique_id=1898090540]
+custom_minimum_size = Vector2(12, 0)
+offset_left = -146.0
+offset_top = -49.0
+offset_right = 286.0
+offset_bottom = 49.0
+theme_override_colors/font_color = Color(0.4, 0.22352941, 0.19215687, 1)
+theme_override_font_sizes/font_size = 23
+text = "You have pleased the crow god with your offering, choose a boon"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="CrowFace" type="AnimatedSprite2D" parent="." unique_id=950836623]
+position = Vector2(-250.00003, 1.9073486e-06)
+scale = Vector2(3.59375, 3.59375)
+sprite_frames = SubResource("SpriteFrames_s1bhj")
+autoplay = "default"

@@ -1,0 +1,55 @@
+[gd_scene format=3 uid="uid://bfrbfa7x4r32e"]
+
+[ext_resource type="Texture2D" uid="uid://chjxp5hkre5l3" path="res://assets/Card-Template.png" id="1_qanh6"]
+[ext_resource type="Texture2D" uid="uid://dluoiye2tkt1i" path="res://icon.svg" id="2_j1oqs"]
+[ext_resource type="Script" uid="uid://cfrmiqim0vqp0" path="res://scripts/boon.gd" id="3_boon_script"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_s1bhj"]
+size = Vector2(141.5625, 217.5)
+
+[node name="BoonCard" type="StaticBody2D" unique_id=1962869614]
+script = ExtResource("3_boon_script")
+
+[node name="Card Border" type="CollisionShape2D" parent="." unique_id=1048356070]
+position = Vector2(79, 114)
+shape = SubResource("RectangleShape2D_s1bhj")
+
+[node name="Card Blank" type="Sprite2D" parent="." unique_id=729730308]
+position = Vector2(80, 113.14286)
+scale = Vector2(0.9285714, 0.9285715)
+texture = ExtResource("1_qanh6")
+region_enabled = true
+region_rect = Rect2(88, 48, 168, 240)
+
+[node name="Item Name" type="Label" parent="Card Blank" unique_id=877095802]
+offset_left = -68.72229
+offset_top = -111.780975
+offset_right = 66.769226
+offset_bottom = -81.780975
+theme_override_font_sizes/font_size = 21
+text = "Item Name"
+horizontal_alignment = 1
+
+[node name="Item Description" type="Label" parent="Card Blank" unique_id=736839144]
+custom_minimum_size = Vector2(4, 0)
+offset_left = -69.76271
+offset_top = 7.8122635
+offset_right = 66.91525
+offset_bottom = 76.15124
+theme_override_font_sizes/font_size = 16
+text = "Description"
+autowrap_mode = 3
+
+[node name="Item Bottom Text" type="Label" parent="Card Blank" unique_id=152119621]
+offset_left = -69.76271
+offset_top = 88.2712
+offset_right = 68.33899
+offset_bottom = 111.2712
+theme_override_font_sizes/font_size = 12
+text = "Bottom Text"
+vertical_alignment = 1
+
+[node name="Item Image" type="Sprite2D" parent="Card Blank" unique_id=1198312682]
+position = Vector2(0.016952515, -38.423737)
+scale = Vector2(0.33342168, 0.33342168)
+texture = ExtResource("2_j1oqs")
