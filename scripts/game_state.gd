@@ -40,9 +40,9 @@ const CHEST_ITEM_ID := "godot_logo"
 ## array empty to disable. Applied by `main.gd::_ready` after autoloads are
 ## ready so `get_tree()`-dependent boons work identically to a live pick.
 const DEBUG_STARTING_BOONS: Array[String] = [
-	"res://scenes/boons/wheelbarrow.tscn",
-	"res://scenes/boons/gloves.tscn",
-	"res://scenes/boons/watering_can.tscn",
+	"res://scenes/boons/sickle.tscn",
+	"res://scenes/boons/nail.tscn",
+	"res://scenes/boons/hoe.tscn",
 ]
 
 @export var tomato_goal: int = 10
