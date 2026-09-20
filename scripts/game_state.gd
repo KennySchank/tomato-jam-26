@@ -78,6 +78,7 @@ var bonus_seed_chance: float = 0.0
 var plant_bonus_hp: int = 0
 var has_sickle: bool = false
 var has_nail: bool = false
+var has_propeller_hat: bool = false
 var hoe_charges: int = 0
 
 var _last_altar_tomato_count: int = 0
@@ -109,6 +110,7 @@ func reset_run() -> void:
 	plant_bonus_hp = 0
 	has_sickle = false
 	has_nail = false
+	has_propeller_hat = false
 	hoe_charges = 0
 	_recount_tomatoes()
 	inventory_changed.emit()

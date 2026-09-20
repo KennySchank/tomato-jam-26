@@ -61,6 +61,16 @@ func set_route(new_route: Array[Vector2]) -> void:
 			if not initial_dir.is_zero_approx():
 				sprite.rotation = initial_dir.angle() - deg_to_rad(sprite_facing_deg)
 
+func nudge_backward(distance: float) -> void:
+	if route.size() < 2 or distance <= 0.0:
+		return
+	var segment_index := clampi(route_index, 1, route.size() - 1)
+	var direction := (route[segment_index] - route[segment_index - 1]).normalized()
+	if direction.is_zero_approx():
+		return
+	global_position -= direction * distance
+	route_index = segment_index
+
 func _physics_process(_delta: float) -> void:
 	if route_index >= route.size():
 		velocity = Vector2.ZERO
