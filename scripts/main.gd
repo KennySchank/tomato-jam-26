@@ -21,6 +21,24 @@ const ENEMY_SCENES: Array[PackedScene] = [
 ]
 const PROJECTILE_SCENE := preload("res://scenes/projectile.tscn")
 const GRAVESTONE_SCENE := preload("res://scenes/gravestone.tscn")
+const FLYING_CROW_SCENE := preload("res://scenes/flying_crow.tscn")
+
+# Death-animation tuning knobs. The crow enters from the top-left, swoops
+# down to the player, then carries them out to the upper-right before the
+# game-over screen appears.
+const DEATH_CROW_SCALE := Vector2(2.5, 2.5)
+## Spawn offset relative to the top-left corner of the viewport. Negative
+## values keep the crow off-screen at the start of the swoop.
+const DEATH_CROW_SPAWN_OFFSET := Vector2(-80.0, -80.0)
+## Exit offset added to the top-right corner. Positive x pushes the crow past
+## the right edge; negative y lifts it above the top edge.
+const DEATH_CROW_EXIT_OFFSET := Vector2(120.0, -160.0)
+## Local offset applied to the player once it's been reparented under the
+## crow, positioning it dangling from the crow's feet.
+const DEATH_CROW_CARRY_OFFSET := Vector2(0.0, 18.0)
+const DEATH_CROW_SWOOP_DURATION := 1.6
+const DEATH_CROW_CARRY_DURATION := 2.0
+const DEATH_CROW_Z_INDEX := 150
 const ENEMY_ATTACK_RADIUS_TILES := 4.5
 const TILLED_SOIL_HITS := 3
 
@@ -91,6 +109,10 @@ var _pumpkin_wall_preview_texture: Texture2D
 @onready var game_over: StaticBody2D = $GameOver
 
 var _round_end_shown: bool = false
+## True while the death cutscene is playing (crow swooping in, grabbing the
+## frog, flying it off-screen). Blocks player movement and input so the
+## avatar doesn't wander around while the crow is animating.
+var _death_animation_active: bool = false
 # Countdown until the next Nail-boon pulse. Only ticks while the boon is
 # owned; resets to NAIL_INTERVAL after each pulse fires.
 var _nail_cooldown: float = NAIL_INTERVAL
@@ -283,7 +305,75 @@ func _on_game_lost() -> void:
 	var report = null
 	if run_stats != null and run_stats.has_method("record_death"):
 		report = run_stats.record_death()
+	await _play_death_animation()
 	game_over.show_game_over(report)
+
+## Cinematic before the game-over overlay: a crow enters from the upper-left,
+## swoops down to the player, latches onto them, and carries them off the
+## top-right of the screen. Blocks player input/movement for the duration via
+## `_death_animation_active` so the frog doesn't wander during the shot.
+func _play_death_animation() -> void:
+	_death_animation_active = true
+
+	# Stop the frog dead in its tracks so it doesn't continue sliding through
+	# whatever navigation target it had when the loss triggered.
+	player.velocity = Vector2.ZERO
+	destination = player.global_position
+	if navigation_ready:
+		navigation_agent.target_position = player.global_position
+	sprite.stop()
+	sprite.frame = IDLE_FRAME
+
+	var viewport_size := get_viewport_rect().size
+	var spawn_position := Vector2(DEATH_CROW_SPAWN_OFFSET.x, DEATH_CROW_SPAWN_OFFSET.y)
+	var exit_position := Vector2(viewport_size.x + DEATH_CROW_EXIT_OFFSET.x, DEATH_CROW_EXIT_OFFSET.y)
+
+	var crow: Node2D = FLYING_CROW_SCENE.instantiate()
+	crow.scale = DEATH_CROW_SCALE
+	crow.z_index = DEATH_CROW_Z_INDEX
+	# Disable the crow's collider so it doesn't punt the frog around or block
+	# any lingering enemy movement while the shot plays out.
+	var crow_collider := crow.get_node_or_null("CollisionShape2D")
+	if crow_collider is CollisionShape2D:
+		(crow_collider as CollisionShape2D).disabled = true
+	add_child(crow)
+	crow.global_position = spawn_position
+
+	# Swoop in from top-left down to the player. QUAD/OUT gives a nice
+	# "arrival" deceleration so the grab lands smoothly.
+	var target_position := player.global_position
+	var swoop := create_tween()
+	swoop.set_trans(Tween.TRANS_QUAD)
+	swoop.set_ease(Tween.EASE_OUT)
+	swoop.tween_property(crow, "global_position", target_position, DEATH_CROW_SWOOP_DURATION)
+	await swoop.finished
+
+	# Latch the frog onto the crow's feet by reparenting so a single tween on
+	# the crow drags the player along without needing per-frame syncing.
+	var world_position := player.global_position
+	player.reparent(crow)
+	player.global_position = world_position
+	player.position = DEATH_CROW_CARRY_OFFSET
+	player.velocity = Vector2.ZERO
+
+	# Fly out to the upper-right with a gentle acceleration so it reads as
+	# the crow beating its wings to gain altitude.
+	var carry := create_tween()
+	carry.set_trans(Tween.TRANS_QUAD)
+	carry.set_ease(Tween.EASE_IN)
+	carry.tween_property(crow, "global_position", exit_position, DEATH_CROW_CARRY_DURATION)
+	await carry.finished
+
+	# Hide both actors so they're gone before the game-over overlay fades in.
+	# The scene is about to reload anyway, but we don't want a stray crow
+	# sprite lingering behind the overlay if the game-over screen has any
+	# transparency.
+	if is_instance_valid(crow):
+		crow.visible = false
+	if is_instance_valid(player):
+		player.visible = false
+
+	_death_animation_active = false
 
 func _count_brown_soil_tiles() -> int:
 	var count := 0
@@ -307,6 +397,8 @@ func _navigation_setup() -> void:
 	navigation_agent.target_position = destination
 
 func _unhandled_input(event: InputEvent) -> void:
+	if _death_animation_active:
+		return
 	if event is InputEventMouseMotion:
 		hovered_tile = map.local_to_map(map.to_local(event.position))
 		queue_redraw()
@@ -910,6 +1002,9 @@ func _tilled_soil_bounds() -> Rect2i:
 
 func _physics_process(_delta: float) -> void:
 	queue_redraw()
+
+	if _death_animation_active:
+		return
 
 	var player_speed := _current_player_speed()
 

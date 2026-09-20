@@ -1,0 +1,58 @@
+[gd_scene format=3 uid="uid://bmtf71kqu36g"]
+
+[ext_resource type="Texture2D" uid="uid://ddl4hu5e8x65i" path="res://assets/Sprite-Bob-Crow.png" id="1_3i0sq"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gq4b8"]
+size = Vector2(20, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_op1dt"]
+atlas = ExtResource("1_3i0sq")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iay8x"]
+atlas = ExtResource("1_3i0sq")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sqqw4"]
+atlas = ExtResource("1_3i0sq")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vdst2"]
+atlas = ExtResource("1_3i0sq")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uqx60"]
+atlas = ExtResource("1_3i0sq")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_s1bhj"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_op1dt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iay8x")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sqqw4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vdst2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uqx60")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="FlyingCrow" type="StaticBody2D" unique_id=1972648751]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=344554369]
+shape = SubResource("RectangleShape2D_gq4b8")
+
+[node name="Flying Crow Boy" type="AnimatedSprite2D" parent="." unique_id=1813422569]
+sprite_frames = SubResource("SpriteFrames_s1bhj")
+autoplay = "default"
