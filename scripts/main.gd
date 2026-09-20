@@ -157,9 +157,12 @@ func _apply_debug_starting_boons() -> void:
 		if boon is CanvasItem:
 			(boon as CanvasItem).visible = false
 		add_child(boon)
-		game_state.activate_boon(boon_path)
+		# Apply the effect FIRST so listeners of `boon_activated` (e.g. the
+		# player's cosmetic sprites) see the fully-updated GameState flags
+		# when the signal fires.
 		if boon.has_method("apply_effect"):
 			boon.call("apply_effect")
+		game_state.activate_boon(boon_path)
 		boon.queue_free()
 
 func _on_wave_spawn_requested(enemy_scene: PackedScene) -> void:

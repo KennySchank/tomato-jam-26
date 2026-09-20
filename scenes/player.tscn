@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://bk84ccgj5trf0" path="res://scripts/player.gd" id="1_player"]
 [ext_resource type="Texture2D" uid="uid://mxwrx1ol7t2c" path="res://assets/Sprite-Frog2.0.png" id="2_g2els"]
 [ext_resource type="Texture2D" uid="uid://bmkp8hmyuqi2t" path="res://assets/Sprite-Cowboy-Hat.png" id="3_cowboy_hat"]
+[ext_resource type="Texture2D" uid="uid://weliog5porjr" path="res://assets/boons1.png" id="2_boons_sheet"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_qhqgy"]
 atlas = ExtResource("2_g2els")
@@ -79,6 +80,14 @@ visible = false
 position = Vector2(0, -36)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("3_cowboy_hat")
+
+[node name="PropellerHatSprite" type="Sprite2D" parent="." unique_id=1121884581]
+visible = false
+position = Vector2(0, -36)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_boons_sheet")
+region_enabled = true
+region_rect = Rect2(64, 32, 32, 32)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=970860440]
 position = Vector2(-0.99999994, 1.9999998)

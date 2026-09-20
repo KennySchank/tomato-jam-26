@@ -214,8 +214,13 @@ func _on_boon_chosen(boon: Boon) -> void:
 		# `GameState.has_boon()` on themselves if they ever need to.
 		var game_state := get_node_or_null("/root/GameState")
 		if game_state != null and game_state.has_method("activate_boon"):
+			# Apply the effect FIRST so listeners of `boon_activated` see the
+			# updated flags. Reversing this order breaks cosmetic overlays like
+			# the cowboy / propeller hats.
+			if boon.has_method("apply_effect"):
+				boon.apply_effect()
 			game_state.activate_boon(boon.scene_file_path)
-		if boon.has_method("apply_effect"):
+		elif boon.has_method("apply_effect"):
 			boon.apply_effect()
 	var run_stats := get_node_or_null("/root/RunStats")
 	if run_stats != null and run_stats.has_method("record_boon_collected"):
