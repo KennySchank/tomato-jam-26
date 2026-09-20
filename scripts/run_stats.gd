@@ -32,6 +32,11 @@ var current_run_tomatoes: int = 0
 var current_run_boons: int = 0
 var current_run_rounds: int = 0
 
+## World-space positions of gravestones marking previous deaths. `main.gd`
+## spawns one Gravestone scene at each entry when the field is set up. Grows
+## by one each run so restarting after a death visibly accumulates markers.
+var gravestone_positions: Array[Vector2] = []
+
 ## Snapshot returned by `record_death()` so the game-over screen doesn't have
 ## to reach into the tracker's mutable state to display the run summary.
 class DeathReport:

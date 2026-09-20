@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://eexmqtcfmkjq"]
+
+[ext_resource type="Texture2D" uid="uid://d017yfbx77yoo" path="res://assets/BaseSpriteSheet.png" id="1_cf7aq"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_s1bhj"]
+size = Vector2(15, 16)
+
+[node name="Gravestone" type="StaticBody2D" unique_id=1116065546]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1649973402]
+position = Vector2(0.5, 0)
+shape = SubResource("RectangleShape2D_s1bhj")
+disabled = true
+
+[node name="rip" type="Sprite2D" parent="." unique_id=2092239639]
+texture = ExtResource("1_cf7aq")
+region_enabled = true
+region_rect = Rect2(80, 32, 16, 16)

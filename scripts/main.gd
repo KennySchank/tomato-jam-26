@@ -19,6 +19,7 @@ const ENEMY_SCENES: Array[PackedScene] = [
 	preload("res://scenes/enemies/enemy_raccoon.tscn"),
 ]
 const PROJECTILE_SCENE := preload("res://scenes/projectile.tscn")
+const GRAVESTONE_SCENE := preload("res://scenes/gravestone.tscn")
 const ENEMY_ATTACK_RADIUS_TILES := 4.5
 const TILLED_SOIL_HITS := 3
 
@@ -30,6 +31,23 @@ const NAIL_DAMAGE := 5.0
 const PROPELLER_INTERVAL := 8.0
 const PROPELLER_RADIUS_TILES := 4.0
 const PROPELLER_PUSH_DISTANCE := 48.0
+
+# Death gravestones. One Gravestone scene is spawned per entry in
+# `RunStats.gravestone_positions` when the field is built. New positions are
+# picked from a grid biased toward the top of the screen so early deaths
+# cluster there and later ones spread downward as the top saturates.
+const GRAVESTONE_GRID_RECT := Rect2(90.0, 32.0, 1000.0, 240.0)
+const GRAVESTONE_GRID_COLS := 12
+const GRAVESTONE_GRID_ROWS := 6
+## Size (in cells) of the "top pool" we shuffle when picking a new slot. Big
+## enough that new graves land in random columns, small enough that they
+## still stay in the top-most partially-empty row band.
+const GRAVESTONE_TOP_POOL := 6
+## Per-gravestone position jitter as a fraction of one grid cell. Keeps a
+## fully-filled row from looking mechanically uniform.
+const GRAVESTONE_JITTER := 0.25
+## Draw scale for the 16x16 gravestone sprite.
+const GRAVESTONE_SCALE := Vector2(2.5, 2.5)
 
 const CARDINAL_DIRECTIONS: Array[Vector2i] = [Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT, Vector2i.UP]
 
@@ -137,6 +155,7 @@ func _ready() -> void:
 	queue_redraw()
 	_navigation_setup.call_deferred()
 	_apply_debug_starting_boons.call_deferred()
+	_spawn_death_gravestones()
 
 ## Applies every boon listed in `GameState.DEBUG_STARTING_BOONS` at the start
 ## of the run. Deferred so it runs after `_ready` completes and the scene tree
@@ -164,6 +183,65 @@ func _apply_debug_starting_boons() -> void:
 			boon.call("apply_effect")
 		game_state.activate_boon(boon_path)
 		boon.queue_free()
+
+## Spawns one Gravestone scene per entry in `RunStats.gravestone_positions`.
+## If the death counter is ahead of the stored list (i.e. the player just
+## died and the game reloaded), new positions are picked and appended so the
+## graveyard grows by one visible marker per death.
+func _spawn_death_gravestones() -> void:
+	if run_stats == null:
+		return
+	var positions: Array[Vector2] = run_stats.gravestone_positions
+	var max_slots: int = GRAVESTONE_GRID_COLS * GRAVESTONE_GRID_ROWS
+	var target: int = mini(int(run_stats.deaths), max_slots)
+	while positions.size() < target:
+		var next_pos: Vector2 = _pick_next_gravestone_position(positions)
+		if next_pos == Vector2.INF:
+			break
+		positions.append(next_pos)
+	run_stats.gravestone_positions = positions
+	for pos in positions:
+		var gravestone: Node2D = GRAVESTONE_SCENE.instantiate()
+		add_child(gravestone)
+		gravestone.global_position = pos
+		gravestone.scale = GRAVESTONE_SCALE
+
+## Picks a world position for a new gravestone. Uses a fixed grid at the top
+## of the screen; unoccupied cells are scanned row-by-row and the first
+## `GRAVESTONE_TOP_POOL` are shuffled to pick from. That keeps early graves
+## in the top row(s) but adds column variance, and lets new graves drift
+## downward once the top rows fill up. Returns `Vector2.INF` if the grid is
+## saturated.
+func _pick_next_gravestone_position(existing: Array[Vector2]) -> Vector2:
+	var cell_w: float = GRAVESTONE_GRID_RECT.size.x / float(GRAVESTONE_GRID_COLS)
+	var cell_h: float = GRAVESTONE_GRID_RECT.size.y / float(GRAVESTONE_GRID_ROWS)
+	var occupied: Dictionary = {}
+	for pos in existing:
+		var col: int = int(clamp(floor((pos.x - GRAVESTONE_GRID_RECT.position.x) / cell_w), 0, GRAVESTONE_GRID_COLS - 1))
+		var row: int = int(clamp(floor((pos.y - GRAVESTONE_GRID_RECT.position.y) / cell_h), 0, GRAVESTONE_GRID_ROWS - 1))
+		occupied[row * GRAVESTONE_GRID_COLS + col] = true
+	var candidates: Array[int] = []
+	for row in GRAVESTONE_GRID_ROWS:
+		for col in GRAVESTONE_GRID_COLS:
+			var idx: int = row * GRAVESTONE_GRID_COLS + col
+			if not occupied.has(idx):
+				candidates.append(idx)
+			if candidates.size() >= GRAVESTONE_TOP_POOL:
+				break
+		if candidates.size() >= GRAVESTONE_TOP_POOL:
+			break
+	if candidates.is_empty():
+		return Vector2.INF
+	var pick: int = candidates[randi() % candidates.size()]
+	var pick_col: int = pick % GRAVESTONE_GRID_COLS
+	var pick_row: int = pick / GRAVESTONE_GRID_COLS
+	var center_x: float = GRAVESTONE_GRID_RECT.position.x + (float(pick_col) + 0.5) * cell_w
+	var center_y: float = GRAVESTONE_GRID_RECT.position.y + (float(pick_row) + 0.5) * cell_h
+	var jitter: Vector2 = Vector2(
+		randf_range(-cell_w * GRAVESTONE_JITTER, cell_w * GRAVESTONE_JITTER),
+		randf_range(-cell_h * GRAVESTONE_JITTER, cell_h * GRAVESTONE_JITTER),
+	)
+	return Vector2(center_x, center_y) + jitter
 
 func _on_wave_spawn_requested(enemy_scene: PackedScene) -> void:
 	_spawn_enemy(enemy_scene)
