@@ -16,7 +16,7 @@ signal seed_types_changed
 ## Emitted when the player switches which reserve they'll plant from next.
 signal active_seed_changed(seed_id: String)
 
-const FROG_CAPACITY := 2
+const FROG_CAPACITY := 6
 const CHEST_CAPACITY := 24
 const ALTAR_CAPACITY := 12
 const MAX_STACK_SIZE := 50
