@@ -55,7 +55,7 @@ animations = [{
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_s1bhj"]
-size = Vector2(153, 31.24999)
+size = Vector2(153, 78)
 
 [node name="Altar" type="StaticBody2D" unique_id=1373918369 groups=["interactable"]]
 scale = Vector2(1.5999994, 1.5999994)
@@ -69,7 +69,7 @@ sprite_frames = SubResource("SpriteFrames_assu6")
 autoplay = "default"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1558174773]
-position = Vector2(77, 39.374992)
+position = Vector2(77, 26)
 scale = Vector2(0.99999976, 0.99999976)
 shape = SubResource("RectangleShape2D_s1bhj")
 

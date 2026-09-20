@@ -13,7 +13,9 @@ config_version=5
 config/name="A Tomato for Your Gods"
 run/main_scene="res://scenes/title_screen.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
-config/icon="res://icon.svg"
+boot_splash/bg_color=Color(0.0784314, 0.0470588, 0.109804, 1)
+boot_splash/image="res://assets/Start-Screen.png"
+config/icon="res://assets/Sprite-Mushroom-House.png"
 
 [autoload]
 
@@ -24,6 +26,8 @@ Music="*uid://ca6yvv5a5v6c4"
 
 [display]
 
+window/size/window_width_override=1152
+window/size/window_height_override=648
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 

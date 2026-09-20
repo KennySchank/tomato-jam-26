@@ -19,7 +19,8 @@ const ENEMY_SCENES: Array[PackedScene] = [
 	preload("res://scenes/enemies/enemy_raccoon.tscn"),
 ]
 const PROJECTILE_SCENE := preload("res://scenes/projectile.tscn")
-const ENEMY_ATTACK_RADIUS_TILES := 4.0
+const ENEMY_ATTACK_RADIUS_TILES := 4.5
+const TILLED_SOIL_HITS := 3
 
 # Nail boon knobs. Every NAIL_INTERVAL seconds any enemy within
 # NAIL_RADIUS_TILES of the frog takes NAIL_DAMAGE HP.
@@ -36,6 +37,7 @@ var tower_tiles: Dictionary = {}
 ## Tracks Pumpkin Walls placed on enemy path tiles so we can block re-placing
 ## a wall on top of an existing one. Cleaned up when the wall queue_frees.
 var wall_tiles: Dictionary = {}
+var soil_damage: Dictionary = {}
 var hovered_tile := Vector2i(999999, 999999)
 var enemy_routes: Array[Array] = []
 var brown_soil_count: int = 0
@@ -437,6 +439,7 @@ func _damage_land(tile: Vector2i) -> void:
 			game_state.deactivate_boon("res://scenes/boons/hoe.tscn")
 		_play_land_repair(tile)
 		return
+	soil_damage[tile] = int(soil_damage.get(tile, 0)) + 1
 	_play_land_damage(tile)
 
 func _play_land_repair(tile: Vector2i) -> void:
@@ -480,7 +483,14 @@ func _play_land_damage(tile: Vector2i) -> void:
 	damage_tween.tween_property(damage_overlay, "position", original_position, 0.025)
 	damage_tween.tween_property(damage_overlay, "color", Color(1.0, 0.15, 0.15, 0.0), 0.08)
 	damage_tween.finished.connect(func() -> void:
+		if not _is_tilled_soil(tile):
+			damage_overlay.queue_free()
+			return
+		if int(soil_damage.get(tile, 0)) < TILLED_SOIL_HITS:
+			damage_overlay.queue_free()
+			return
 		map.set_cell(tile, GRASS_SOURCE_ID, GRASS_ATLAS_COORDS)
+		soil_damage.erase(tile)
 		damage_overlay.queue_free()
 		brown_soil_count = maxi(0, brown_soil_count - 1)
 		_check_loss_condition()
