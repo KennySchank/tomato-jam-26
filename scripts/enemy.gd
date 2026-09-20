@@ -17,6 +17,12 @@ var route_index := 0
 var attack_cooldown := 0.0
 var damage_tween: Tween
 
+## Set by `main.gd` each physics frame when a pumpkin wall is directly ahead
+## on the enemy's route. While `true`, the enemy holds position and drives its
+## attack loop, exactly like reaching the route endpoint. Cleared when the
+## wall dies or is no longer in the path.
+var blocked_by_wall: bool = false
+
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var sprite_position := sprite.position
 @onready var sprite_modulate := sprite.modulate
@@ -72,6 +78,11 @@ func nudge_backward(distance: float) -> void:
 	route_index = segment_index
 
 func _physics_process(_delta: float) -> void:
+	if blocked_by_wall:
+		velocity = Vector2.ZERO
+		_process_endpoint_attack(_delta)
+		return
+
 	if route_index >= route.size():
 		velocity = Vector2.ZERO
 		_process_endpoint_attack(_delta)

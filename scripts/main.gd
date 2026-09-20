@@ -46,6 +46,13 @@ var enemy_routes: Array[Array] = []
 var brown_soil_count: int = 0
 var plant_preview_scale := Vector2.ONE
 
+## Idle silhouettes cached at startup from the tower scenes. The placement
+## preview swaps between these depending on which seed the player has active,
+## so hovering with corn seeds shows a corn tower instead of the tomato tower.
+var _tomato_tower_preview_texture: Texture2D
+var _corn_tower_preview_texture: Texture2D
+var _pumpkin_wall_preview_texture: Texture2D
+
 @onready var player: CharacterBody2D = $Player
 @onready var sprite: AnimatedSprite2D = $Player/AnimatedSprite2D
 @onready var navigation_agent: NavigationAgent2D = $Player/NavigationAgent2D
@@ -87,8 +94,31 @@ func _ready() -> void:
 	var idle_animation := &"Idle"
 	if tower_sprite.sprite_frames.has_animation(idle_animation):
 		var tower_final_frame := tower_sprite.sprite_frames.get_frame_count(idle_animation) - 1
-		placement_preview.texture = tower_sprite.sprite_frames.get_frame_texture(idle_animation, tower_final_frame)
+		_tomato_tower_preview_texture = tower_sprite.sprite_frames.get_frame_texture(idle_animation, tower_final_frame)
+		placement_preview.texture = _tomato_tower_preview_texture
 	tower_scene_instance.free()
+
+	var corn_scene_instance := CORN_TOWER_SCENE.instantiate()
+	var corn_sprite: AnimatedSprite2D = corn_scene_instance.get_node("AnimatedSprite2D")
+	if corn_sprite.sprite_frames.has_animation(idle_animation):
+		var corn_final_frame := corn_sprite.sprite_frames.get_frame_count(idle_animation) - 1
+		_corn_tower_preview_texture = corn_sprite.sprite_frames.get_frame_texture(idle_animation, corn_final_frame)
+	corn_scene_instance.free()
+
+	# Pull the pumpkin wall silhouette straight from its scene so the placement
+	# preview and the spawned wall always share the same art. Wrap it in an
+	# AtlasTexture so the region baked into the wall's Sprite2D is preserved
+	# when the texture is assigned to `placement_preview`.
+	var pumpkin_scene_instance := preload("res://scenes/pumpkin_wall.tscn").instantiate()
+	var pumpkin_body_sprite: Sprite2D = pumpkin_scene_instance.get_node("Body/Sprite")
+	if pumpkin_body_sprite.region_enabled and pumpkin_body_sprite.texture != null:
+		var pumpkin_atlas := AtlasTexture.new()
+		pumpkin_atlas.atlas = pumpkin_body_sprite.texture
+		pumpkin_atlas.region = pumpkin_body_sprite.region_rect
+		_pumpkin_wall_preview_texture = pumpkin_atlas
+	else:
+		_pumpkin_wall_preview_texture = pumpkin_body_sprite.texture
+	pumpkin_scene_instance.free()
 
 	var start_cell := map.local_to_map(map.to_local(PLOT_CENTER))
 	destination = _cell_center(start_cell)
@@ -344,12 +374,12 @@ func _spawn_enemy(enemy_scene: PackedScene = null) -> void:
 	enemy.set_route(enemy_routes.pick_random())
 
 func _on_enemy_attack_requested(enemy_position: Vector2, enemy: Node) -> void:
-	# Pumpkin wall takes priority: if the enemy is within attack range of the
-	# wall, redirect the shot there and skip the plot-targeting logic below.
+	# Pumpkin wall takes priority: if the enemy is within attack range of any
+	# wall, redirect the shot to the nearest one and skip the plot-targeting
+	# logic below.
 	var interaction_radius := Vector2(map.tile_set.tile_size).x * map.scale.x * ENEMY_ATTACK_RADIUS_TILES
-	var pumpkin: Node = get_tree().get_first_node_in_group("pumpkin_wall")
-	if is_instance_valid(pumpkin) and pumpkin is Node2D \
-			and enemy_position.distance_to((pumpkin as Node2D).global_position) <= interaction_radius:
+	var pumpkin := _nearest_pumpkin_wall_in_range(enemy_position, interaction_radius)
+	if pumpkin != null:
 		_spawn_shield_projectile(enemy, enemy_position, pumpkin)
 		return
 
@@ -405,6 +435,22 @@ func _get_plot_shield() -> Node:
 	if is_instance_valid(scarecrow) and scarecrow.has_method("is_alive") and scarecrow.is_alive():
 		return scarecrow
 	return null
+
+## Picks the closest living pumpkin wall within `radius` of the given world
+## position, or null if none are in range.
+func _nearest_pumpkin_wall_in_range(from: Vector2, radius: float) -> Node:
+	var best: Node = null
+	var best_distance := INF
+	for wall in get_tree().get_nodes_in_group("pumpkin_wall"):
+		if not is_instance_valid(wall) or not (wall is Node2D):
+			continue
+		if wall.has_method("is_alive") and not wall.is_alive():
+			continue
+		var distance := from.distance_to((wall as Node2D).global_position)
+		if distance <= radius and distance < best_distance:
+			best_distance = distance
+			best = wall
+	return best
 
 func _find_enemy_target_tile(enemy_position: Vector2) -> Vector2i:
 	var interaction_radius := Vector2(map.tile_set.tile_size).x * map.scale.x * ENEMY_ATTACK_RADIUS_TILES
@@ -529,6 +575,8 @@ func _process(_delta: float) -> void:
 				hover_is_valid = _can_place_item(hovered_tile, item_id)
 				preview_scale = Vector2.ONE * 1.68
 				preview_node = placement_preview
+				if _tomato_tower_preview_texture != null:
+					placement_preview.texture = _tomato_tower_preview_texture
 		elif game_state.get_seed_count(game_state.active_seed_id) > 0 and not hover_is_harvest_target:
 			var active_id: String = game_state.active_seed_id
 			hover_is_valid = _can_place_item(hovered_tile, active_id)
@@ -537,11 +585,25 @@ func _process(_delta: float) -> void:
 				preview_node = plant_preview
 			elif active_id == game_state.CORN_SEED_ID:
 				# Corn plants a tower on the same non-tilled tiles as tomato
-				# towers, so reuse the tower silhouette preview.
+				# towers, so reuse the tower silhouette preview -- but swap in
+				# the corn tower silhouette so the preview matches what will
+				# actually be spawned.
 				preview_scale = Vector2.ONE * 1.68
 				preview_node = placement_preview
-			# Pumpkins don't get a preview sprite yet; the hover highlight is
-			# enough of a signal that the tile is a valid path drop.
+				if _corn_tower_preview_texture != null:
+					placement_preview.texture = _corn_tower_preview_texture
+			elif active_id == game_state.PUMPKIN_SEED_ID:
+				# Pumpkins drop a wall on the enemy path; show the wall art at
+				# the hovered tile so the preview matches what will spawn.
+				preview_scale = Vector2.ONE * 2.0
+				preview_node = placement_preview
+				if _pumpkin_wall_preview_texture != null:
+					placement_preview.texture = _pumpkin_wall_preview_texture
+			else:
+				if _tomato_tower_preview_texture != null:
+					placement_preview.texture = _tomato_tower_preview_texture
+			# Any other seed type falls through with no preview sprite; the
+			# hover highlight is enough of a signal.
 	placement_preview.visible = false
 	plant_preview.visible = false
 	preview_node.visible = hover_is_valid and preview_scale != Vector2.ZERO
@@ -626,6 +688,35 @@ func _place_pumpkin_wall(tile: Vector2i) -> void:
 func _on_wall_removed(tile: Vector2i) -> void:
 	wall_tiles.erase(tile)
 
+## Marks any enemy whose next route waypoint sits on a pumpkin-wall tile as
+## `blocked_by_wall`, and clears the flag when no wall stands in their way.
+## Runs every physics frame so the state syncs the moment a wall dies.
+func _update_enemy_wall_blocks() -> void:
+	var enemies := get_tree().get_nodes_in_group("enemies")
+	var have_walls := not wall_tiles.is_empty()
+	for enemy in enemies:
+		if not (enemy is Node2D):
+			continue
+		if not have_walls:
+			enemy.blocked_by_wall = false
+			continue
+		enemy.blocked_by_wall = _enemy_is_blocked_by_wall(enemy)
+
+func _enemy_is_blocked_by_wall(enemy: Node) -> bool:
+	# Look at the enemy's current tile plus its next waypoint tile; if either
+	# sits on a wall, the enemy has to attack it before continuing.
+	var enemy_pos: Vector2 = (enemy as Node2D).global_position
+	var enemy_tile := map.local_to_map(map.to_local(enemy_pos))
+	if wall_tiles.has(enemy_tile):
+		return true
+	var route: Array = enemy.route
+	var idx: int = enemy.route_index
+	if idx < route.size():
+		var next_tile := map.local_to_map(map.to_local(route[idx]))
+		if wall_tiles.has(next_tile):
+			return true
+	return false
+
 func _try_harvest(tile: Vector2i) -> bool:
 	if not _is_in_planting_range(tile) or not planted_tiles.has(tile):
 		return false
@@ -675,28 +766,25 @@ func spawn_fence() -> bool:
 	fence.global_position = Vector2(world_x, world_y)
 	# Base fence polygon spans 192 px wide; scale x so it covers the full plot.
 	fence.scale = Vector2(float(bounds.size.x) * tile_size.x / 192.0, 1.0)
+	fence.owning_boon_id = "res://scenes/boons/fence.tscn"
 	add_child(fence)
 	return true
 
-## Spawns a Scarecrow on the center-most tilled soil tile.
+## Spawns a Scarecrow on the grass strip just west of the tilled plots. The
+## sprite sits between the plot columns so it doesn't cover a plantable tile.
 func spawn_scarecrow() -> bool:
 	const SCARECROW_SCENE := preload("res://scenes/scarecrow.tscn")
-	var tilled: Array[Vector2i] = []
-	for tile in map.get_used_cells():
-		if _is_tilled_soil(tile):
-			tilled.append(tile)
-	if tilled.is_empty():
+	var bounds := _tilled_soil_bounds()
+	if bounds.size == Vector2i.ZERO:
 		push_warning("Scarecrow boon: no tilled soil found.")
 		return false
-	var best_tile: Vector2i = tilled[0]
-	var best_dist := INF
-	for tile in tilled:
-		var d := _cell_center(tile).distance_to(PLOT_CENTER)
-		if d < best_dist:
-			best_dist = d
-			best_tile = tile
+	# One column to the left of the plot's leftmost column, centered vertically.
+	var target_x := bounds.position.x - 1
+	var mid_y := bounds.position.y + int(round(float(bounds.size.y - 1) * 0.5))
+	var target_tile := Vector2i(target_x, mid_y)
 	var scarecrow := SCARECROW_SCENE.instantiate()
-	scarecrow.global_position = _cell_center(best_tile)
+	scarecrow.global_position = _cell_center(target_tile)
+	scarecrow.owning_boon_id = "res://scenes/boons/scarecrow.tscn"
 	add_child(scarecrow)
 	return true
 
@@ -751,6 +839,8 @@ func _physics_process(_delta: float) -> void:
 		_tick_nail_pulse(_delta)
 	if game_state.has_propeller_hat:
 		_tick_propeller_hat(_delta)
+
+	_update_enemy_wall_blocks()
 
 	# Keyboard/arrow input takes priority over click-to-move.
 	var input_vector := Input.get_vector("move_left", "move_right", "move_up", "move_down")

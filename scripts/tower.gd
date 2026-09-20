@@ -12,6 +12,11 @@ const PROJECTILE_SCENE := preload("res://scenes/projectile.tscn")
 ## multiply this at spawn time inside `projectile.gd`.
 @export var projectile_damage := -1.0
 
+## Flip the tower art horizontally relative to its target. Enable this for
+## variants (e.g. Corn Tower) whose spritesheet is drawn facing the opposite
+## direction of the base tomato tower.
+@export var invert_facing := false
+
 var fire_cooldown := 0.0
 var age := 0.0
 var is_dying := false
@@ -56,7 +61,7 @@ func _process(delta: float) -> void:
 	if target == null:
 		return
 
-	sprite.flip_h = target.global_position.x < global_position.x
+	sprite.flip_h = (target.global_position.x < global_position.x) != invert_facing
 	var projectile := PROJECTILE_SCENE.instantiate()
 	projectile.global_position = global_position
 	if projectile_damage >= 0.0:

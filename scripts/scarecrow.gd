@@ -7,6 +7,10 @@ class_name Scarecrow
 
 @export var max_hit_points := 5
 
+## Path of the boon scene that spawned this scarecrow. Set by `main.gd` at
+## spawn time. Cleared from `GameState.active_boons` when the scarecrow breaks.
+var owning_boon_id: String = ""
+
 var hit_points := 5
 var damage_tween: Tween
 
@@ -36,4 +40,11 @@ func _play_damage_flash() -> void:
 func _play_break_and_free() -> void:
 	var fade := create_tween()
 	fade.tween_property(body, "modulate:a", 0.0, 0.2)
-	fade.finished.connect(queue_free)
+	fade.finished.connect(_on_break_finished)
+
+func _on_break_finished() -> void:
+	if not owning_boon_id.is_empty():
+		var game_state := get_node_or_null("/root/GameState")
+		if game_state != null:
+			game_state.deactivate_boon(owning_boon_id)
+	queue_free()

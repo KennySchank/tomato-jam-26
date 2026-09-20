@@ -129,6 +129,10 @@ func _visible_storage_slot_count(storage_inventory: Array[Dictionary]) -> int:
 
 func _clear(container: Container) -> void:
 	for child in container.get_children():
+		# Detach immediately so callers that rebuild in the same frame don't
+		# collide with the queued-for-free children (Godot appends `@N`
+		# suffixes to keep names unique, which breaks name-based lookups).
+		container.remove_child(child)
 		child.queue_free()
 
 func _add_slot(container: Container, inventory_name: String, index: int, item: Dictionary) -> void:
@@ -177,6 +181,10 @@ func _rebuild_seed_reserves() -> void:
 	for seed_id in game_state.unlocked_seeds:
 		var button := Button.new()
 		button.name = _seed_button_name(seed_id)
+		# Stash the id in metadata so `_sync_seed_reserve_selection` doesn't
+		# have to depend on the node name (which Godot may rename to
+		# `Reserve_..@N` if a same-named sibling is still queued for free).
+		button.set_meta("seed_id", seed_id)
 		button.custom_minimum_size = SEED_RESERVE_BUTTON_SIZE
 		button.focus_mode = Control.FOCUS_NONE
 		# Wrap long labels (e.g. "Pumpkin Seeds") so the button stays inside
@@ -188,21 +196,59 @@ func _rebuild_seed_reserves() -> void:
 			game_state.get_seed_count(seed_id),
 			game_state.get_seed_max(seed_id),
 		)
-		button.modulate = SELECTED_COLOR if seed_id == game_state.active_seed_id else Color.WHITE
+		# Toggle-mode buttons give us a persistent pressed StyleBox that stays
+		# visible through hover and re-focus, unlike a `modulate` tint which
+		# the hover style washes out.
+		button.toggle_mode = true
+		# Force a highly visible pressed StyleBox on every reserve button. The
+		# default theme's pressed style is too subtle here, so selected
+		# reserves would look "off" even when they were the active one.
+		_apply_selected_styles(button)
+		button.set_pressed_no_signal(seed_id == game_state.active_seed_id)
 		button.pressed.connect(_on_seed_reserve_pressed.bind(seed_id))
 		seed_reserves.add_child(button)
+	_sync_seed_reserve_selection()
 
 func _on_active_seed_changed(_seed_id: String) -> void:
+	_sync_seed_reserve_selection()
+
+func _on_seed_reserve_pressed(seed_id: String) -> void:
+	game_state.set_active_seed(seed_id)
+	# `set_active_seed` early-returns when re-selecting the current reserve, so
+	# no `active_seed_changed` fires. Re-sync anyway so the toggle button that
+	# the click just un-pressed snaps back to pressed.
+	_sync_seed_reserve_selection()
+
+## Push the current `active_seed_id` onto every reserve button. Used from both
+## the `active_seed_changed` signal and the direct click handler so the UI
+## always matches state regardless of which path fires. Also applies the
+## `modulate` tint so the active reserve reads clearly even at a glance.
+func _sync_seed_reserve_selection() -> void:
 	if seed_reserves == null:
 		return
 	for child in seed_reserves.get_children():
 		if child is Button:
-			var name_str: String = child.name
-			var id: String = name_str.trim_prefix("Reserve_")
-			child.modulate = SELECTED_COLOR if id == game_state.active_seed_id else Color.WHITE
+			var button: Button = child as Button
+			var id: String = button.get_meta("seed_id", "")
+			var is_active: bool = id == game_state.active_seed_id
+			button.set_pressed_no_signal(is_active)
+			button.modulate = SELECTED_COLOR if is_active else Color.WHITE
 
-func _on_seed_reserve_pressed(seed_id: String) -> void:
-	game_state.set_active_seed(seed_id)
+## Adds explicit `pressed` / `hover_pressed` StyleBoxes to a reserve button so
+## the selected state is unmistakable regardless of the project's active
+## theme. Called once per button when the reserve column is rebuilt.
+func _apply_selected_styles(button: Button) -> void:
+	var selected_style := StyleBoxFlat.new()
+	selected_style.bg_color = Color("2a3652")
+	selected_style.border_color = SELECTED_COLOR
+	selected_style.set_border_width_all(3)
+	selected_style.set_corner_radius_all(4)
+	selected_style.content_margin_left = 6
+	selected_style.content_margin_right = 6
+	selected_style.content_margin_top = 4
+	selected_style.content_margin_bottom = 4
+	button.add_theme_stylebox_override("pressed", selected_style)
+	button.add_theme_stylebox_override("hover_pressed", selected_style)
 
 func _seed_button_name(seed_id: String) -> String:
 	return "Reserve_%s" % seed_id

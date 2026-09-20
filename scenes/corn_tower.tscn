@@ -47,6 +47,7 @@ animations = [{
 script = ExtResource("2_tower")
 range = 320.0
 projectile_damage = 5.0
+invert_facing = true
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 visible = false

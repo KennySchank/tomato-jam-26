@@ -7,6 +7,11 @@ class_name Fence
 
 @export var max_hit_points := 4
 
+## Path of the boon scene that spawned this fence. Set by `main.gd` at spawn.
+## When the fence breaks it calls `GameState.deactivate_boon(owning_boon_id)`
+## so the boon tracker drops the icon and the boon can be re-offered later.
+var owning_boon_id: String = ""
+
 var hit_points := 4
 var damage_tween: Tween
 
@@ -39,4 +44,11 @@ func _play_break_and_free() -> void:
 	# Fade out, then remove. No death animation asset yet.
 	var fade := create_tween()
 	fade.tween_property(body, "modulate:a", 0.0, 0.2)
-	fade.finished.connect(queue_free)
+	fade.finished.connect(_on_break_finished)
+
+func _on_break_finished() -> void:
+	if not owning_boon_id.is_empty():
+		var game_state := get_node_or_null("/root/GameState")
+		if game_state != null:
+			game_state.deactivate_boon(owning_boon_id)
+	queue_free()
