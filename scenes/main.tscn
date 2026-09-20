@@ -1,15 +1,15 @@
-[gd_scene format=4 uid="uid://o5s4h4vlw616"]
+[gd_scene format=4 uid="uid://b7kdtbvewnk1a"]
 
 [ext_resource type="Script" uid="uid://cva5thvk03khi" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Texture2D" uid="uid://d017yfbx77yoo" path="res://assets/BaseSpriteSheet.png" id="2_jyhfs"]
 [ext_resource type="PackedScene" uid="uid://b4qjtxecibwdb" path="res://scenes/player.tscn" id="2_player"]
 [ext_resource type="PackedScene" uid="uid://bhx1nsqac3jqa" path="res://scenes/frog_house.tscn" id="5_tbgi4"]
 [ext_resource type="PackedScene" uid="uid://ber4664758ss8" path="res://scenes/chest.tscn" id="6_chest"]
-[ext_resource type="PackedScene" path="res://scenes/inventory_ui.tscn" id="7_inventory_ui"]
+[ext_resource type="PackedScene" uid="uid://3gil60qwam3m" path="res://scenes/inventory_ui.tscn" id="7_inventory_ui"]
 [ext_resource type="Script" uid="uid://dg750m8qqllep" path="res://scripts/interactable_highlight.gd" id="8_highlight"]
 [ext_resource type="Texture2D" uid="uid://dluoiye2tkt1i" path="res://icon.svg" id="9_preview_icon"]
 [ext_resource type="PackedScene" path="res://scenes/cloud_shadows.tscn" id="10_cloud_shadows"]
-[ext_resource type="PackedScene" uid="uid://bk0uxeqk3jwwp" path="res://scenes/HUD.tscn" id="11_hud"]
+[ext_resource type="PackedScene" uid="uid://4w4fwhoss4qx" path="res://scenes/HUD.tscn" id="11_hud"]
 [ext_resource type="Script" uid="uid://p4w6735cfx72" path="res://scripts/placement_range_preview.gd" id="11_range_preview"]
 [ext_resource type="PackedScene" uid="uid://k365fy18v6d5" path="res://scenes/altar.tscn" id="12_eb6dy"]
 [ext_resource type="Script" uid="uid://dd4oggb3vqfaf" path="res://scripts/wave_manager.gd" id="13_wave_mgr"]
@@ -133,7 +133,7 @@ edge_end = 0.55
 [node name="HUD" parent="." unique_id=1737727628 instance=ExtResource("11_hud")]
 
 [node name="Altar" parent="." unique_id=294149674 instance=ExtResource("12_eb6dy")]
-position = Vector2(522, 73)
+position = Vector2(476, 73)
 
 [node name="WaveManager" type="Node" parent="." unique_id=48806075]
 script = ExtResource("13_wave_mgr")
@@ -141,8 +141,10 @@ waves = Array[ExtResource("14_wave_def")]([SubResource("Wave_1"), SubResource("W
 endless_mode = true
 
 [node name="RoundEnd" parent="." unique_id=1028732954 instance=ExtResource("17_round_end")]
+visible = false
 
 [node name="GameOver" parent="." unique_id=1291462599 instance=ExtResource("18_game_over")]
+visible = false
 
 [connection signal="opened" from="Chest" to="InventoryUI" method="open_chest"]
 [connection signal="opened" from="Altar" to="InventoryUI" method="open_altar"]
