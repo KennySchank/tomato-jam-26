@@ -20,6 +20,7 @@
 [ext_resource type="PackedScene" uid="uid://bx5dmihvw0rvt" path="res://scenes/round_end.tscn" id="17_round_end"]
 [ext_resource type="PackedScene" uid="uid://dajfik8rdxa4p" path="res://scenes/game_over.tscn" id="18_game_over"]
 [ext_resource type="PackedScene" uid="uid://dv1fmqr5knct0" path="res://scenes/boon_tracker.tscn" id="19_boon_tracker"]
+[ext_resource type="Script" uid="uid://0f8k7msqtvc3" path="res://scripts/onboarding.gd" id="20_onboarding"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tbgi4"]
 texture = ExtResource("2_jyhfs")
@@ -85,6 +86,36 @@ enemy_health_multiplier = 1.1
 enemy_attack_interval_multiplier = 0.95
 enemy_scenes = Array[PackedScene]([ExtResource("16_caterpillar"), ExtResource("16_raccoon"), ExtResource("16_bog_boy")])
 reward_seeds = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_onboarding_panel"]
+bg_color = Color(0.0784314, 0.0470588, 0.109804, 0.98)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.7921569, 0.5921569, 0.3215686, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.55)
+shadow_size = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_onboarding_button"]
+content_margin_left = 18.0
+content_margin_top = 10.0
+content_margin_right = 18.0
+content_margin_bottom = 10.0
+bg_color = Color(0.5254902, 0.2745098, 0.254902, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.9490196, 0.7882353, 0.4117647, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
 
 [node name="TowerDefenseBaseline" type="Node2D" unique_id=621228746]
 script = ExtResource("1_main")
@@ -155,6 +186,84 @@ visible = false
 
 [node name="GameOver" parent="." unique_id=1291462599 instance=ExtResource("18_game_over")]
 visible = false
+
+[node name="Onboarding" type="CanvasLayer" parent="." unique_id=1963000001]
+layer = 20
+script = ExtResource("20_onboarding")
+
+[node name="Backdrop" type="ColorRect" parent="Onboarding" unique_id=1963000002]
+offset_right = 1152.0
+offset_bottom = 648.0
+color = Color(0.0196078, 0.0117647, 0.027451, 0.72)
+
+[node name="Panel" type="PanelContainer" parent="Onboarding/Backdrop" unique_id=1963000003]
+layout_mode = 0
+offset_left = 290.0
+offset_top = 42.0
+offset_right = 882.0
+offset_bottom = 600.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_onboarding_panel")
+
+[node name="Margin" type="MarginContainer" parent="Onboarding/Backdrop/Panel" unique_id=1963000004]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 26
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 24
+
+[node name="Column" type="VBoxContainer" parent="Onboarding/Backdrop/Panel/Margin" unique_id=1963000005]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Onboarding/Backdrop/Panel/Margin/Column" unique_id=1963000006]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.7882353, 0.4117647, 1)
+theme_override_font_sizes/font_size = 26
+text = "WELCOME, GARDENER"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Onboarding/Backdrop/Panel/Margin/Column" unique_id=1963000007]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8313726, 0.7568628, 0.7176471, 1)
+theme_override_font_sizes/font_size = 15
+text = "Grow tomatoes. Defend your garden. Feed your god."
+horizontal_alignment = 1
+
+[node name="Divider" type="HSeparator" parent="Onboarding/Backdrop/Panel/Margin/Column" unique_id=1963000008]
+layout_mode = 2
+
+[node name="Instructions" type="Label" parent="Onboarding/Backdrop/Panel/Margin/Column" unique_id=1963000009]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9411765, 0.9098039, 0.8588235, 1)
+theme_override_font_sizes/font_size = 16
+text = "MOVE
+  WASD / Arrow Keys  or  Left-click a tile
+
+GROW & FIGHT
+  Right-click soil to plant or harvest
+  Right-click a tile to place the selected defense
+  Use the toolbar on the right, or press 1-8, to select items
+
+SURVIVE
+  Visit the chest to manage supplies. Offer tomatoes at the altar.
+  Prepare your garden before each wave, then keep the enemies out!"
+autowrap_mode = 2
+
+[node name="Hint" type="Label" parent="Onboarding/Backdrop/Panel/Margin/Column" unique_id=1963000010]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7254902, 0.6509804, 0.6078431, 1)
+text = "Tip: hover over tiles to see what can be planted or built."
+horizontal_alignment = 1
+
+[node name="StartButton" type="Button" parent="Onboarding/Backdrop/Panel/Margin/Column" unique_id=1963000011]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9490196, 0.8235294, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_onboarding_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_onboarding_button")
+theme_override_styles/focus = SubResource("StyleBoxFlat_onboarding_button")
+text = "START FARMING"
 
 [connection signal="opened" from="Chest" to="InventoryUI" method="open_chest"]
 [connection signal="opened" from="Altar" to="InventoryUI" method="open_altar"]
