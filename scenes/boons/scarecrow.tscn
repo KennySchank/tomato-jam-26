@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://di8iupgblt820"]
+
+[ext_resource type="PackedScene" uid="uid://bfrbfa7x4r32e" path="res://scenes/boon_card.tscn" id="1_sg82r"]
+[ext_resource type="Texture2D" uid="uid://weliog5porjr" path="res://assets/boons1.png" id="2_xt2a2"]
+
+[node name="BoonCard" unique_id=662996127 instance=ExtResource("1_sg82r")]
+bonus_seeds = 2
+
+[node name="Item Name" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="0" unique_id=877095802]
+theme_override_font_sizes/font_size = 18
+text = "Scarecrow"
+vertical_alignment = 1
+
+[node name="Item Description" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="1" unique_id=736839144]
+offset_top = 6.7353287
+offset_bottom = 81.73533
+text = "Temporarily protects crop"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Item Bottom Text" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="2" unique_id=152119621]
+text = "If it only had a brain"
+horizontal_alignment = 1
+
+[node name="Item Image" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="3" unique_id=1198312682]
+position = Vector2(1.0769255, -37.84615)
+scale = Vector2(1.3343954, 1.3343954)
+texture = ExtResource("2_xt2a2")
+region_enabled = true
+region_rect = Rect2(192, 0, 32, 32)

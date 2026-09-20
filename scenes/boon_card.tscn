@@ -36,6 +36,7 @@ offset_left = -69.76271
 offset_top = 7.8122635
 offset_right = 66.91525
 offset_bottom = 76.15124
+theme_override_constants/line_spacing = 2
 theme_override_font_sizes/font_size = 16
 text = "Description"
 autowrap_mode = 3

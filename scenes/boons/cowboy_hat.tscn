@@ -11,9 +11,12 @@ text = "Cowboy Hat"
 
 [node name="Item Description" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="1" unique_id=736839144]
 text = "Provides good vibes and cute looks"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Item Bottom Text" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="2" unique_id=152119621]
-text = "Yeehaw"
+text = "Yeehaw!"
+horizontal_alignment = 1
 
 [node name="Item Image" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="3" unique_id=1198312682]
 position = Vector2(1.0938797, -44.885277)
