@@ -190,8 +190,10 @@ waves = Array[ExtResource("14_wave_def")]([SubResource("Wave_1"), SubResource("W
 endless_mode = true
 
 [node name="RoundEnd" parent="." unique_id=1028732954 instance=ExtResource("17_round_end")]
+z_index = 5
 
 [node name="GameOver" parent="." unique_id=1291462599 instance=ExtResource("18_game_over")]
+z_index = 5
 
 [node name="Onboarding" type="CanvasLayer" parent="." unique_id=1963000001]
 layer = 20
