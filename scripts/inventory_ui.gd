@@ -25,7 +25,9 @@ var open_storage := "chest"
 @onready var player: Node2D = get_parent().get_node("Player")
 @onready var game_state: Node = get_node("/root/GameState")
 @onready var toolbar_slots: VBoxContainer = $InventoryToolbar/Scroll/Center/ToolbarSlots
-@onready var chest_window: PanelContainer = $ChestWindow
+@onready var storage_backdrop: Control = $StorageBackdrop
+@onready var chest_window: Panel = $ChestWindow
+@onready var close_button: Button = $ChestWindow/CloseButton
 @onready var frog_slots: HBoxContainer = $ChestWindow/Margin/Column/FrogSlots
 @onready var chest_slots: GridContainer = $ChestWindow/Margin/Column/ChestSlots
 @onready var window_title: Label = $ChestWindow/Margin/Column/Title
@@ -33,6 +35,8 @@ var open_storage := "chest"
 @onready var seed_reserves: HBoxContainer = $SeedReserves
 
 func _ready() -> void:
+	close_button.pressed.connect(close_all_windows)
+	storage_backdrop.gui_input.connect(_on_storage_backdrop_input)
 	game_state.inventory_changed.connect(_refresh)
 	game_state.seed_count_changed.connect(_on_seed_count_changed)
 	game_state.seed_types_changed.connect(_rebuild_seed_reserves)
@@ -45,16 +49,17 @@ func _process(_delta: float) -> void:
 		return
 	if open_storage == "altar":
 		if not altar.can_player_interact(player):
-			chest_window.hide()
+			close_all_windows()
 	else:
 		if not chest.can_player_interact(player):
-			chest_window.hide()
+			close_all_windows()
 
 func open_chest() -> void:
 	open_storage = "chest"
 	selected_source = ""
 	selected_index = -1
 	chest_window.show()
+	storage_backdrop.show()
 	_refresh()
 
 func open_altar() -> void:
@@ -62,6 +67,7 @@ func open_altar() -> void:
 	selected_source = ""
 	selected_index = -1
 	chest_window.show()
+	storage_backdrop.show()
 	_refresh()
 
 ## Hide any open storage window and cancel any in-progress item transfer.
@@ -72,16 +78,23 @@ func close_all_windows() -> void:
 	selected_index = -1
 	if chest_window != null:
 		chest_window.hide()
+	if storage_backdrop != null:
+		storage_backdrop.hide()
 	_refresh()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
-		chest_window.hide()
+		close_all_windows()
 		return
 	if event is InputEventKey and event.pressed and not event.echo:
 		var slot: int = event.keycode - KEY_1
 		if slot >= 0 and slot < TOOLBAR_SLOT_COUNT and slot < game_state.frog_inventory.size():
 			_select_frog_slot(slot)
+
+func _on_storage_backdrop_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		close_all_windows()
+		get_viewport().set_input_as_handled()
 
 func _refresh() -> void:
 	if not is_node_ready():

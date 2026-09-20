@@ -16,6 +16,7 @@ config/features=PackedStringArray("4.7", "Forward Plus")
 boot_splash/bg_color=Color(0.0784314, 0.0470588, 0.109804, 1)
 boot_splash/image="res://assets/Start-Screen.png"
 config/icon="res://assets/Sprite-Mushroom-House.png"
+gui/theme/custom="res://themes/pixel_theme.tres"
 
 [autoload]
 

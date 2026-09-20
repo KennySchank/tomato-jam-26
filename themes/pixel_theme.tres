@@ -1,0 +1,10 @@
+[gd_resource type="Theme" load_steps=2 format=3]
+
+[sub_resource type="SystemFont" id="SystemFont_pixel"]
+font_names = PackedStringArray("Fixedsys", "Terminal", "Small Fonts", "Consolas", "Courier New")
+antialiasing = 0
+hinting = 0
+subpixel_positioning = 0
+
+[resource]
+default_font = SubResource("SystemFont_pixel")
