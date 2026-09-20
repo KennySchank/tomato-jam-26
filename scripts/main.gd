@@ -509,6 +509,8 @@ func _can_place_item(tile: Vector2i, item_id: String) -> bool:
 	if item_id == game_state.FRUIT_ITEM_ID:
 		if altar.blocks_tower_at(tile):
 			return false
+		if _is_tilled_soil(tile):
+			return false
 		return not _is_enemy_path(tile)
 	return false
 

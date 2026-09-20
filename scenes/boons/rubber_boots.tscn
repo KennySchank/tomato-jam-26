@@ -1,10 +1,10 @@
 [gd_scene format=3 uid="uid://brbootsboonpl"]
 
 [ext_resource type="PackedScene" uid="uid://bfrbfa7x4r32e" path="res://scenes/boon_card.tscn" id="1_boon_card"]
-[ext_resource type="Texture2D" uid="uid://weliog5porjr" path="res://assets/boons1.png" id="2_boots_icon"]
-[ext_resource type="Script" path="res://scripts/boons/rubber_boots.gd" id="3_boots_script"]
+[ext_resource type="Texture2D" uid="uid://cjb8dtp2cbjdk" path="res://assets/Sprite-Yellow-Boots.png" id="3_1g4wc"]
+[ext_resource type="Script" uid="uid://duehr8x722ewx" path="res://scripts/boons/rubber_boots.gd" id="3_boots_script"]
 
-[node name="BoonCard" instance=ExtResource("1_boon_card")]
+[node name="BoonCard" unique_id=109497835 instance=ExtResource("1_boon_card")]
 script = ExtResource("3_boots_script")
 
 [node name="Item Name" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="0" unique_id=877095802]
@@ -24,8 +24,7 @@ text = "Made for stompin'"
 horizontal_alignment = 1
 
 [node name="Item Image" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="3" unique_id=1198312682]
-position = Vector2(0.0, -41.07692)
-scale = Vector2(1.3343954, 1.3343954)
-texture = ExtResource("2_boots_icon")
-region_enabled = true
+position = Vector2(5.4786873, -46.555603)
+scale = Vector2(1.8787361, 1.8787361)
+texture = ExtResource("3_1g4wc")
 region_rect = Rect2(32, 0, 32, 32)

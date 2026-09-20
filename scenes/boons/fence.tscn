@@ -2,21 +2,20 @@
 
 [ext_resource type="PackedScene" uid="uid://bfrbfa7x4r32e" path="res://scenes/boon_card.tscn" id="1_3vinu"]
 [ext_resource type="Texture2D" uid="uid://weliog5porjr" path="res://assets/boons1.png" id="2_20j5o"]
-[ext_resource type="Script" path="res://scripts/boons/fence.gd" id="3_fence_script"]
+[ext_resource type="Script" uid="uid://dojj55r4thnxv" path="res://scripts/boons/fence.gd" id="3_fence_script"]
 
 [node name="BoonCard" unique_id=662996127 instance=ExtResource("1_3vinu")]
 script = ExtResource("3_fence_script")
 
-
 [node name="Item Name" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="0" unique_id=877095802]
 theme_override_font_sizes/font_size = 18
-text = "Hoe"
+text = "Fence"
 vertical_alignment = 1
 
 [node name="Item Description" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="1" unique_id=736839144]
 offset_top = 6.7353287
 offset_bottom = 81.73533
-text = "Create a new tower plot"
+text = "Shields the whole plot for 4 hits"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -25,12 +24,12 @@ offset_left = -70.0
 offset_top = 88.15384
 offset_right = 68.1017
 offset_bottom = 111.15384
-text = "Don't trust 'em"
+text = "Good fences, good crops"
 horizontal_alignment = 1
 
 [node name="Item Image" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="3" unique_id=1198312682]
-position = Vector2(1.0769255, -38.923073)
-scale = Vector2(1.3343954, 1.3343954)
+position = Vector2(0.44439507, -44.752098)
+scale = Vector2(1.441236, 1.441236)
 texture = ExtResource("2_20j5o")
 region_enabled = true
-region_rect = Rect2(32, 0, 32, 32)
+region_rect = Rect2(224, 0, 32, 32)
