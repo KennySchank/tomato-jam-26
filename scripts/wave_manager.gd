@@ -21,8 +21,6 @@ enum Phase { IDLE, PREPARING, ACTIVE, COMPLETED, LOST }
 @export var enemies_group: StringName = &"enemies"
 ## Start the first prep phase automatically on _ready.
 @export var auto_start: bool = true
-## Input action pressed during prep to skip straight to the wave.
-@export var skip_prep_action: StringName = &"ui_accept"
 
 @export_group("Harvest Deadline")
 ## Seconds the player has to reach the tomato goal. Expiry triggers a loss.
@@ -76,11 +74,6 @@ func start_next_wave_prep() -> void:
 	prep_phase_started.emit(current_wave_index, current_wave.prep_time)
 	prep_time_changed.emit(_prep_time_remaining)
 
-## Skip the remainder of the current prep phase (e.g. bound to a "Ready" button).
-func skip_prep() -> void:
-	if phase == Phase.PREPARING:
-		_prep_time_remaining = 0.0
-
 ## End the run in a loss state; the manager stops spawning.
 func trigger_loss() -> void:
 	if phase == Phase.LOST or phase == Phase.COMPLETED:
@@ -100,12 +93,6 @@ func trigger_win() -> void:
 func restart_harvest_timer() -> void:
 	_harvest_time_remaining = harvest_time_limit
 	harvest_time_changed.emit(_harvest_time_remaining)
-
-func _unhandled_input(event: InputEvent) -> void:
-	if phase != Phase.PREPARING:
-		return
-	if event.is_action_pressed(skip_prep_action):
-		skip_prep()
 
 func _process(delta: float) -> void:
 	_tick_harvest_timer(delta)

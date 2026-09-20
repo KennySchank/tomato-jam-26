@@ -205,7 +205,7 @@ color = Color(0.0196078, 0.0117647, 0.027451, 0.72)
 layout_mode = 0
 offset_left = 290.0
 offset_top = 42.0
-offset_right = 882.0
+offset_right = 891.0
 offset_bottom = 600.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_onboarding_panel")
 
@@ -269,6 +269,15 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_onboarding_button")
 theme_override_styles/hover = SubResource("StyleBoxFlat_onboarding_button")
 theme_override_styles/focus = SubResource("StyleBoxFlat_onboarding_button")
 text = "START FARMING"
+
+[node name="Label" type="Label" parent="." unique_id=2077768329]
+offset_left = 10.0
+offset_top = 622.0
+offset_right = 164.0
+offset_bottom = 645.0
+theme_override_colors/font_color = Color(0.95444137, 0.83038133, 0.7141139, 1)
+theme_override_font_sizes/font_size = 14
+text = "P or SPACE to pause"
 
 [connection signal="opened" from="Chest" to="InventoryUI" method="open_chest"]
 [connection signal="opened" from="Altar" to="InventoryUI" method="open_altar"]
