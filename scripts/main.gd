@@ -61,6 +61,14 @@ func _ready() -> void:
 	plant_preview.scale = plant_preview_scale
 	plant_scene_instance.free()
 
+	var tower_scene_instance := TOWER_SCENE.instantiate()
+	var tower_sprite: AnimatedSprite2D = tower_scene_instance.get_node("AnimatedSprite2D")
+	var idle_animation := &"Idle"
+	if tower_sprite.sprite_frames.has_animation(idle_animation):
+		var tower_final_frame := tower_sprite.sprite_frames.get_frame_count(idle_animation) - 1
+		placement_preview.texture = tower_sprite.sprite_frames.get_frame_texture(idle_animation, tower_final_frame)
+	tower_scene_instance.free()
+
 	var start_cell := map.local_to_map(map.to_local(PLOT_CENTER))
 	destination = _cell_center(start_cell)
 	player.position = destination
@@ -377,7 +385,7 @@ func _process(_delta: float) -> void:
 			tower_is_selected = item_id == game_state.FRUIT_ITEM_ID
 			if not hover_is_harvest_target and (item_id == game_state.SEED_ITEM_ID or item_id == game_state.FRUIT_ITEM_ID):
 				hover_is_valid = _can_place_item(hovered_tile, item_id)
-				preview_scale = Vector2.ONE * (0.18 if item_id == game_state.SEED_ITEM_ID else 0.22)
+				preview_scale = Vector2.ONE * (0.18 if item_id == game_state.SEED_ITEM_ID else 1.68)
 				preview_node = plant_preview if item_id == game_state.SEED_ITEM_ID else placement_preview
 	placement_preview.visible = false
 	plant_preview.visible = false
