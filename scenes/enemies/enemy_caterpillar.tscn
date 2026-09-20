@@ -1,0 +1,63 @@
+[gd_scene format=3 uid="uid://cuuowveddw3of"]
+
+[ext_resource type="PackedScene" uid="uid://c7nrcu1lnd7wb" path="res://scenes/enemy.tscn" id="1_43mhm"]
+[ext_resource type="Texture2D" uid="uid://hhirqiqmhdi0" path="res://assets/Sprite-Tomato-Hornworm.png" id="2_43mhm"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_43mhm"]
+atlas = ExtResource("2_43mhm")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ghxv8"]
+atlas = ExtResource("2_43mhm")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hdn72"]
+atlas = ExtResource("2_43mhm")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hwffy"]
+atlas = ExtResource("2_43mhm")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_2ytov"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_43mhm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ghxv8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hdn72")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hwffy")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 10.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_crow"]
+size = Vector2(36.318405, 31.34328)
+
+[node name="Enemy" unique_id=371982480 instance=ExtResource("1_43mhm")]
+modulate = Color(1, 1, 1, 1)
+speed = 40.0
+max_health = 15.0
+sprite_facing_deg = 0.0
+
+[node name="AnimatedSprite2D" parent="." index="0" unique_id=779821457]
+position = Vector2(5.432835, 3.9402976)
+scale = Vector2(1.3706467, 1.3706467)
+sprite_frames = SubResource("SpriteFrames_2ytov")
+animation = &"default"
+autoplay = "default"
+frame = 1
+frame_progress = 0.32301086
+
+[node name="CollisionShape2D" parent="." index="1" unique_id=1885304010]
+position = Vector2(5.2238784, 4.726366)
+scale = Vector2(0.9999998, 0.9999998)
+shape = SubResource("RectangleShape2D_crow")

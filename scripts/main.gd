@@ -15,8 +15,9 @@ const CORN_TOWER_SCENE := preload("res://scenes/corn_tower.tscn")
 const PUMPKIN_WALL_SCENE := preload("res://scenes/pumpkin_wall.tscn")
 const ENEMY_SCENE := preload("res://scenes/enemy.tscn")
 const ENEMY_SCENES: Array[PackedScene] = [
-	preload("res://scenes/enemy.tscn"),
+	preload("res://scenes/enemies/enemy_caterpillar.tscn"),
 	preload("res://scenes/enemies/enemy_raccoon.tscn"),
+	preload("res://scenes/enemies/enemy_bog_boy.tscn"),
 ]
 const PROJECTILE_SCENE := preload("res://scenes/projectile.tscn")
 const GRAVESTONE_SCENE := preload("res://scenes/gravestone.tscn")

@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://41ychq3qwvxb"
-path="res://.godot/imported/Sprite-Bog-Boy-Sheet.png-044b07ca95c7c9a005ee83e6c6f7a671.ctex"
+path="res://.godot/imported/Sprite-Bog-Boy-Sheet.png-b0fdde9e187f2d26f10cf693dc1b9bc8.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://scenes/Sprite-Bog-Boy-Sheet.png"
-dest_files=["res://.godot/imported/Sprite-Bog-Boy-Sheet.png-044b07ca95c7c9a005ee83e6c6f7a671.ctex"]
+source_file="res://assets/Sprite-Bog-Boy-Sheet.png"
+dest_files=["res://.godot/imported/Sprite-Bog-Boy-Sheet.png-b0fdde9e187f2d26f10cf693dc1b9bc8.ctex"]
 
 [params]
 
