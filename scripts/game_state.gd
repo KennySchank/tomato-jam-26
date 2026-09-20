@@ -130,7 +130,7 @@ func get_seed_count(seed_id: String) -> int:
 ## Every reserve currently shares the same cap. Kept as a function so we can
 ## specialize per seed later without touching every caller.
 func get_seed_max(_seed_id: String) -> int:
-	return MAX_SEEDS
+	return MAX_STACK_SIZE
 
 ## Add seeds to a specific reserve. Defaults to tomato so the pre-existing
 ## `add_seeds(amount)` calls (wave rewards, harvest drops) keep working.

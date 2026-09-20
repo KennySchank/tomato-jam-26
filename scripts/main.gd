@@ -595,6 +595,7 @@ func _try_plant(tile: Vector2i) -> void:
 	if not _can_place_item(tile, seed_id):
 		return
 	if not game_state.consume_seed(seed_id):
+		return
 	if not game_state.consume_frog_item(inventory_ui.selected_frog_slot):
 		return
 	match seed_id:
