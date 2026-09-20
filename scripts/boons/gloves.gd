@@ -1,7 +1,7 @@
 extends Boon
 
 ## Gardening Gloves — gives every future tomato harvest a 10% chance to yield
-## an extra tomato seed straight to the seed reserve. `main.gd::_try_harvest`
+## an extra tomato seed. `main.gd::_try_harvest` and the sickle harvest path
 ## reads `GameState.bonus_seed_chance` and rolls against it after a successful
 ## pick.
 const CHANCE_BONUS := 0.10

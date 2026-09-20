@@ -134,7 +134,7 @@ func _on_wave_spawn_requested(enemy_scene: PackedScene) -> void:
 func _on_wave_ended(_wave_index: int, wave: WaveDefinition) -> void:
 	if wave == null or wave.reward_seeds <= 0:
 		return
-	var leftover: int = game_state.add_seeds(wave.reward_seeds)
+	var leftover: int = game_state.grant_item(game_state.SEED_ITEM_ID, wave.reward_seeds)
 	if leftover > 0:
 		push_warning("Wave reward overflow: %d seeds could not be stored." % leftover)
 
@@ -517,7 +517,11 @@ func _process(_delta: float) -> void:
 		if not selected_item.is_empty():
 			var item_id: String = selected_item.get("id", "")
 			tower_is_selected = item_id == game_state.FRUIT_ITEM_ID
-			if not hover_is_harvest_target and item_id == game_state.FRUIT_ITEM_ID:
+			if not hover_is_harvest_target and item_id == game_state.SEED_ITEM_ID:
+				hover_is_valid = _can_place_item(hovered_tile, item_id)
+				preview_scale = Vector2.ONE * 0.18
+				preview_node = plant_preview
+			elif not hover_is_harvest_target and item_id == game_state.FRUIT_ITEM_ID:
 				hover_is_valid = _can_place_item(hovered_tile, item_id)
 				preview_scale = Vector2.ONE * 1.68
 				preview_node = placement_preview
@@ -587,6 +591,7 @@ func _try_plant(tile: Vector2i) -> void:
 	if not _can_place_item(tile, seed_id):
 		return
 	if not game_state.consume_seed(seed_id):
+	if not game_state.consume_frog_item(inventory_ui.selected_frog_slot):
 		return
 	match seed_id:
 		game_state.CORN_SEED_ID:
@@ -626,10 +631,10 @@ func _try_harvest(tile: Vector2i) -> bool:
 		return true
 	if not game_state.add_frog_item(game_state.FRUIT_ITEM_ID):
 		return true
-	game_state.add_seeds(1)
-	# Gloves boon: chance to drop an extra tomato seed into the seed reserve.
+	game_state.grant_item(game_state.SEED_ITEM_ID, 1)
+	# Gloves boon: chance to drop an extra tomato seed.
 	if game_state.bonus_seed_chance > 0.0 and randf() < game_state.bonus_seed_chance:
-		game_state.add_seeds(1)
+		game_state.grant_item(game_state.SEED_ITEM_ID, 1)
 	planted_tiles.erase(tile)
 	plant.queue_free()
 	return true
@@ -808,9 +813,9 @@ func _run_sickle_harvest() -> void:
 			continue
 		if not game_state.add_frog_item(game_state.FRUIT_ITEM_ID):
 			continue
-		game_state.add_seeds(1)
+		game_state.grant_item(game_state.SEED_ITEM_ID, 1)
 		if game_state.bonus_seed_chance > 0.0 and randf() < game_state.bonus_seed_chance:
-			game_state.add_seeds(1)
+			game_state.grant_item(game_state.SEED_ITEM_ID, 1)
 		planted_tiles.erase(tile)
 		plant.queue_free()
 

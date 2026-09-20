@@ -118,13 +118,13 @@ func _apply_window_layout() -> void:
 		chest_window.size = CHEST_WINDOW_SIZE
 
 ## The altar shows exactly one open drop slot: one icon per completed stack of
-## 10 tomatoes plus a single empty slot for the next deposit, capped by the
+## 50 tomatoes plus a single empty slot for the next deposit, capped by the
 ## goal. All other storages render every backing slot.
 func _visible_storage_slot_count(storage_inventory: Array[Dictionary]) -> int:
 	if open_storage != "altar":
 		return storage_inventory.size()
-	var max_slots: int = mini(storage_inventory.size(), int(ceil(float(game_state.tomato_goal) / 10.0)))
-	var visible: int = int(floor(float(game_state.tomato_count) / 10.0)) + 1
+	var max_slots: int = mini(storage_inventory.size(), int(ceil(float(game_state.tomato_goal) / game_state.MAX_STACK_SIZE)))
+	var visible: int = int(floor(float(game_state.tomato_count) / game_state.MAX_STACK_SIZE)) + 1
 	return clampi(visible, 1, max_slots)
 
 func _clear(container: Container) -> void:

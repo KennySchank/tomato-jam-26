@@ -16,10 +16,10 @@ signal seed_types_changed
 ## Emitted when the player switches which reserve they'll plant from next.
 signal active_seed_changed(seed_id: String)
 
-const FROG_CAPACITY := 2
+const FROG_CAPACITY := 6
 const CHEST_CAPACITY := 24
 const ALTAR_CAPACITY := 12
-const MAX_SEEDS := 30
+const MAX_STACK_SIZE := 50
 const SEED_ITEM_ID := "tomato_seed"
 ## Named aliases for each seed reserve. `SEED_ITEM_ID` stays as the canonical
 ## "tomato seed" identifier because it also doubles as the inventory item id
@@ -95,6 +95,7 @@ func reset_run() -> void:
 		chest_inventory.append({})
 	for _i in ALTAR_CAPACITY:
 		altar_inventory.append({})
+	frog_inventory[0] = {"id": SEED_ITEM_ID, "quantity": 10}
 	chest_inventory[0] = {"id": CHEST_ITEM_ID, "quantity": 1}
 	seed_counts = {TOMATO_SEED_ID: 10}
 	unlocked_seeds = [TOMATO_SEED_ID]
@@ -253,8 +254,6 @@ func add_chest_item(item_id: String, amount: int = 1) -> bool:
 ## Add items to the first available storage: frog slot(s) first, then the chest.
 ## Returns the number of items that could not be placed anywhere.
 func grant_item(item_id: String, amount: int) -> int:
-	if item_id == SEED_ITEM_ID:
-		return add_seeds(amount)
 	if amount <= 0:
 		return 0
 	var remaining := amount
@@ -272,9 +271,9 @@ func _capacity_for(inventory: Array[Dictionary], item_id: String) -> int:
 	var available := 0
 	for item: Dictionary in inventory:
 		if item.is_empty():
-			available += 10
+			available += MAX_STACK_SIZE
 		elif item.get("id") == item_id:
-			available += 10 - int(item.get("quantity", 0))
+			available += MAX_STACK_SIZE - int(item.get("quantity", 0))
 	return available
 
 func _add_item(inventory: Array[Dictionary], item_id: String, amount: int) -> bool:
@@ -285,8 +284,8 @@ func _add_item(inventory: Array[Dictionary], item_id: String, amount: int) -> bo
 	var remaining := amount
 	for index in inventory.size():
 		var item: Dictionary = inventory[index]
-		if not item.is_empty() and item.get("id") == item_id and int(item.get("quantity", 0)) < 10:
-			var space := 10 - int(item["quantity"])
+		if not item.is_empty() and item.get("id") == item_id and int(item.get("quantity", 0)) < MAX_STACK_SIZE:
+			var space := MAX_STACK_SIZE - int(item["quantity"])
 			var added := mini(space, remaining)
 			item["quantity"] = int(item["quantity"]) + added
 			remaining -= added
@@ -294,7 +293,7 @@ func _add_item(inventory: Array[Dictionary], item_id: String, amount: int) -> bo
 		if remaining <= 0:
 			break
 		if inventory[index].is_empty():
-			var added := mini(remaining, 10)
+			var added := mini(remaining, MAX_STACK_SIZE)
 			inventory[index] = {"id": item_id, "quantity": added}
 			remaining -= added
 	if remaining > 0:
@@ -322,8 +321,8 @@ func move_item(source: String, source_index: int, destination: String, destinati
 	if destination_item.is_empty():
 		destination_inventory[destination_index] = source_item.duplicate()
 		source_inventory[source_index] = {}
-	elif destination_item.get("id") == source_item.get("id") and int(destination_item.get("quantity", 0)) < 10:
-		var space := 10 - int(destination_item["quantity"])
+	elif destination_item.get("id") == source_item.get("id") and int(destination_item.get("quantity", 0)) < MAX_STACK_SIZE:
+		var space := MAX_STACK_SIZE - int(destination_item["quantity"])
 		var moved := mini(space, int(source_item["quantity"]))
 		destination_item["quantity"] = int(destination_item["quantity"]) + moved
 		source_item["quantity"] = int(source_item["quantity"]) - moved
