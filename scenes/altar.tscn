@@ -3,6 +3,10 @@
 [ext_resource type="Script" uid="uid://b1ltrgd2xr7la" path="res://scripts/altar.gd" id="1_altar"]
 [ext_resource type="Texture2D" uid="uid://cwsiueyqc5vd7" path="res://assets/Game-Altar.png" id="2_dwhmf"]
 [ext_resource type="Script" uid="uid://dg750m8qqllep" path="res://scripts/interactable_highlight.gd" id="2_highlight"]
+[ext_resource type="Texture2D" uid="uid://ddl4hu5e8x65i" path="res://assets/Sprite-Bob-Crow.png" id="4_7ynsc"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_s1bhj"]
+size = Vector2(153, 78)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_7ynsc"]
 atlas = ExtResource("2_dwhmf")
@@ -54,13 +58,93 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_s1bhj"]
-size = Vector2(153, 78)
+[sub_resource type="AtlasTexture" id="AtlasTexture_qlfsx"]
+atlas = ExtResource("4_7ynsc")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w0wt3"]
+atlas = ExtResource("4_7ynsc")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6nkhy"]
+atlas = ExtResource("4_7ynsc")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_glfxb"]
+atlas = ExtResource("4_7ynsc")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gs401"]
+atlas = ExtResource("4_7ynsc")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2roxl"]
+atlas = ExtResource("4_7ynsc")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sk7q7"]
+atlas = ExtResource("4_7ynsc")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jyqy6"]
+atlas = ExtResource("4_7ynsc")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_n3kel"]
+atlas = ExtResource("4_7ynsc")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u7xm2"]
+atlas = ExtResource("4_7ynsc")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_s1bhj"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qlfsx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w0wt3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6nkhy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_glfxb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gs401")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2roxl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sk7q7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jyqy6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_n3kel")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_u7xm2")
+}],
+"loop": 0,
+"name": &"default",
+"speed": 6.0
+}]
 
 [node name="Altar" type="StaticBody2D" unique_id=1373918369 groups=["interactable"]]
 scale = Vector2(1.5999994, 1.5999994)
 disable_mode = 1
 script = ExtResource("1_altar")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1558174773]
+position = Vector2(77, 25.999996)
+scale = Vector2(0.9999997, 0.9999997)
+shape = SubResource("RectangleShape2D_s1bhj")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=70125650]
 position = Vector2(79, 26)
@@ -68,11 +152,13 @@ scale = Vector2(2.4400005, 2.4400005)
 sprite_frames = SubResource("SpriteFrames_assu6")
 autoplay = "default"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1558174773]
-position = Vector2(77, 26)
-scale = Vector2(0.99999976, 0.99999976)
-shape = SubResource("RectangleShape2D_s1bhj")
-
 [node name="InteractableHighlight" type="Node2D" parent="." unique_id=789455485]
 position = Vector2(76.87503, 11.250004)
 script = ExtResource("2_highlight")
+
+[node name="Crow God" type="AnimatedSprite2D" parent="." unique_id=522170965]
+position = Vector2(55.62502, 15.000004)
+scale = Vector2(2.8242195, 2.8242195)
+sprite_frames = SubResource("SpriteFrames_s1bhj")
+frame = 9
+frame_progress = 1.0

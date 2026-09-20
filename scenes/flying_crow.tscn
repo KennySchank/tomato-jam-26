@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://ddl4hu5e8x65i" path="res://assets/Sprite-Bob-Crow.png" id="1_3i0sq"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gq4b8"]
-size = Vector2(20, 16)
+size = Vector2(26, 24)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_op1dt"]
 atlas = ExtResource("1_3i0sq")
@@ -51,8 +51,11 @@ animations = [{
 [node name="FlyingCrow" type="StaticBody2D" unique_id=1972648751]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=344554369]
+position = Vector2(-2, 4)
 shape = SubResource("RectangleShape2D_gq4b8")
 
 [node name="Flying Crow Boy" type="AnimatedSprite2D" parent="." unique_id=1813422569]
+position = Vector2(4.5, 4.5)
+scale = Vector2(1.28125, 1.28125)
 sprite_frames = SubResource("SpriteFrames_s1bhj")
 autoplay = "default"

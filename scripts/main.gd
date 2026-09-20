@@ -36,7 +36,7 @@ const DEATH_CROW_EXIT_OFFSET := Vector2(120.0, -160.0)
 ## Local offset applied to the player once it's been reparented under the
 ## crow, positioning it dangling from the crow's feet.
 const DEATH_CROW_CARRY_OFFSET := Vector2(0.0, 18.0)
-const DEATH_CROW_SWOOP_DURATION := 1.6
+const DEATH_CROW_SWOOP_DURATION := 1.1
 const DEATH_CROW_CARRY_DURATION := 2.0
 const DEATH_CROW_Z_INDEX := 150
 const ENEMY_ATTACK_RADIUS_TILES := 4.5
@@ -340,8 +340,10 @@ func _play_death_animation() -> void:
 	crow.global_position = spawn_position
 
 	# Swoop in from top-left down to the player. QUAD/OUT gives a nice
-	# "arrival" deceleration so the grab lands smoothly.
-	var target_position := player.global_position
+	# "arrival" deceleration so the grab lands smoothly. Stop the crow a hair
+	# above the player so its feet meet the player's head instead of its
+	# center dropping down to the player's center.
+	var target_position := player.global_position - DEATH_CROW_CARRY_OFFSET
 	var swoop := create_tween()
 	swoop.set_trans(Tween.TRANS_QUAD)
 	swoop.set_ease(Tween.EASE_OUT)
