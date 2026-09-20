@@ -2,6 +2,7 @@ extends Area2D
 
 @export var speed := 300.0
 @export var damage := 10.0
+@export var spin_speed := 12.0
 
 var direction := Vector2.RIGHT
 var target: Node2D
@@ -9,6 +10,8 @@ var target_position := Vector2.ZERO
 var impact_callback: Callable
 var has_target_position := false
 var source: Node
+
+@onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 
 func set_source(new_source: Node) -> void:
 	source = new_source
@@ -28,6 +31,7 @@ func set_target_position(new_target_position: Vector2) -> void:
 	rotation = direction.angle()
 
 func _physics_process(delta: float) -> void:
+	sprite.rotation += spin_speed * delta
 	if is_instance_valid(target):
 		target_position = target.global_position
 		direction = global_position.direction_to(target_position)
