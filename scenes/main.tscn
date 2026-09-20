@@ -5,19 +5,18 @@
 [ext_resource type="PackedScene" uid="uid://b4qjtxecibwdb" path="res://scenes/player.tscn" id="2_player"]
 [ext_resource type="PackedScene" uid="uid://bhx1nsqac3jqa" path="res://scenes/frog_house.tscn" id="5_tbgi4"]
 [ext_resource type="PackedScene" uid="uid://ber4664758ss8" path="res://scenes/chest.tscn" id="6_chest"]
-[ext_resource type="PackedScene" uid="uid://3gil60qwam3m" path="res://scenes/inventory_ui.tscn" id="7_inventory_ui"]
+[ext_resource type="PackedScene" uid="uid://c68iiw4xt4s27" path="res://scenes/inventory_ui.tscn" id="7_inventory_ui"]
 [ext_resource type="Script" uid="uid://dg750m8qqllep" path="res://scripts/interactable_highlight.gd" id="8_highlight"]
 [ext_resource type="Texture2D" uid="uid://dluoiye2tkt1i" path="res://icon.svg" id="9_preview_icon"]
 [ext_resource type="PackedScene" path="res://scenes/cloud_shadows.tscn" id="10_cloud_shadows"]
-[ext_resource type="PackedScene" uid="uid://4w4fwhoss4qx" path="res://scenes/HUD.tscn" id="11_hud"]
+[ext_resource type="PackedScene" uid="uid://b2urw5nm5kt57" path="res://scenes/HUD.tscn" id="11_hud"]
 [ext_resource type="Script" uid="uid://p4w6735cfx72" path="res://scripts/placement_range_preview.gd" id="11_range_preview"]
 [ext_resource type="PackedScene" uid="uid://k365fy18v6d5" path="res://scenes/altar.tscn" id="12_eb6dy"]
 [ext_resource type="Script" uid="uid://dd4oggb3vqfaf" path="res://scripts/wave_manager.gd" id="13_wave_mgr"]
 [ext_resource type="Script" uid="uid://dbm4eg2jegqxt" path="res://scripts/wave_definition.gd" id="14_wave_def"]
-[ext_resource type="PackedScene" uid="uid://c7nrcu1lnd7wb" path="res://scenes/enemy.tscn" id="15_enemy"]
-[ext_resource type="PackedScene" uid="uid://t52lkh3pd8eb" path="res://scenes/enemies/enemy_raccoon.tscn" id="16_raccoon"]
-[ext_resource type="PackedScene" uid="uid://cuuowveddw3of" path="res://scenes/enemies/enemy_caterpillar.tscn" id="16_caterpillar"]
 [ext_resource type="PackedScene" uid="uid://cmdqlpy1spea" path="res://scenes/enemies/enemy_bog_boy.tscn" id="16_bog_boy"]
+[ext_resource type="PackedScene" uid="uid://cuuowveddw3of" path="res://scenes/enemies/enemy_caterpillar.tscn" id="16_caterpillar"]
+[ext_resource type="PackedScene" uid="uid://t52lkh3pd8eb" path="res://scenes/enemies/enemy_raccoon.tscn" id="16_raccoon"]
 [ext_resource type="PackedScene" uid="uid://bx5dmihvw0rvt" path="res://scenes/round_end.tscn" id="17_round_end"]
 [ext_resource type="PackedScene" uid="uid://dajfik8rdxa4p" path="res://scenes/game_over.tscn" id="18_game_over"]
 [ext_resource type="PackedScene" uid="uid://dv1fmqr5knct0" path="res://scenes/boon_tracker.tscn" id="19_boon_tracker"]
@@ -141,7 +140,7 @@ edge_end = 0.55
 
 [node name="HUD" parent="." unique_id=1737727628 instance=ExtResource("11_hud")]
 
-[node name="BoonTracker" parent="." instance=ExtResource("19_boon_tracker")]
+[node name="BoonTracker" parent="." unique_id=1594728628 instance=ExtResource("19_boon_tracker")]
 
 [node name="Altar" parent="." unique_id=294149674 instance=ExtResource("12_eb6dy")]
 position = Vector2(476, 73)
