@@ -29,7 +29,10 @@ func _update_growth_sprite(progress: float) -> void:
 	var frame_count := sprite.sprite_frames.get_frame_count(sprite.animation)
 	if frame_count <= 1:
 		return
-	sprite.frame = mini(int(progress * float(frame_count)), frame_count - 1)
+	var next_frame := mini(int(progress * float(frame_count)), frame_count - 1)
+	sprite.frame = next_frame
+	if next_frame == frame_count - 1:
+		is_mature = true
 
 func _on_growth_finished() -> void:
 	is_mature = true
