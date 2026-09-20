@@ -287,6 +287,11 @@ func _on_tomato_count_changed(count: int, goal: int) -> void:
 		round_end.show_round_end()
 
 func _on_round_end_closed() -> void:
+	if not _round_end_shown:
+		return
+	# Clear this before resetting the altar so duplicate close/deposit events
+	# cannot advance the run twice.
+	_round_end_shown = false
 	# The round is only "completed" once the player has picked a boon and
 	# dismissed the round-end screen — record it here.
 	if run_stats != null and run_stats.has_method("record_round_completed"):
@@ -296,7 +301,6 @@ func _on_round_end_closed() -> void:
 	game_state.increase_tomato_goal()
 	game_state.reset_altar_for_new_round()
 	wave_manager.restart_harvest_timer()
-	_round_end_shown = false
 
 func _on_game_lost() -> void:
 	inventory_ui.close_all_windows()
@@ -741,14 +745,11 @@ func _process(_delta: float) -> void:
 	var tower_is_selected := false
 	if inventory_ui != null and inventory_ui.is_node_ready():
 		var selected_item: Dictionary = game_state.frog_inventory[inventory_ui.selected_frog_slot]
-		if not selected_item.is_empty():
-			var item_id: String = selected_item.get("id", "")
-			tower_is_selected = item_id == game_state.FRUIT_ITEM_ID
-			if not hover_is_harvest_target and item_id == game_state.SEED_ITEM_ID:
-				hover_is_valid = _can_place_item(hovered_tile, item_id)
-				preview_scale = Vector2.ONE * 0.18
-				preview_node = plant_preview
-			elif not hover_is_harvest_target and item_id == game_state.FRUIT_ITEM_ID:
+		var selected_item_id: String = selected_item.get("id", "") if not selected_item.is_empty() else ""
+		tower_is_selected = selected_item_id == game_state.FRUIT_ITEM_ID
+		if not hover_is_harvest_target and tower_is_selected:
+			var item_id: String = game_state.FRUIT_ITEM_ID
+			if not hover_is_harvest_target and item_id == game_state.FRUIT_ITEM_ID:
 				hover_is_valid = _can_place_item(hovered_tile, item_id)
 				preview_scale = Vector2.ONE * 1.68
 				preview_node = placement_preview
