@@ -1,11 +1,11 @@
-[gd_scene format=4 uid="uid://b7kdtbvewnk1a"]
+[gd_scene format=4 uid="uid://o5s4h4vlw616"]
 
 [ext_resource type="Script" uid="uid://cva5thvk03khi" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Texture2D" uid="uid://d017yfbx77yoo" path="res://assets/BaseSpriteSheet.png" id="2_jyhfs"]
 [ext_resource type="PackedScene" uid="uid://b4qjtxecibwdb" path="res://scenes/player.tscn" id="2_player"]
 [ext_resource type="PackedScene" uid="uid://bhx1nsqac3jqa" path="res://scenes/frog_house.tscn" id="5_tbgi4"]
 [ext_resource type="PackedScene" uid="uid://ber4664758ss8" path="res://scenes/chest.tscn" id="6_chest"]
-[ext_resource type="PackedScene" uid="uid://c68iiw4xt4s27" path="res://scenes/inventory_ui.tscn" id="7_inventory_ui"]
+[ext_resource type="PackedScene" path="res://scenes/inventory_ui.tscn" id="7_inventory_ui"]
 [ext_resource type="Script" uid="uid://dg750m8qqllep" path="res://scripts/interactable_highlight.gd" id="8_highlight"]
 [ext_resource type="Texture2D" uid="uid://dluoiye2tkt1i" path="res://icon.svg" id="9_preview_icon"]
 [ext_resource type="PackedScene" path="res://scenes/cloud_shadows.tscn" id="10_cloud_shadows"]
@@ -50,6 +50,9 @@ sources/3 = SubResource("TileSetAtlasSource_muem4")
 vertices = PackedVector2Array(16, 16, 1136, 16, 1136, 632, 16, 632)
 polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
 agent_radius = 16.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_s1bhj"]
+size = Vector2(6.525635, 9.395779)
 
 [sub_resource type="Resource" id="Wave_1"]
 script = ExtResource("14_wave_def")
@@ -127,7 +130,6 @@ tile_map_data = PackedByteArray("AAABAAEAAAAFAAAAAAACAAEAAAAFAAAAAAACAAIAAAAEAAA
 tile_set = SubResource("TileSet_lquwl")
 
 [node name="WalkableArea" type="NavigationRegion2D" parent="." unique_id=1247266027]
-visible = false
 navigation_polygon = SubResource("NavigationPolygon_main")
 
 [node name="Player" parent="." unique_id=567865120 instance=ExtResource("2_player")]
@@ -138,6 +140,10 @@ z_index = -19
 position = Vector2(936.00006, 190)
 scale = Vector2(6.62, 6.62)
 
+[node name="Chest blocker" type="CollisionShape2D" parent="Frog House" unique_id=1924873521]
+position = Vector2(-7.9456024, 9.682787)
+shape = SubResource("RectangleShape2D_s1bhj")
+
 [node name="Chest" parent="." unique_id=1258476236 instance=ExtResource("6_chest")]
 position = Vector2(840, 262)
 
@@ -145,21 +151,22 @@ position = Vector2(840, 262)
 script = ExtResource("8_highlight")
 
 [node name="PlacementPreview" type="Sprite2D" parent="." unique_id=153430696]
-visible = false
 modulate = Color(1, 1, 1, 0.6)
 z_index = 1
 texture = ExtResource("9_preview_icon")
 
 [node name="PlantPreview" type="AnimatedSprite2D" parent="." unique_id=205284178]
-visible = false
 modulate = Color(1, 1, 1, 0.6)
 z_index = 1
 
 [node name="PlacementRangePreview" type="Node2D" parent="." unique_id=187306679]
-visible = false
 script = ExtResource("11_range_preview")
 
 [node name="CloudShadows" parent="." unique_id=198531367 instance=ExtResource("10_cloud_shadows")]
+offset_left = -28.0
+offset_top = -1.0
+offset_right = 1124.0
+offset_bottom = 647.0
 shadow_color = Color(0, 0.14117648, 0.039215688, 1)
 shadow_strength = 0.17
 horizontal_speed = 0.05299999999999999
@@ -182,10 +189,8 @@ waves = Array[ExtResource("14_wave_def")]([SubResource("Wave_1"), SubResource("W
 endless_mode = true
 
 [node name="RoundEnd" parent="." unique_id=1028732954 instance=ExtResource("17_round_end")]
-visible = false
 
 [node name="GameOver" parent="." unique_id=1291462599 instance=ExtResource("18_game_over")]
-visible = false
 
 [node name="Onboarding" type="CanvasLayer" parent="." unique_id=1963000001]
 layer = 20
