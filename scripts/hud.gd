@@ -2,7 +2,9 @@ extends StaticBody2D
 
 @onready var tomato_count_label: Label = $TomatoCount
 @onready var timer_label: Label = $Timer
+@onready var round_counter_label: Label = $ScreenOverlay/RoundCounter
 @onready var game_state: Node = get_node("/root/GameState")
+@onready var run_stats: Node = get_node("/root/RunStats")
 
 var _wave_manager: WaveManager
 var _run_ended: bool = false
@@ -10,7 +12,9 @@ var _run_ended: bool = false
 
 func _ready() -> void:
 	game_state.tomato_count_changed.connect(_on_tomato_count_changed)
+	run_stats.stats_changed.connect(_on_stats_changed)
 	_refresh_tomato_label(game_state.tomato_count, game_state.tomato_goal)
+	_refresh_round_counter()
 	timer_label.text = "--:--"
 
 
@@ -28,6 +32,15 @@ func _on_tomato_count_changed(count: int, goal: int) -> void:
 
 func _refresh_tomato_label(count: int, goal: int) -> void:
 	tomato_count_label.text = "%d / %d" % [count, goal]
+
+
+func _on_stats_changed() -> void:
+	_refresh_round_counter()
+
+
+func _refresh_round_counter() -> void:
+	# The current round is one ahead of the number already completed this run.
+	round_counter_label.text = "WAVE %d" % (run_stats.current_run_rounds + 1)
 
 
 func _on_harvest_time_changed(seconds_remaining: float) -> void:

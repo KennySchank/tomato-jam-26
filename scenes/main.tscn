@@ -189,6 +189,7 @@ visible = false
 
 [node name="Onboarding" type="CanvasLayer" parent="." unique_id=1963000001]
 layer = 20
+visible = false
 script = ExtResource("20_onboarding")
 
 [node name="Backdrop" type="ColorRect" parent="Onboarding" unique_id=1963000002]

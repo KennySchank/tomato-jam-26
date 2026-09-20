@@ -46,3 +46,23 @@ theme_override_font_sizes/font_size = 16
 text = "1:24"
 horizontal_alignment = 1
 vertical_alignment = 2
+
+[node name="ScreenOverlay" type="CanvasLayer" parent="." unique_id=2064865]
+
+[node name="RoundCounter" type="Label" parent="ScreenOverlay" unique_id=2064866]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -966.0
+offset_top = -645.0
+offset_right = -838.0
+offset_bottom = -613.0
+grow_horizontal = 0
+grow_vertical = 0
+scale = Vector2(1.465, 1.465)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "WAVE 1"
+vertical_alignment = 1
