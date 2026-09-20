@@ -1,16 +1,53 @@
-[gd_scene load_steps=3 format=4]
+[gd_scene format=3 uid="uid://d0k4vq7gflo38"]
 
 [ext_resource type="Script" uid="uid://dq7udt0aadhgs" path="res://scripts/plant.gd" id="1_plant"]
-[ext_resource type="Texture2D" path="res://icon.svg" id="2_icon"]
+[ext_resource type="Texture2D" uid="uid://d017yfbx77yoo" path="res://assets/BaseSpriteSheet.png" id="2_odjdt"]
 
-[node name="Plant" type="Node2D"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_a88lo"]
+atlas = ExtResource("2_odjdt")
+region = Rect2(96, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_m5w0e"]
+atlas = ExtResource("2_odjdt")
+region = Rect2(112, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_toh6u"]
+atlas = ExtResource("2_odjdt")
+region = Rect2(128, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ptog4"]
+atlas = ExtResource("2_odjdt")
+region = Rect2(144, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_kkyey"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a88lo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_m5w0e")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_toh6u")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ptog4")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="Plant" type="Node2D" unique_id=224582632]
 z_index = -5
 script = ExtResource("1_plant")
 
-[node name="SwayPivot" type="Node2D" parent="."]
+[node name="SwayPivot" type="Node2D" parent="." unique_id=1429880015]
 position = Vector2(0, 12)
 
-[node name="Sprite2D" type="Sprite2D" parent="SwayPivot"]
-texture = ExtResource("2_icon")
-position = Vector2(0, -12)
-scale = Vector2(0.18, 0.18)
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="SwayPivot" unique_id=580662078]
+position = Vector2(2, -13.999999)
+scale = Vector2(3.1, 3.1)
+sprite_frames = SubResource("SpriteFrames_kkyey")
+frame_progress = 0.9903202

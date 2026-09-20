@@ -111,6 +111,11 @@ modulate = Color(1, 1, 1, 0.6)
 z_index = 1
 texture = ExtResource("9_preview_icon")
 
+[node name="PlantPreview" type="AnimatedSprite2D" parent="." unique_id=205284178]
+visible = false
+modulate = Color(1, 1, 1, 0.6)
+z_index = 1
+
 [node name="PlacementRangePreview" type="Node2D" parent="." unique_id=187306679]
 visible = false
 script = ExtResource("11_range_preview")
