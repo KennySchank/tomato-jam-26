@@ -55,7 +55,10 @@ func _on_body_entered(body: Node2D) -> void:
 
 func _hit_target() -> void:
 	if is_instance_valid(target) and target.has_method("take_damage"):
-		target.take_damage()
+		if target.is_in_group("enemies"):
+			target.take_damage(damage)
+		else:
+			target.take_damage()
 	if impact_callback.is_valid():
 		impact_callback.call()
 	queue_free()
