@@ -25,13 +25,10 @@ var open_storage := "chest"
 @onready var chest_slots: GridContainer = $ChestWindow/Margin/Column/ChestSlots
 @onready var window_title: Label = $ChestWindow/Margin/Column/Title
 @onready var window_hint: Label = $ChestWindow/Margin/Column/Hint
-@onready var seed_reserve: Label = $SeedReserve
 
 func _ready() -> void:
 	game_state.inventory_changed.connect(_refresh)
-	game_state.seed_count_changed.connect(_on_seed_count_changed)
 	_refresh()
-	_on_seed_count_changed(game_state.seed_count, game_state.MAX_SEEDS)
 
 func _process(_delta: float) -> void:
 	if not chest_window.visible:
@@ -93,7 +90,6 @@ func _refresh() -> void:
 	_clear(frog_slots)
 	_clear(chest_slots)
 	_clear(toolbar_slots)
-	_on_seed_count_changed(game_state.seed_count, game_state.MAX_SEEDS)
 	var storage_inventory: Array[Dictionary] = game_state.altar_inventory if open_storage == "altar" else game_state.chest_inventory
 	for index in game_state.frog_inventory.size():
 		_add_slot(frog_slots, "frog", index, game_state.frog_inventory[index])
@@ -112,13 +108,13 @@ func _apply_window_layout() -> void:
 		chest_window.size = CHEST_WINDOW_SIZE
 
 ## The altar shows exactly one open drop slot: one icon per completed stack of
-## 10 tomatoes plus a single empty slot for the next deposit, capped by the
+## 50 tomatoes plus a single empty slot for the next deposit, capped by the
 ## goal. All other storages render every backing slot.
 func _visible_storage_slot_count(storage_inventory: Array[Dictionary]) -> int:
 	if open_storage != "altar":
 		return storage_inventory.size()
-	var max_slots: int = mini(storage_inventory.size(), int(ceil(float(game_state.tomato_goal) / 10.0)))
-	var visible: int = int(floor(float(game_state.tomato_count) / 10.0)) + 1
+	var max_slots: int = mini(storage_inventory.size(), int(ceil(float(game_state.tomato_goal) / game_state.MAX_STACK_SIZE)))
+	var visible: int = int(floor(float(game_state.tomato_count) / game_state.MAX_STACK_SIZE)) + 1
 	return clampi(visible, 1, max_slots)
 
 func _clear(container: Container) -> void:
@@ -150,10 +146,6 @@ func _item_text(item: Dictionary) -> String:
 	if item_id == game_state.FRUIT_ITEM_ID:
 		return "Tomato\n×%d" % quantity
 	return item_id
-
-func _on_seed_count_changed(count: int, maximum: int) -> void:
-	if seed_reserve != null:
-		seed_reserve.text = "Seeds\n×%d / %d" % [count, maximum]
 
 func _on_slot_pressed(inventory_name: String, index: int) -> void:
 	if inventory_name == "frog":
