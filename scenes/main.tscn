@@ -65,9 +65,9 @@ enemy_count = 10
 spawn_interval_min = 1.5
 spawn_interval_max = 2.75
 max_concurrent = 6
-enemy_speed_multiplier = 1.1
-enemy_health_multiplier = 1.1
-enemy_attack_interval_multiplier = 0.95
+enemy_speed_multiplier = 1.05
+enemy_health_multiplier = 1.05
+enemy_attack_interval_multiplier = 0.98
 enemy_scenes = Array[PackedScene]([ExtResource("15_enemy"), ExtResource("16_raccoon")])
 reward_seeds = 4
 
@@ -78,9 +78,9 @@ enemy_count = 16
 spawn_interval_min = 0.9
 spawn_interval_max = 2.0
 max_concurrent = 9
-enemy_speed_multiplier = 1.2
-enemy_health_multiplier = 1.2
-enemy_attack_interval_multiplier = 0.9
+enemy_speed_multiplier = 1.1
+enemy_health_multiplier = 1.1
+enemy_attack_interval_multiplier = 0.95
 enemy_scenes = Array[PackedScene]([ExtResource("15_enemy"), ExtResource("16_raccoon")])
 reward_seeds = 5
 

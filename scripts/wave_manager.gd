@@ -34,15 +34,15 @@ enum Phase { IDLE, PREPARING, ACTIVE, COMPLETED, LOST }
 ## Prep time used for every endless wave.
 @export_range(0.0, 120.0, 0.5) var endless_prep_time: float = 20.0
 ## Extra enemies added per endless wave beyond the last authored one.
-@export_range(0, 40) var endless_enemy_step: int = 4
+@export_range(0, 40) var endless_enemy_step: int = 3
 ## Extra concurrent enemies allowed per endless wave.
 @export_range(0, 20) var endless_concurrent_step: int = 1
 ## Enemy movement, health, and attack pressure increase per endless wave.
-@export_range(1.0, 1.5, 0.01) var endless_speed_multiplier_step: float = 1.04
-@export_range(1.0, 1.5, 0.01) var endless_health_multiplier_step: float = 1.06
-@export_range(0.5, 1.0, 0.01) var endless_attack_interval_factor: float = 0.97
+@export_range(1.0, 1.5, 0.01) var endless_speed_multiplier_step: float = 1.02
+@export_range(1.0, 1.5, 0.01) var endless_health_multiplier_step: float = 1.03
+@export_range(0.5, 1.0, 0.01) var endless_attack_interval_factor: float = 0.985
 ## Spawn interval is multiplied by this factor each endless wave (min & max).
-@export_range(0.5, 1.0, 0.01) var endless_spawn_interval_factor: float = 0.92
+@export_range(0.5, 1.0, 0.01) var endless_spawn_interval_factor: float = 0.96
 ## Lower bound clamp for endless spawn interval min.
 @export_range(0.1, 5.0, 0.1) var endless_min_spawn_interval: float = 0.4
 
