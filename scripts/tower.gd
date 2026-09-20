@@ -20,6 +20,7 @@ signal died
 
 var idle_animation := &"idle"
 var shooting_animation := &"shooting"
+var death_animation := &"Death"
 
 func _ready() -> void:
 	shake_phase = randf_range(0.0, TAU)
@@ -81,7 +82,13 @@ func _update_deterioration() -> void:
 
 func _die() -> void:
 	is_dying = true
-	# Replace this with the death animation once its frames are available.
+	if sprite.sprite_frames.has_animation(death_animation):
+		sprite.stop()
+		sprite.play(death_animation)
+		return
+	_finish_death()
+
+func _finish_death() -> void:
 	died.emit()
 	queue_free()
 
@@ -102,6 +109,9 @@ func _play_shooting() -> void:
 		sprite.play(shooting_animation)
 
 func _on_animated_sprite_2d_animation_finished() -> void:
+	if sprite.animation == death_animation:
+		_finish_death()
+		return
 	if sprite.animation == shooting_animation:
 		_play_idle()
 
