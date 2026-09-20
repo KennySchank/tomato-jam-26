@@ -57,6 +57,9 @@ func _recount_tomatoes() -> void:
 	var delta: int = total - _last_altar_tomato_count
 	if delta > 0:
 		total_tomatoes_deposited += delta
+		var run_stats := get_node_or_null("/root/RunStats")
+		if run_stats != null and run_stats.has_method("record_tomato_deposit"):
+			run_stats.record_tomato_deposit(delta)
 	_last_altar_tomato_count = total
 	tomato_count = total
 	tomato_count_changed.emit(tomato_count, tomato_goal)

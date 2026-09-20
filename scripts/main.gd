@@ -41,6 +41,7 @@ var plant_preview_scale := Vector2.ONE
 @onready var plant_preview: AnimatedSprite2D = $PlantPreview
 @onready var placement_range_preview: Node2D = $PlacementRangePreview
 @onready var game_state: Node = get_node("/root/GameState")
+@onready var run_stats: Node = get_node("/root/RunStats")
 @onready var inventory_ui: CanvasLayer = $InventoryUI
 @onready var wave_manager: WaveManager = $WaveManager
 @onready var hud: Node = $HUD
@@ -107,6 +108,10 @@ func _on_tomato_count_changed(count: int, goal: int) -> void:
 		round_end.show_round_end()
 
 func _on_round_end_closed() -> void:
+	# The round is only "completed" once the player has picked a boon and
+	# dismissed the round-end screen — record it here.
+	if run_stats != null and run_stats.has_method("record_round_completed"):
+		run_stats.record_round_completed()
 	# Endless mode: reset the altar and restart the harvest countdown so the
 	# player has a fresh deadline for the next tribute cycle.
 	game_state.reset_altar_for_new_round()
@@ -115,7 +120,12 @@ func _on_round_end_closed() -> void:
 
 func _on_game_lost() -> void:
 	inventory_ui.close_all_windows()
-	game_over.show_game_over(game_state.total_tomatoes_deposited)
+	# Finalize this run's stats before showing the game-over screen so any UI
+	# that reads from RunStats sees the frozen post-run values.
+	var report = null
+	if run_stats != null and run_stats.has_method("record_death"):
+		report = run_stats.record_death()
+	game_over.show_game_over(report)
 
 func _count_brown_soil_tiles() -> int:
 	var count := 0

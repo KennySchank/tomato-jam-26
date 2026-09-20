@@ -190,4 +190,7 @@ func _weight_for(rarity_val: int) -> int:
 func _on_boon_chosen(boon: Boon) -> void:
 	if boon != null and boon.has_method("apply_effect"):
 		boon.apply_effect()
+	var run_stats := get_node_or_null("/root/RunStats")
+	if run_stats != null and run_stats.has_method("record_boon_collected"):
+		run_stats.record_boon_collected()
 	_close()

@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://4w4fwhoss4qx"]
+[gd_scene format=3 uid="uid://b2urw5nm5kt57"]
 
 [ext_resource type="Texture2D" uid="uid://buddyowa6hk44" path="res://assets/Tomato-UI.png" id="1_ghshn"]
 [ext_resource type="Script" uid="uid://bqdsggihcurqk" path="res://scripts/hud.gd" id="1_hud"]

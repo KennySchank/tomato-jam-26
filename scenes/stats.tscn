@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://btxqn73k86fx3"]
+
+[ext_resource type="Texture2D" uid="uid://bdv16828y7d5d" path="res://assets/DialogCards-Sheet.png" id="1_3f7q0"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_s1bhj"]
+size = Vector2(96, 128)
+
+[node name="Stats" type="StaticBody2D" unique_id=1269436515]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=112361726]
+position = Vector2(51, 64)
+shape = SubResource("RectangleShape2D_s1bhj")
+
+[node name="Stats Panel" type="Sprite2D" parent="." unique_id=1781950067]
+position = Vector2(52, 64)
+texture = ExtResource("1_3f7q0")
+region_enabled = true
+region_rect = Rect2(48, 128, 96, 128)
+
+[node name="Card Title" type="Label" parent="Stats Panel" unique_id=1339577615]
+custom_minimum_size = Vector2(5, 0)
+offset_left = -44.0
+offset_top = -61.0
+offset_right = 42.0
+offset_bottom = -25.0
+theme_override_colors/font_color = Color(0.4, 0.22352941, 0.19215687, 1)
+theme_override_constants/line_spacing = 0
+theme_override_font_sizes/font_size = 12
+text = "Round Complete!"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Round Label" type="Label" parent="Stats Panel" unique_id=316122383]
+offset_left = -42.0
+offset_top = -22.0
+offset_right = 28.0
+offset_bottom = 1.0
+theme_override_colors/font_color = Color(0.98303884, 0.9358653, 0.8925176, 1)
+theme_override_constants/line_spacing = 0
+theme_override_font_sizes/font_size = 14
+text = "Rounds : 3"
+
+[node name="Round Label2" type="Label" parent="Stats Panel" unique_id=1979310065]
+offset_left = 8.0
+offset_top = -1.0
+offset_right = 44.0
+offset_bottom = 22.0
+theme_override_colors/font_color = Color(0.98303884, 0.9358653, 0.8925176, 1)
+theme_override_constants/line_spacing = 0
+theme_override_font_sizes/font_size = 14
+text = " : 378"

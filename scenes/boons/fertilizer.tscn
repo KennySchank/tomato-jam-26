@@ -18,5 +18,6 @@ text = "Provides good vibes and cute looks"
 text = "Yeehaw"
 
 [node name="Item Image" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="3" unique_id=1198312682]
+position = Vector2(3.8146973e-06, -45.38461)
 scale = Vector2(2, 2)
 texture = ExtResource("2_nw6oa")
