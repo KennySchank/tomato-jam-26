@@ -12,14 +12,14 @@ size = Vector2(601, 447)
 process_mode = 3
 script = ExtResource("2_round_end")
 
+[node name="ABCollision" type="CollisionShape2D" parent="." unique_id=954498361]
+position = Vector2(302.5, 227.5)
+shape = SubResource("RectangleShape2D_s1bhj")
+
 [node name="AltarBackground" type="Sprite2D" parent="." unique_id=1304275248]
 position = Vector2(306.00003, 231.00003)
 scale = Vector2(4.6458335, 4.6458335)
 texture = ExtResource("1_naec3")
-
-[node name="ABCollision" type="CollisionShape2D" parent="." unique_id=954498361]
-position = Vector2(302.5, 227.5)
-shape = SubResource("RectangleShape2D_s1bhj")
 
 [node name="DialogBox" parent="." unique_id=144182113 instance=ExtResource("3_7rbo8")]
 position = Vector2(309, 529)
