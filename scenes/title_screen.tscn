@@ -1,0 +1,110 @@
+[gd_scene format=3 uid="uid://cs0am4i0r7si2"]
+
+[ext_resource type="Script" uid="uid://87dpqwaiyc2m" path="res://scripts/title_screen.gd" id="0_title_scr"]
+[ext_resource type="Texture2D" uid="uid://b3n787gy5ea7u" path="res://assets/Start-Screen.png" id="1_sa3yf"]
+[ext_resource type="Texture2D" uid="uid://cx5s5lsx3ud3o" path="res://assets/Sprite-Frog-Shadowed-Art-Sheet.png" id="2_s4lrb"]
+[ext_resource type="Texture2D" uid="uid://bdv16828y7d5d" path="res://assets/DialogCards-Sheet.png" id="3_s4lrb"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_s1bhj"]
+size = Vector2(1153, 657)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mgrm8"]
+atlas = ExtResource("2_s4lrb")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dc4i4"]
+atlas = ExtResource("2_s4lrb")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e54dn"]
+atlas = ExtResource("2_s4lrb")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3yumr"]
+atlas = ExtResource("2_s4lrb")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cs5ya"]
+atlas = ExtResource("2_s4lrb")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mykxm"]
+atlas = ExtResource("2_s4lrb")
+region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_s1bhj"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mgrm8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dc4i4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_e54dn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3yumr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cs5ya")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mykxm")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="SystemFont" id="SystemFont_woa3q"]
+font_names = PackedStringArray("Fixedsys", "Terminal", "Small Fonts", "Consolas", "Courier New")
+antialiasing = 0
+hinting = 0
+subpixel_positioning = 0
+
+[node name="TitleScreen" type="StaticBody2D" unique_id=45849153]
+script = ExtResource("0_title_scr")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1328245106]
+position = Vector2(572.5, 318.5)
+shape = SubResource("RectangleShape2D_s1bhj")
+
+[node name="Screen Background" type="Sprite2D" parent="." unique_id=692237162]
+position = Vector2(572, 323)
+texture = ExtResource("1_sa3yf")
+
+[node name="Shadow Frog" type="AnimatedSprite2D" parent="Screen Background" unique_id=670129026]
+position = Vector2(-541, 159)
+sprite_frames = SubResource("SpriteFrames_s1bhj")
+autoplay = "default"
+
+[node name="Tomato Button" type="Sprite2D" parent="Screen Background" unique_id=1711951566]
+position = Vector2(517, 283)
+scale = Vector2(5.0454545, 5.0454545)
+texture = ExtResource("3_s4lrb")
+region_enabled = true
+region_rect = Rect2(192, 67, 16, 11)
+
+[node name="Label" type="Label" parent="." unique_id=1408814736]
+offset_left = 1058.0
+offset_top = 598.0
+offset_right = 1120.0
+offset_bottom = 622.0
+theme_override_fonts/font = SubResource("SystemFont_woa3q")
+theme_override_font_sizes/font_size = 23
+text = "Play"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PlayButton" type="Button" parent="." unique_id=1965398527]
+modulate = Color(1, 1, 1, 0)
+offset_left = 1049.0
+offset_top = 578.0
+offset_right = 1129.0
+offset_bottom = 634.0
+mouse_default_cursor_shape = 2
+flat = true
+
+[connection signal="pressed" from="PlayButton" to="." method="_on_play_button_pressed"]
