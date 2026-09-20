@@ -15,7 +15,7 @@ const BORDER_SIZE := Vector2(58.0, 58.0)
 func _ready() -> void:
 	add_to_group("interactable")
 	highlight.configure(map, player)
-	var altar_tile := map.local_to_map(map.to_local(global_position))
+	var altar_tile := _interaction_tile()
 	highlight.set_target_tile(altar_tile, Rect2(-BORDER_SIZE * 0.5, BORDER_SIZE), true)
 
 func can_interact_at(world_position: Vector2) -> bool:
@@ -24,12 +24,12 @@ func can_interact_at(world_position: Vector2) -> bool:
 	var footprint := _global_footprint()
 	if footprint.has_point(world_position):
 		return true
-	var altar_tile := map.local_to_map(map.to_local(global_position))
+	var altar_tile := _interaction_tile()
 	var clicked_tile := map.local_to_map(map.to_local(world_position))
 	return clicked_tile == altar_tile
 
 func can_player_interact(player_node: Node2D) -> bool:
-	var altar_tile := map.local_to_map(map.to_local(global_position))
+	var altar_tile := _interaction_tile()
 	return highlight.is_in_range(altar_tile)
 
 ## True when the given map tile is within the altar's tower exclusion radius.
@@ -42,16 +42,19 @@ func _global_footprint() -> Rect2:
 	var shape := collision_shape.shape as RectangleShape2D
 	if shape == null:
 		return Rect2(global_position, Vector2.ZERO)
-	var half := shape.size * 0.5 * collision_shape.scale.abs()
+	var half := shape.size * 0.5 * collision_shape.global_scale.abs()
 	var center: Vector2 = collision_shape.global_position
 	return Rect2(center - half, half * 2.0)
+
+func _interaction_tile() -> Vector2i:
+	return map.local_to_map(map.to_local(collision_shape.global_position))
 
 func interact() -> void:
 	opened.emit()
 
 func _process(_delta: float) -> void:
 	highlight.set_target_tile(
-		map.local_to_map(map.to_local(global_position)),
+		_interaction_tile(),
 		Rect2(-BORDER_SIZE * 0.5, BORDER_SIZE),
 		can_interact_at(get_global_mouse_position())
 	)

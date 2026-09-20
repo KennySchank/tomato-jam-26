@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://ca6yvv5a5v6c4"]
 
-[ext_resource type="AudioStream" uid="uid://dm6i8q020mwhb" path="res://assets/lil frog song.ogg" id="1_0j54u"]
+[ext_resource type="AudioStream" uid="uid://2enj8ls8xvd7" path="res://assets/lil frog song.wav" id="1_0j54u"]
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" unique_id=1421320381]
 stream = ExtResource("1_0j54u")
