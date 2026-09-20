@@ -28,6 +28,7 @@ var tower_tiles: Dictionary = {}
 var hovered_tile := Vector2i(999999, 999999)
 var enemy_routes: Array[Array] = []
 var brown_soil_count: int = 0
+var plant_preview_scale := Vector2.ONE
 
 @onready var player: CharacterBody2D = $Player
 @onready var sprite: AnimatedSprite2D = $Player/AnimatedSprite2D
@@ -37,6 +38,7 @@ var brown_soil_count: int = 0
 @onready var altar: StaticBody2D = $Altar
 @onready var highlight: InteractableHighlight = $InteractableHighlight
 @onready var placement_preview: Sprite2D = $PlacementPreview
+@onready var plant_preview: AnimatedSprite2D = $PlantPreview
 @onready var placement_range_preview: Node2D = $PlacementRangePreview
 @onready var game_state: Node = get_node("/root/GameState")
 @onready var inventory_ui: CanvasLayer = $InventoryUI
@@ -48,6 +50,17 @@ var brown_soil_count: int = 0
 var _round_end_shown: bool = false
 
 func _ready() -> void:
+	var plant_scene_instance := PLANT_SCENE.instantiate()
+	var plant_sprite: AnimatedSprite2D = plant_scene_instance.get_node("SwayPivot/AnimatedSprite2D")
+	plant_preview.sprite_frames = plant_sprite.sprite_frames
+	plant_preview.animation = plant_sprite.animation
+	plant_preview.stop()
+	var final_frame := plant_preview.sprite_frames.get_frame_count(plant_preview.animation) - 1
+	plant_preview.set_frame_and_progress(final_frame, 0.0)
+	plant_preview_scale = plant_sprite.scale
+	plant_preview.scale = plant_preview_scale
+	plant_scene_instance.free()
+
 	var start_cell := map.local_to_map(map.to_local(PLOT_CENTER))
 	destination = _cell_center(start_cell)
 	player.position = destination
@@ -355,6 +368,7 @@ func _process(_delta: float) -> void:
 	var hover_is_valid := _is_plantable(hovered_tile)
 	var hover_is_harvest_target := _is_in_planting_range(hovered_tile) and planted_tiles.has(hovered_tile)
 	var preview_scale := Vector2.ZERO
+	var preview_node: Node2D = placement_preview
 	var tower_is_selected := false
 	if inventory_ui != null and inventory_ui.is_node_ready():
 		var selected_item: Dictionary = game_state.frog_inventory[inventory_ui.selected_frog_slot]
@@ -364,10 +378,16 @@ func _process(_delta: float) -> void:
 			if not hover_is_harvest_target and (item_id == game_state.SEED_ITEM_ID or item_id == game_state.FRUIT_ITEM_ID):
 				hover_is_valid = _can_place_item(hovered_tile, item_id)
 				preview_scale = Vector2.ONE * (0.18 if item_id == game_state.SEED_ITEM_ID else 0.22)
-	placement_preview.visible = hover_is_valid and preview_scale != Vector2.ZERO
-	if placement_preview.visible:
-		placement_preview.global_position = _cell_center(hovered_tile)
-		placement_preview.scale = preview_scale
+				preview_node = plant_preview if item_id == game_state.SEED_ITEM_ID else placement_preview
+	placement_preview.visible = false
+	plant_preview.visible = false
+	preview_node.visible = hover_is_valid and preview_scale != Vector2.ZERO
+	if preview_node.visible:
+		preview_node.global_position = _cell_center(hovered_tile)
+		if preview_node == placement_preview:
+			preview_node.scale = preview_scale
+		else:
+			preview_node.scale = plant_preview_scale
 	placement_range_preview.visible = tower_is_selected and _can_place_item(hovered_tile, game_state.FRUIT_ITEM_ID)
 	if placement_range_preview.visible:
 		placement_range_preview.global_position = _cell_center(hovered_tile)

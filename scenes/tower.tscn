@@ -1,11 +1,89 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://cgcvtxgbt5uga"]
 
-[ext_resource type="Texture2D" path="res://icon.svg" id="1_icon"]
-[ext_resource type="Script" path="res://scripts/tower.gd" id="2_tower"]
+[ext_resource type="Texture2D" uid="uid://dluoiye2tkt1i" path="res://icon.svg" id="1_icon"]
+[ext_resource type="Script" uid="uid://dcdr7rnt8lgtv" path="res://scripts/tower.gd" id="2_tower"]
+[ext_resource type="Texture2D" uid="uid://bel7di0uelysr" path="res://assets/TomatoTower.png" id="3_ktxwe"]
 
-[node name="Tower" type="Node2D"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_qrbg1"]
+atlas = ExtResource("3_ktxwe")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jfguu"]
+atlas = ExtResource("3_ktxwe")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_85u2j"]
+atlas = ExtResource("3_ktxwe")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xl0gn"]
+atlas = ExtResource("3_ktxwe")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vqps3"]
+atlas = ExtResource("3_ktxwe")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qfw7u"]
+atlas = ExtResource("3_ktxwe")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_p8022"]
+atlas = ExtResource("3_ktxwe")
+region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_olwqo"]
+atlas = ExtResource("3_ktxwe")
+region = Rect2(192, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_kkyey"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qrbg1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jfguu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_85u2j")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xl0gn")
+}],
+"loop": 1,
+"name": &"Idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vqps3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qfw7u")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_p8022")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_olwqo")
+}],
+"loop": 1,
+"name": &"Shooting",
+"speed": 5.0
+}]
+
+[node name="Tower" type="Node2D" unique_id=897419669]
 script = ExtResource("2_tower")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("1_icon")
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=493968014]
+visible = false
 scale = Vector2(0.22, 0.22)
+texture = ExtResource("1_icon")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=84853571]
+scale = Vector2(0.22, 0.22)
+sprite_frames = SubResource("SpriteFrames_kkyey")
+animation = &"Idle"
+
+[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]

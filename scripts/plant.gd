@@ -6,14 +6,15 @@ var is_mature := false
 var damage_tween: Tween
 
 @onready var sway_pivot: Node2D = $SwayPivot
-@onready var sprite: Sprite2D = $SwayPivot/Sprite2D
+@onready var sprite: AnimatedSprite2D = $SwayPivot/AnimatedSprite2D
 @onready var sprite_position := sprite.position
 
 func _ready() -> void:
-	sprite.modulate = Color(0.9, 0.12, 0.12)
+	sprite.stop()
+	sprite.frame = 0
 	var growth := create_tween()
 	growth.finished.connect(_on_growth_finished)
-	growth.tween_property(sprite, "modulate", Color(0.15, 0.9, 0.2), growth_duration)
+	growth.tween_method(_update_growth_sprite, 0.0, 1.0, growth_duration)
 
 	var sway_duration := randf_range(1.0, 1.4)
 	var sway_amount := randf_range(0.025, 0.04)
@@ -23,6 +24,12 @@ func _ready() -> void:
 	sway.parallel().tween_property(sway_pivot, "skew", sway_amount * 0.55, sway_duration)
 	sway.tween_property(sway_pivot, "rotation", -sway_amount, sway_duration)
 	sway.parallel().tween_property(sway_pivot, "skew", -sway_amount * 0.55, sway_duration)
+
+func _update_growth_sprite(progress: float) -> void:
+	var frame_count := sprite.sprite_frames.get_frame_count(sprite.animation)
+	if frame_count <= 1:
+		return
+	sprite.frame = mini(int(progress * float(frame_count)), frame_count - 1)
 
 func _on_growth_finished() -> void:
 	is_mature = true
