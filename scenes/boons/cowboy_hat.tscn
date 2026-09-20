@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://cg5m6gm41rg66"]
+
+[ext_resource type="PackedScene" uid="uid://bfrbfa7x4r32e" path="res://scenes/boon_card.tscn" id="1_boon_card"]
+[ext_resource type="Texture2D" uid="uid://bmkp8hmyuqi2t" path="res://assets/Sprite-Cowboy-Hat.png" id="2_cowboy_hat"]
+
+[node name="BoonCard2" unique_id=1183607124 instance=ExtResource("1_boon_card")]
+bonus_seeds = 2
+
+[node name="Item Name" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="0" unique_id=877095802]
+text = "Cowboy Hat"
+
+[node name="Item Description" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="1" unique_id=736839144]
+text = "Provides good vibes and cute looks"
+
+[node name="Item Bottom Text" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="2" unique_id=152119621]
+text = "Yeehaw"
+
+[node name="Item Image" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="3" unique_id=1198312682]
+position = Vector2(1.0938797, -44.885277)
+scale = Vector2(2, 2)
+texture = ExtResource("2_cowboy_hat")

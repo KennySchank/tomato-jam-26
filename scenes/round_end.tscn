@@ -1,31 +1,38 @@
 [gd_scene format=3 uid="uid://bx5dmihvw0rvt"]
 
 [ext_resource type="Texture2D" uid="uid://cts3baud7hwoo" path="res://assets/Altertop.png" id="1_naec3"]
-[ext_resource type="Script" path="res://scripts/round_end.gd" id="2_round_end"]
+[ext_resource type="Script" uid="uid://da6w14nekibt1" path="res://scripts/round_end.gd" id="2_round_end"]
+[ext_resource type="PackedScene" uid="uid://cpu8k7o7yyqu8" path="res://scenes/dialog_box.tscn" id="3_7rbo8"]
+[ext_resource type="PackedScene" uid="uid://bfrbfa7x4r32e" path="res://scenes/boon_card.tscn" id="4_5tybl"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_s1bhj"]
-size = Vector2(737, 571)
+size = Vector2(601, 447)
 
 [node name="RoundEnd" type="StaticBody2D" unique_id=1063412795]
 process_mode = 3
 script = ExtResource("2_round_end")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1304275248]
-position = Vector2(370.33334, 287.5)
-scale = Vector2(5.7395835, 5.7395835)
+[node name="AltarBackground" type="Sprite2D" parent="." unique_id=1304275248]
+position = Vector2(306.00003, 231.00003)
+scale = Vector2(4.6458335, 4.6458335)
 texture = ExtResource("1_naec3")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=954498361]
-position = Vector2(366.5, 280.5)
+[node name="ABCollision" type="CollisionShape2D" parent="." unique_id=954498361]
+position = Vector2(302.5, 227.5)
 shape = SubResource("RectangleShape2D_s1bhj")
 
-[node name="Prompt" type="Label" parent="."]
-offset_left = 200.0
-offset_top = 520.0
-offset_right = 540.0
-offset_bottom = 560.0
-theme_override_colors/font_color = Color(0.95, 0.79, 0.41, 1)
-theme_override_font_sizes/font_size = 20
-text = "Click or press any key to continue"
-horizontal_alignment = 1
-vertical_alignment = 1
+[node name="DialogBox" parent="." unique_id=144182113 instance=ExtResource("3_7rbo8")]
+position = Vector2(309, 529)
+scale = Vector2(0.73511904, 0.735119)
+
+[node name="BoonCard1" parent="." unique_id=1384645794 instance=ExtResource("4_5tybl")]
+position = Vector2(34, 162)
+script = null
+
+[node name="BoonCard2" parent="." unique_id=1962869614 instance=ExtResource("4_5tybl")]
+position = Vector2(229, 203)
+script = null
+
+[node name="BoonCard3" parent="." unique_id=1354868312 instance=ExtResource("4_5tybl")]
+position = Vector2(424, 167)
+script = null
