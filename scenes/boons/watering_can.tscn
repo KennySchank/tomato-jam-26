@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://dm6aegblukgfu"]
+
+[ext_resource type="PackedScene" uid="uid://bfrbfa7x4r32e" path="res://scenes/boon_card.tscn" id="1_ot4us"]
+[ext_resource type="Texture2D" uid="uid://weliog5porjr" path="res://assets/boons1.png" id="2_kb004"]
+
+[node name="BoonCard" unique_id=662996127 instance=ExtResource("1_ot4us")]
+bonus_seeds = 2
+
+[node name="Item Name" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="0" unique_id=877095802]
+theme_override_font_sizes/font_size = 18
+text = "Watering Can"
+vertical_alignment = 1
+
+[node name="Item Description" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="1" unique_id=736839144]
+offset_top = 6.7353287
+offset_bottom = 81.73533
+text = "+10% tomato HP regen"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Item Bottom Text" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="2" unique_id=152119621]
+text = "Beam me up, Scotty"
+horizontal_alignment = 1
+
+[node name="Item Image" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="3" unique_id=1198312682]
+position = Vector2(4.307695, -41.07692)
+scale = Vector2(1.3343954, 1.3343954)
+texture = ExtResource("2_kb004")
+region_enabled = true
+region_rect = Rect2(0, 32, 32, 32)

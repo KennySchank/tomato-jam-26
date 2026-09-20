@@ -10,8 +10,7 @@ var target_position := Vector2.ZERO
 var impact_callback: Callable
 var has_target_position := false
 var source: Node
-
-@onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
+var spin_rotation := 0.0
 
 func set_source(new_source: Node) -> void:
 	source = new_source
@@ -28,14 +27,14 @@ func set_target_position(new_target_position: Vector2) -> void:
 	target_position = new_target_position
 	has_target_position = true
 	direction = global_position.direction_to(target_position)
-	rotation = direction.angle()
+	rotation = direction.angle() + spin_rotation
 
 func _physics_process(delta: float) -> void:
-	sprite.rotation += spin_speed * delta
+	spin_rotation += spin_speed * delta
 	if is_instance_valid(target):
 		target_position = target.global_position
 		direction = global_position.direction_to(target_position)
-		rotation = direction.angle()
+		rotation = direction.angle() + spin_rotation
 	if has_target_position and global_position.distance_to(target_position) <= speed * delta:
 		_hit_target()
 		return

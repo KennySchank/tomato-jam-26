@@ -463,8 +463,12 @@ func _try_place_tower(tile: Vector2i) -> bool:
 	var tower := TOWER_SCENE.instantiate()
 	tower.global_position = _cell_center(tile)
 	add_child(tower)
+	tower.died.connect(_on_tower_died.bind(tile))
 	tower_tiles[tile] = tower
 	return true
+
+func _on_tower_died(tile: Vector2i) -> void:
+	tower_tiles.erase(tile)
 
 func _physics_process(_delta: float) -> void:
 	queue_redraw()
