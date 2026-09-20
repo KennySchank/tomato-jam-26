@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://b3n787gy5ea7u" path="res://assets/Start-Screen.png" id="1_sa3yf"]
 [ext_resource type="Texture2D" uid="uid://cx5s5lsx3ud3o" path="res://assets/Sprite-Frog-Shadowed-Art-Sheet.png" id="2_s4lrb"]
 [ext_resource type="Texture2D" uid="uid://bdv16828y7d5d" path="res://assets/DialogCards-Sheet.png" id="3_s4lrb"]
+[ext_resource type="Texture2D" uid="uid://cs3f777v6yb35" path="res://assets/Sprite-House-Smoke.png" id="5_dc4i4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_s1bhj"]
 size = Vector2(1153, 657)
@@ -58,6 +59,166 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_gunyq"]
+atlas = ExtResource("5_dc4i4")
+region = Rect2(112, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a5oac"]
+atlas = ExtResource("5_dc4i4")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lvgq6"]
+atlas = ExtResource("5_dc4i4")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5rfef"]
+atlas = ExtResource("5_dc4i4")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ry45y"]
+atlas = ExtResource("5_dc4i4")
+region = Rect2(48, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2dpac"]
+atlas = ExtResource("5_dc4i4")
+region = Rect2(64, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qxdmu"]
+atlas = ExtResource("5_dc4i4")
+region = Rect2(80, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cvckw"]
+atlas = ExtResource("5_dc4i4")
+region = Rect2(96, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_e54dn"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a5oac")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lvgq6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5rfef")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ry45y")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2dpac")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qxdmu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cvckw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gunyq")
+}],
+"loop": 1,
+"name": &"smoke puff",
+"speed": 4.0
+}]
+
 [sub_resource type="SystemFont" id="SystemFont_woa3q"]
 font_names = PackedStringArray("Fixedsys", "Terminal", "Small Fonts", "Consolas", "Courier New")
 antialiasing = 0
@@ -86,6 +247,13 @@ scale = Vector2(5.0454545, 5.0454545)
 texture = ExtResource("3_s4lrb")
 region_enabled = true
 region_rect = Rect2(192, 67, 16, 11)
+
+[node name="Smoke Plume" type="AnimatedSprite2D" parent="Screen Background" unique_id=1372167902]
+modulate = Color(0.46618116, 0.46618068, 0.46618092, 1)
+position = Vector2(-344, 28)
+sprite_frames = SubResource("SpriteFrames_e54dn")
+animation = &"smoke puff"
+autoplay = "smoke puff"
 
 [node name="Label" type="Label" parent="." unique_id=1408814736]
 offset_left = 1058.0
