@@ -5,6 +5,10 @@ const SLOT_SIZE := Vector2(56, 56)
 const SLOT_COLOR := Color("263247")
 const SELECTED_COLOR := Color("f3c969")
 const TOOLBAR_SLOT_COUNT := 8
+const CHEST_WINDOW_POSITION := Vector2(300, 120)
+const CHEST_WINDOW_SIZE := Vector2(552, 390)
+const ALTAR_WINDOW_POSITION := Vector2(426, 150)
+const ALTAR_WINDOW_SIZE := Vector2(300, 300)
 
 var selected_source := ""
 var selected_index := -1
@@ -77,6 +81,7 @@ func _refresh() -> void:
 		return
 	if frog_slots == null or chest_slots == null:
 		return
+	_apply_window_layout()
 	if window_title != null:
 		window_title.text = "Altar" if open_storage == "altar" else "Chest"
 	if window_hint != null:
@@ -97,6 +102,14 @@ func _refresh() -> void:
 	var visible_slot_count: int = _visible_storage_slot_count(storage_inventory)
 	for index in visible_slot_count:
 		_add_slot(chest_slots, open_storage, index, storage_inventory[index])
+
+func _apply_window_layout() -> void:
+	if open_storage == "altar":
+		chest_window.position = ALTAR_WINDOW_POSITION
+		chest_window.size = ALTAR_WINDOW_SIZE
+	else:
+		chest_window.position = CHEST_WINDOW_POSITION
+		chest_window.size = CHEST_WINDOW_SIZE
 
 ## The altar shows exactly one open drop slot: one icon per completed stack of
 ## 10 tomatoes plus a single empty slot for the next deposit, capped by the
