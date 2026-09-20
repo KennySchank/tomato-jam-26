@@ -78,7 +78,7 @@ func _on_mouse_exited() -> void:
 func apply_effect() -> void:
 	if bonus_seeds > 0:
 		var game_state := get_node_or_null("/root/GameState")
-		if game_state != null and game_state.has_method("grant_item"):
-			var leftover: int = game_state.grant_item(game_state.SEED_ITEM_ID, bonus_seeds)
+		if game_state != null and game_state.has_method("add_seeds"):
+			var leftover: int = game_state.add_seeds(bonus_seeds)
 			if leftover > 0:
 				push_warning("Boon reward overflow: %d seeds could not be stored." % leftover)

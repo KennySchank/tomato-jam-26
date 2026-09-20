@@ -50,18 +50,18 @@ agent_radius = 16.0
 
 [sub_resource type="Resource" id="Wave_1"]
 script = ExtResource("14_wave_def")
-prep_time = 28.0
-enemy_count = 7
-spawn_interval_min = 2.25
-spawn_interval_max = 3.5
+prep_time = 40.0
+enemy_count = 6
+spawn_interval_min = 2.5
+spawn_interval_max = 4.0
 max_concurrent = 4
 enemy_scenes = Array[PackedScene]([ExtResource("15_enemy")])
 reward_seeds = 3
 
 [sub_resource type="Resource" id="Wave_2"]
 script = ExtResource("14_wave_def")
-prep_time = 18.0
-enemy_count = 12
+prep_time = 22.0
+enemy_count = 10
 spawn_interval_min = 1.5
 spawn_interval_max = 2.75
 max_concurrent = 6
@@ -73,8 +73,8 @@ reward_seeds = 4
 
 [sub_resource type="Resource" id="Wave_3"]
 script = ExtResource("14_wave_def")
-prep_time = 14.0
-enemy_count = 18
+prep_time = 18.0
+enemy_count = 16
 spawn_interval_min = 0.9
 spawn_interval_max = 2.0
 max_concurrent = 9

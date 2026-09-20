@@ -79,19 +79,19 @@ func _unhandled_input(event: InputEvent) -> void:
 	# Any click anywhere on the overlay restarts, matching the "Continue..."
 	# prompt. Keyboard confirm also works so this is reachable without a mouse.
 	if event is InputEventMouseButton and event.pressed:
-		_restart_game()
 		get_viewport().set_input_as_handled()
+		_restart_game()
 	elif event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode in [KEY_ENTER, KEY_KP_ENTER, KEY_SPACE]:
-			_restart_game()
 			get_viewport().set_input_as_handled()
+			_restart_game()
 
 func _on_continue_gui_input(event: InputEvent) -> void:
 	if not _input_armed:
 		return
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		_restart_game()
 		get_viewport().set_input_as_handled()
+		_restart_game()
 
 func _on_continue_hover() -> void:
 	if continue_label != null:
