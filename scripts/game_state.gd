@@ -96,7 +96,6 @@ func reset_run() -> void:
 		chest_inventory.append({})
 	for _i in ALTAR_CAPACITY:
 		altar_inventory.append({})
-	frog_inventory[0] = {"id": SEED_ITEM_ID, "quantity": 10}
 	chest_inventory[0] = {"id": CHEST_ITEM_ID, "quantity": 1}
 	seed_counts = {TOMATO_SEED_ID: 10}
 	unlocked_seeds = [TOMATO_SEED_ID]
@@ -258,6 +257,8 @@ func add_chest_item(item_id: String, amount: int = 1) -> bool:
 func grant_item(item_id: String, amount: int) -> int:
 	if amount <= 0:
 		return 0
+	if item_id == SEED_ITEM_ID:
+		return add_seeds(amount)
 	var remaining := amount
 	var frog_space := _capacity_for(frog_inventory, item_id)
 	var to_frog: int = mini(remaining, frog_space)
