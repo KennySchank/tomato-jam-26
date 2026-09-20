@@ -34,10 +34,11 @@ func _on_harvest_time_changed(seconds_remaining: float) -> void:
 	if _run_ended:
 		return
 	timer_label.text = _format_seconds(seconds_remaining)
-
+	timer_label.add_theme_font_size_override("font_size", 16)
 
 func _on_game_lost() -> void:
 	_run_ended = true
+	timer_label.add_theme_font_size_override("font_size", 12)
 	timer_label.text = "Defeated"
 
 
