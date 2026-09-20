@@ -48,8 +48,8 @@ const DEFAULT_TOMATO_GOAL := 10
 ## array empty to disable. Applied by `main.gd::_ready` after autoloads are
 ## ready so `get_tree()`-dependent boons work identically to a live pick.
 const DEBUG_STARTING_BOONS: Array[String] = [
-	"res://scenes/boons/corn_seeds.tscn",
-	"res://scenes/boons/pumpkin_seeds.tscn",
+	#"res://scenes/boons/corn_seeds.tscn",
+	#"res://scenes/boons/pumpkin_seeds.tscn",
 ]
 
 @export var tomato_goal: int = DEFAULT_TOMATO_GOAL
