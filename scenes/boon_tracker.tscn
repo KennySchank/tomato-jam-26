@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://dv1fmqr5knct0"]
+
+[ext_resource type="Script" uid="uid://ksg5bg1m85gd" path="res://scripts/boon_tracker.gd" id="1_boon_tracker"]
+
+[node name="BoonTracker" type="CanvasLayer" unique_id=1386978646]
+script = ExtResource("1_boon_tracker")
+
+[node name="Slots" type="HBoxContainer" parent="." unique_id=549166343]
+offset_left = 443.0
+offset_top = 8.0
+offset_right = 1138.0
+offset_bottom = 56.0
+theme_override_constants/separation = 6
+alignment = 2

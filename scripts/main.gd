@@ -11,6 +11,8 @@ const IDLE_FRAME: int = 1
 const PLOT_CENTER := Vector2(576, 324)
 const PLANT_SCENE := preload("res://scenes/plant.tscn")
 const TOWER_SCENE := preload("res://scenes/tower.tscn")
+const CORN_TOWER_SCENE := preload("res://scenes/corn_tower.tscn")
+const PUMPKIN_WALL_SCENE := preload("res://scenes/pumpkin_wall.tscn")
 const ENEMY_SCENE := preload("res://scenes/enemy.tscn")
 const ENEMY_SCENES: Array[PackedScene] = [
 	preload("res://scenes/enemy.tscn"),
@@ -31,6 +33,9 @@ var destination := PLOT_CENTER
 var navigation_ready := false
 var planted_tiles: Dictionary = {}
 var tower_tiles: Dictionary = {}
+## Tracks Pumpkin Walls placed on enemy path tiles so we can block re-placing
+## a wall on top of an existing one. Cleaned up when the wall queue_frees.
+var wall_tiles: Dictionary = {}
 var hovered_tile := Vector2i(999999, 999999)
 var enemy_routes: Array[Array] = []
 var brown_soil_count: int = 0
@@ -425,6 +430,11 @@ func _damage_land(tile: Vector2i) -> void:
 	# Hoe boon spends a charge to save the plot before it turns to grass.
 	if game_state.hoe_charges > 0:
 		game_state.hoe_charges -= 1
+		# Once the last charge is spent, the hoe breaks: drop it from the
+		# active boons so the tracker hides it and future rerolls can offer
+		# it again.
+		if game_state.hoe_charges <= 0:
+			game_state.deactivate_boon("res://scenes/boons/hoe.tscn")
 		_play_land_repair(tile)
 		return
 	_play_land_damage(tile)
@@ -501,10 +511,19 @@ func _process(_delta: float) -> void:
 				hover_is_valid = _can_place_item(hovered_tile, item_id)
 				preview_scale = Vector2.ONE * 1.68
 				preview_node = placement_preview
-		elif game_state.seed_count > 0 and not hover_is_harvest_target:
-			hover_is_valid = _can_place_item(hovered_tile, game_state.SEED_ITEM_ID)
-			preview_scale = Vector2.ONE * 0.18
-			preview_node = plant_preview
+		elif game_state.get_seed_count(game_state.active_seed_id) > 0 and not hover_is_harvest_target:
+			var active_id: String = game_state.active_seed_id
+			hover_is_valid = _can_place_item(hovered_tile, active_id)
+			if active_id == game_state.TOMATO_SEED_ID:
+				preview_scale = Vector2.ONE * 0.18
+				preview_node = plant_preview
+			elif active_id == game_state.CORN_SEED_ID:
+				# Corn plants a tower on the same non-tilled tiles as tomato
+				# towers, so reuse the tower silhouette preview.
+				preview_scale = Vector2.ONE * 1.68
+				preview_node = placement_preview
+			# Pumpkins don't get a preview sprite yet; the hover highlight is
+			# enough of a signal that the tile is a valid path drop.
 	placement_preview.visible = false
 	plant_preview.visible = false
 	preview_node.visible = hover_is_valid and preview_scale != Vector2.ZERO
@@ -527,10 +546,24 @@ func _process(_delta: float) -> void:
 func _can_place_item(tile: Vector2i, item_id: String) -> bool:
 	if not _is_in_planting_range(tile) or map.get_cell_tile_data(tile) == null:
 		return false
-	if planted_tiles.has(tile) or tower_tiles.has(tile):
+	if planted_tiles.has(tile) or tower_tiles.has(tile) or wall_tiles.has(tile):
 		return false
 	if item_id == game_state.SEED_ITEM_ID:
 		return _is_plantable(tile)
+	if item_id == game_state.CORN_SEED_ID:
+		# Corn Towers place exactly where tomato towers do: off the tilled
+		# plot, off the enemy path, and not blocked by the altar.
+		if altar.blocks_tower_at(tile):
+			return false
+		if _is_tilled_soil(tile):
+			return false
+		return not _is_enemy_path(tile)
+	if item_id == game_state.PUMPKIN_SEED_ID:
+		# Pumpkin Walls only drop on enemy path tiles so enemies path into
+		# them instead of the plot.
+		if altar.blocks_tower_at(tile):
+			return false
+		return _is_enemy_path(tile)
 	if item_id == game_state.FRUIT_ITEM_ID:
 		if altar.blocks_tower_at(tile):
 			return false
@@ -540,15 +573,40 @@ func _can_place_item(tile: Vector2i, item_id: String) -> bool:
 	return false
 
 func _try_plant(tile: Vector2i) -> void:
-	if not _can_place_item(tile, game_state.SEED_ITEM_ID):
+	var seed_id: String = game_state.active_seed_id
+	if not _can_place_item(tile, seed_id):
 		return
-	if not game_state.consume_seed():
+	if not game_state.consume_seed(seed_id):
 		return
+	match seed_id:
+		game_state.CORN_SEED_ID:
+			_place_corn_tower(tile)
+		game_state.PUMPKIN_SEED_ID:
+			_place_pumpkin_wall(tile)
+		_:
+			var plant := PLANT_SCENE.instantiate()
+			plant.global_position = _cell_center(tile)
+			add_child(plant)
+			planted_tiles[tile] = plant
 
-	var plant := PLANT_SCENE.instantiate()
-	plant.global_position = _cell_center(tile)
-	add_child(plant)
-	planted_tiles[tile] = plant
+func _place_corn_tower(tile: Vector2i) -> void:
+	var tower := CORN_TOWER_SCENE.instantiate()
+	tower.global_position = _cell_center(tile)
+	add_child(tower)
+	tower.died.connect(_on_tower_died.bind(tile))
+	tower_tiles[tile] = tower
+
+func _place_pumpkin_wall(tile: Vector2i) -> void:
+	var wall := PUMPKIN_WALL_SCENE.instantiate()
+	wall.global_position = _cell_center(tile)
+	add_child(wall)
+	wall_tiles[tile] = wall
+	# Pumpkin walls queue_free themselves on break; clear the tile record so
+	# the player can drop another one on the same path square later.
+	wall.tree_exited.connect(_on_wall_removed.bind(tile))
+
+func _on_wall_removed(tile: Vector2i) -> void:
+	wall_tiles.erase(tile)
 
 func _try_harvest(tile: Vector2i) -> bool:
 	if not _is_in_planting_range(tile) or not planted_tiles.has(tile):
@@ -582,29 +640,6 @@ func _try_place_tower(tile: Vector2i) -> bool:
 
 func _on_tower_died(tile: Vector2i) -> void:
 	tower_tiles.erase(tile)
-
-## Spawns a Corn Tower on a random tilled soil tile that has no plant or tower
-## on it yet. Called by the Corn Seeds boon after the round-end screen closes.
-## Returns true when a tower was placed.
-func spawn_corn_tower() -> bool:
-	const CORN_TOWER_SCENE := preload("res://scenes/corn_tower.tscn")
-	var candidates: Array[Vector2i] = []
-	for tile in map.get_used_cells():
-		if not _is_tilled_soil(tile):
-			continue
-		if planted_tiles.has(tile) or tower_tiles.has(tile):
-			continue
-		candidates.append(tile)
-	if candidates.is_empty():
-		push_warning("Corn Seeds boon: no empty tilled soil to plant the corn tower on.")
-		return false
-	var tile: Vector2i = candidates.pick_random()
-	var tower := CORN_TOWER_SCENE.instantiate()
-	tower.global_position = _cell_center(tile)
-	add_child(tower)
-	tower.died.connect(_on_tower_died.bind(tile))
-	tower_tiles[tile] = tower
-	return true
 
 ## Spawns a Fence entity spanning the south edge of the tomato plot. Only one
 ## fence can exist at a time (the boon is deduped from re-picks).
@@ -649,10 +684,11 @@ func spawn_scarecrow() -> bool:
 
 ## Spawns a Pumpkin Wall at the endpoint of the shortest enemy route so that
 ## enemies stop and attack it there rather than continuing to the plot.
+## Kept as a debug/utility helper; the Pumpkin Seeds boon now grants seeds
+## instead of calling this directly.
 func spawn_pumpkin_wall() -> bool:
-	const PUMPKIN_WALL_SCENE := preload("res://scenes/pumpkin_wall.tscn")
 	if enemy_routes.is_empty():
-		push_warning("Pumpkin Seeds boon: no enemy routes available.")
+		push_warning("spawn_pumpkin_wall: no enemy routes available.")
 		return false
 	var shortest: Array = enemy_routes[0]
 	for route in enemy_routes:
