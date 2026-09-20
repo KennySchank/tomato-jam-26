@@ -1,31 +1,31 @@
-[gd_scene format=3 uid="uid://b26np2jjajtjx"]
+[gd_scene format=3 uid="uid://h4ejxkxhk5yg"]
 
-[ext_resource type="PackedScene" uid="uid://bfrbfa7x4r32e" path="res://scenes/boon_card.tscn" id="1_fhawm"]
-[ext_resource type="Texture2D" uid="uid://weliog5porjr" path="res://assets/boons1.png" id="2_2sy51"]
+[ext_resource type="PackedScene" uid="uid://bfrbfa7x4r32e" path="res://scenes/boon_card.tscn" id="1_777xs"]
+[ext_resource type="Texture2D" uid="uid://weliog5porjr" path="res://assets/boons1.png" id="2_c5882"]
 
-[node name="BoonCard" unique_id=662996127 instance=ExtResource("1_fhawm")]
+[node name="BoonCard" unique_id=662996127 instance=ExtResource("1_777xs")]
 bonus_seeds = 2
 
 [node name="Item Name" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="0" unique_id=877095802]
 theme_override_font_sizes/font_size = 18
-text = "Pumpkin Seeds"
+text = "Sickle"
 vertical_alignment = 1
 
 [node name="Item Description" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="1" unique_id=736839144]
 offset_top = 6.7353287
 offset_bottom = 81.73533
-text = "Unlocks planting pumpkin barricades"
+text = "Auto tomato harvest"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Item Bottom Text" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="2" unique_id=152119621]
 theme_override_font_sizes/font_size = 11
-text = "Add a dash of cinnamon"
+text = "Farm with me, comrade"
 horizontal_alignment = 1
 
 [node name="Item Image" parent="Card Blank" parent_id_path=PackedInt32Array(729730308) index="3" unique_id=1198312682]
 position = Vector2(2.3841858e-06, -37.84615)
 scale = Vector2(1.3343954, 1.3343954)
-texture = ExtResource("2_2sy51")
+texture = ExtResource("2_c5882")
 region_enabled = true
-region_rect = Rect2(160, 0, 32, 32)
+region_rect = Rect2(32, 32, 32, 32)
